@@ -268,7 +268,7 @@ export default function LandingPage() {
 
         .hero-right {
           position: relative;
-          background: linear-gradient(160deg, ${blueDeep} 0%, #1d4ed8 55%, #0f172a 100%);
+          background: linear-gradient(160deg, ${blueDeep} 0%, #1d4ed8 60%, #0f172a 100%);
           border-top-left-radius: 44px;
           border-bottom-left-radius: 44px;
           padding: 38px 40px 32px;
@@ -280,27 +280,15 @@ export default function LandingPage() {
           min-height: 560px;
         }
 
-        .hero-right::before {
+        .hero-right::after {
           content: "";
           position: absolute;
-          top: -80px;
+          top: -100px;
           right: -80px;
           width: 320px;
           height: 320px;
           border-radius: 50%;
           background: radial-gradient(circle, rgba(147, 197, 253, 0.22) 0%, transparent 70%);
-          pointer-events: none;
-        }
-
-        .hero-right::after {
-          content: "";
-          position: absolute;
-          bottom: -60px;
-          left: -40px;
-          width: 260px;
-          height: 260px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
           pointer-events: none;
         }
 
@@ -442,19 +430,6 @@ export default function LandingPage() {
           padding: 110px 36px 90px;
           border-top: 1px solid ${borderSoft};
           position: relative;
-        }
-
-        .sectors-band::before {
-          content: "002";
-          position: absolute;
-          top: 40px;
-          right: 36px;
-          font-family: "Instrument Serif", Georgia, serif;
-          font-size: 110px;
-          color: ${dark ? "rgba(37,99,235,0.06)" : "rgba(37,99,235,0.05)"};
-          line-height: 1;
-          letter-spacing: -0.02em;
-          pointer-events: none;
         }
 
         .sectors-inner {
@@ -710,19 +685,6 @@ export default function LandingPage() {
           padding: 110px 36px;
           background: ${dark ? "#0a1220" : "#f4f6fb"};
           position: relative;
-        }
-
-        .features-band::before {
-          content: "003";
-          position: absolute;
-          top: 40px;
-          left: 36px;
-          font-family: "Instrument Serif", Georgia, serif;
-          font-size: 110px;
-          color: ${dark ? "rgba(37,99,235,0.06)" : "rgba(37,99,235,0.05)"};
-          line-height: 1;
-          letter-spacing: -0.02em;
-          pointer-events: none;
         }
 
         .features-inner {
@@ -993,55 +955,56 @@ export default function LandingPage() {
 
         /* ===== FOOTER ===== */
         .footer {
-          padding: 48px 36px 36px;
+          padding: 40px 36px 32px;
           border-top: 1px solid ${borderSoft};
         }
 
-        .footer-top {
-          display: grid;
-          grid-template-columns: 1.4fr 1fr 1fr 1fr;
-          gap: 40px;
-          margin-bottom: 40px;
+        .footer-main {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 28px;
+          flex-wrap: wrap;
+          margin-bottom: 28px;
         }
 
-        .footer-brand-block h3 {
-          margin: 14px 0 12px;
-          font-family: "Instrument Serif", Georgia, serif;
-          font-weight: 400;
-          font-size: 28px;
-          line-height: 1.1;
+        .footer-brand-side {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .footer-brand-name {
+          font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+          font-size: 20px;
+          font-weight: 800;
+          letter-spacing: -0.02em;
           color: ${ink};
-          max-width: 280px;
         }
 
-        .footer-brand-block p {
+        .footer-tagline {
           margin: 0;
           color: ${muted};
-          font-size: 13px;
-          line-height: 1.55;
-          max-width: 280px;
+          font-size: 13.5px;
+          line-height: 1.5;
         }
 
-        .footer-col h4 {
-          margin: 0 0 16px;
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: ${muted};
+        .footer-nav {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          flex-wrap: wrap;
         }
 
-        .footer-col a {
-          display: block;
-          color: ${ink};
+        .footer-nav a {
+          color: ${inkSoft};
           text-decoration: none;
           font-size: 14px;
-          font-weight: 500;
-          margin-bottom: 10px;
+          font-weight: 600;
           transition: color 0.15s ease;
         }
 
-        .footer-col a:hover {
+        .footer-nav a:hover {
           color: ${blue};
         }
 
@@ -1049,7 +1012,7 @@ export default function LandingPage() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-top: 28px;
+          padding-top: 24px;
           border-top: 1px solid ${borderSoft};
           gap: 16px;
           flex-wrap: wrap;
@@ -1058,10 +1021,15 @@ export default function LandingPage() {
         .footer-meta {
           display: flex;
           align-items: center;
-          gap: 18px;
+          gap: 10px;
           color: ${muted};
           font-size: 13px;
           font-weight: 500;
+          flex-wrap: wrap;
+        }
+
+        .footer-dot {
+          opacity: 0.5;
         }
 
         .admin-link {
@@ -1113,9 +1081,6 @@ export default function LandingPage() {
           .bento-wide {
             grid-column: span 2;
           }
-          .footer-top {
-            grid-template-columns: 1fr 1fr;
-          }
         }
 
         @media (max-width: 880px) {
@@ -1159,10 +1124,6 @@ export default function LandingPage() {
           .features-band {
             padding: 72px 22px;
           }
-          .sectors-band::before,
-          .features-band::before {
-            display: none;
-          }
           .cta-left,
           .cta-right {
             padding: 40px 28px;
@@ -1182,9 +1143,10 @@ export default function LandingPage() {
           .bento-wide {
             grid-column: span 1;
           }
-          .footer-top {
-            grid-template-columns: 1fr;
-            gap: 28px;
+          .footer-main {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
           }
           .hero-proof {
             gap: 18px;
@@ -1225,12 +1187,12 @@ export default function LandingPage() {
           <div className="hero-left">
             <div className="hero-eyebrow">ENTERPRISE OPERATING SYSTEM</div>
             <h1 className="hero-title">
-              Built for Modern<br />
-              <em>Accounting, Tax</em><br />
-              &amp; Operations
+              Empower Your<br />
+              Business with<br />
+              <em>Modern</em> Solutions
             </h1>
             <p className="hero-copy">
-              The unified ERP &amp; CRM platform for modern businesses. Automated tax filing, compliance-ready ledgers, seamless payments, and bilingual workflows.
+              The unified ERP &amp; CRM platform for modern businesses. Automated tax filing, compliance-ready ledgers, seamless payments, and offline-first workflows.
             </p>
 
             <div className="hero-actions">
@@ -1249,7 +1211,7 @@ export default function LandingPage() {
                 <ShieldCheck size={16} /> Compliance &amp; Tax Ready
               </span>
               <span className="proof-logo">
-                <Languages size={16} /> English · Français
+                <Languages size={16} /> Amharic · English
               </span>
               <span className="proof-logo">
                 <Wifi size={16} /> Offline-First Sync
@@ -1603,49 +1565,31 @@ export default function LandingPage() {
 
         {/* ============= FOOTER ============= */}
         <footer className="footer">
-          <div className="footer-top">
-            <div className="footer-brand-block">
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <LogoTile tileSize={32} iconSize={20} background={blue} />
-                <span style={{ fontFamily: '"Instrument Serif", Georgia, serif', fontSize: 22, color: ink }}>
-                  Beyond<span style={{ color: blue }}>.</span>
-                </span>
-              </div>
-              <h3>The operating system for Ethiopian companies.</h3>
-              <p>
-                Built in Addis Ababa for sales, stock, payroll, finance, and reports — online or off.
+          <div className="footer-main">
+            <div className="footer-brand-side">
+              <span className="footer-brand-name">Beyond ERP</span>
+              <p className="footer-tagline">
+                Mobile-first ERP &amp; CRM for Ethiopian businesses.
               </p>
             </div>
 
-            <div className="footer-col">
-              <h4>Product</h4>
+            <div className="footer-nav">
               <a href="#sectors">Sectors</a>
               <a href="#features">Features</a>
               <a href="#start">Pricing</a>
-              <a href="/register">Get access</a>
-            </div>
-
-            <div className="footer-col">
-              <h4>Company</h4>
-              <a href="#start">About</a>
               <a href="#start">Contact</a>
-              <a href="#start">Careers</a>
-              <a href="/login">Sign in</a>
-            </div>
-
-            <div className="footer-col">
-              <h4>Compliance</h4>
-              <a href="#start">NBE compliance</a>
-              <a href="#start">15% VAT</a>
-              <a href="#start">Data security</a>
-              <a href="#start">Privacy</a>
+              <a href="/login">Sign In</a>
+              <a href="/register">Get Started</a>
             </div>
           </div>
 
           <div className="footer-bottom">
             <div className="footer-meta">
-              <span>&copy; {new Date().getFullYear()} Beyond ERP Ethiopia</span>
-              <span>Built in Addis Ababa</span>
+              <span>&copy; {new Date().getFullYear()} Beyond ERP. All rights reserved.</span>
+              <span className="footer-dot">&middot;</span>
+              <span>Amharic &middot; English</span>
+              <span className="footer-dot">&middot;</span>
+              <span>Addis Ababa, Ethiopia</span>
             </div>
             <a href="/sa" className="admin-link" aria-label="Open system admin">
               Admin
