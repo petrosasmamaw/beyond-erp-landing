@@ -216,20 +216,20 @@ export const domainWorkflows: Record<string, DomainWorkflow[]> = {
       { name: "impactScore", label: "Impact score", type: "number", required: true }
     ])
   ],
-  "government-services": [
-    workflow("government-services", "permit", "Permit", "Create permit", "Track permit applicant and fee.", [
-      { name: "applicant", label: "Applicant", type: "text", required: true },
-      { name: "permitType", label: "Permit type", type: "text", required: true },
-      { name: "fee", label: "Fee", type: "number", required: true }
-    ], "fee"),
-    workflow("government-services", "citizen-case", "Citizen Case", "Open citizen case", "Track service desk case and priority.", [
-      { name: "citizenName", label: "Citizen name", type: "text", required: true },
-      { name: "serviceType", label: "Service type", type: "text", required: true },
+  "request-custom": [
+    workflow("request-custom", "custom-module", "Custom Module", "Request custom module", "Request tailored ERP module development and feature set.", [
+      { name: "moduleName", label: "Module name", type: "text", required: true },
+      { name: "department", label: "Department", type: "text", required: true },
+      { name: "estimatedBudget", label: "Estimated budget", type: "number", required: true }
+    ], "estimatedBudget"),
+    workflow("request-custom", "integration-ticket", "Integration Ticket", "Open integration request", "Track custom third-party or API integration request.", [
+      { name: "integrationSystem", label: "System to integrate", type: "text", required: true },
+      { name: "integrationType", label: "Integration type", type: "text", required: true },
       { name: "priorityScore", label: "Priority score", type: "number", required: true }
     ]),
-    workflow("government-services", "revenue-receipt", "Revenue Receipt", "Record revenue receipt", "Track public revenue payment.", [
-      { name: "payer", label: "Payer", type: "text", required: true },
-      { name: "revenueType", label: "Revenue type", type: "text", required: true },
+    workflow("request-custom", "custom-service-order", "Custom Service Order", "Record custom service order", "Track bespoke software implementation fee.", [
+      { name: "clientName", label: "Client name", type: "text", required: true },
+      { name: "serviceScope", label: "Service scope", type: "text", required: true },
       { name: "amount", label: "Amount", type: "number", required: true }
     ], "amount")
   ]

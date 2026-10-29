@@ -87,9 +87,9 @@ export default function LoginPage() {
           </h1>
           <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
             {([
-              { icon: <ShieldCheck size={14} />, label: "NBE compliant · 15% VAT built in" },
+              { icon: <ShieldCheck size={14} />, label: "Audit ready · 15% VAT built in" },
               { icon: <Wifi size={14} />, label: "Offline-first — no dropped sales" },
-              { icon: <Languages size={14} />, label: "Amharic · Oromo · Tigrinya" },
+              { icon: <Languages size={14} />, label: "Amharic · English · Afan Oromo" },
             ] as const).map(({ icon, label }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.85)", fontSize: 14 }}>
                 <span style={{ color: "#93c5fd", flexShrink: 0 }}>{icon}</span>

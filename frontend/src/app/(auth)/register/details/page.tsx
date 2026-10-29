@@ -172,7 +172,7 @@ function RegisterDetailsContent() {
             {([
               { icon: <ShieldCheck size={14} />, label: "Admin-reviewed setup after payment" },
               { icon: <Wifi size={14} />, label: "Offline-first workflows from day one" },
-              { icon: <Languages size={14} />, label: "Amharic, Oromo, and Tigrinya ready" },
+              { icon: <Languages size={14} />, label: "Amharic, English, and Afan Oromo ready" },
             ] as const).map(({ icon, label }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.85)", fontSize: 14 }}>
                 <span style={{ color: "#93c5fd", flexShrink: 0 }}>{icon}</span>

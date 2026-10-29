@@ -510,7 +510,7 @@
         }
 
         .spotlight-card {
-          background: var(--hero-right-bg);
+          background: linear-gradient(160deg, #1e3a8a 0%, #1d4ed8 60%, #0f172a 100%);
           border-radius: 20px;
           padding: 36px;
           color: white;
@@ -892,7 +892,7 @@
         }
 
         .cta-right {
-          background: var(--hero-right-bg);
+          background: linear-gradient(160deg, #1e3a8a 0%, #1d4ed8 60%, #0f172a 100%);
           padding: 50px;
           position: relative;
           overflow: hidden;

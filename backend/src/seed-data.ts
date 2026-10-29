@@ -209,22 +209,22 @@ export const sectors = [
     ]
   },
   {
-    id: "government-services",
-    name: "Government Services",
-    icon: "badge-check",
-    color: "#475569",
-    lightColor: "#e2e8f0",
-    textColor: "#334155",
-    description: "Permit, revenue, citizen service, and audit workflows for public offices.",
+    id: "request-custom",
+    name: "Request Custom",
+    icon: "sparkles",
+    color: "#8b5cf6",
+    lightColor: "#f5f3ff",
+    textColor: "#6d28d9",
+    description: "Tailored ERP workflows, specialized modules, and bespoke integrations built for your business.",
     features: [
-      "Permit management",
-      "Revenue collection",
-      "Citizen records",
-      "Audit logs",
-      "Case routing",
-      "Document registry",
-      "Service counters",
-      "Performance reports"
+      "Custom workflows",
+      "Specialized modules",
+      "API integrations",
+      "Legacy data migration",
+      "Tailored reports",
+      "Dedicated onboarding",
+      "Custom role hierarchies",
+      "Priority SLA support"
     ]
   }
 ];
