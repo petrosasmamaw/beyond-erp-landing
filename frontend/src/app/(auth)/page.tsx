@@ -50,9 +50,8 @@ export default function LandingPage() {
       <div className="landing-card">
         {/* ============= NAV ============= */}
         <nav className="landing-nav">
-          <a className="nav-brand" href="#" style={{ textDecoration: "none" }}>
-            <span style={{ color: "var(--landing-ink)", fontWeight: 800 }}>Beyond</span>
-            <span style={{ color: "#3b82f6", fontWeight: 800, marginLeft: "4px" }}>ERP</span>
+          <a className="nav-brand" href="#" style={{ textDecoration: "none", color: "#ffffff" }}>
+            <span style={{ color: "#ffffff", fontWeight: 800 }}>Beyond ERP</span>
           </a>
 
           <div className="nav-links">
