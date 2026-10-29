@@ -84,13 +84,6 @@ function RegisterDetailsContent() {
   const sectorTint = dark ? "rgba(37,99,235,0.14)" : companySector.tint || "#eff6ff";
   const backToSectorHref = sectorId ? `/register?sectorId=${sectorId}` : "/register";
 
-  const logoImage = (size: number): CSSProperties => ({
-    width: size,
-    height: size,
-    display: "block",
-    background: 'url("/beyond.ico") center / contain no-repeat',
-  });
-
   const labelStyle: CSSProperties = {
     display: "flex",
     flexDirection: "column",
@@ -161,15 +154,15 @@ function RegisterDetailsContent() {
         className="login-brand-panel"
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
-            <span aria-hidden="true" style={logoImage(24)} />
-          </div>
-          <span style={{ fontWeight: 700, fontSize: 15, color: "white" }}>Beyond ERP</span>
+          <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
+            <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
+            <span style={{ color: "#60a5fa" }}>ERP</span>
+          </span>
         </div>
 
         <div style={{ position: "relative" }}>
           <p style={{ margin: "0 0 20px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.7)" }}>
-            002 - Workspace onboarding
+            Workspace Onboarding
           </p>
           <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400 }}>
             Request access<br />for your<br />
@@ -196,11 +189,11 @@ function RegisterDetailsContent() {
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
-          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span aria-hidden="true" style={logoImage(18)} />
-            </div>
-            <span style={{ fontWeight: 700, fontSize: 14, color: ink }}>Beyond ERP</span>
+          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
+              <span style={{ color: ink }}>Beyond</span>{" "}
+              <span style={{ color: "#2563eb" }}>ERP</span>
+            </span>
           </div>
           <ThemeToggle />
         </div>

@@ -190,22 +190,18 @@ export function Sidebar({
       >
         {!collapsed && (
           <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 7,
-                background: "#2563eb",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <span style={{ fontFamily: "Georgia, serif", fontSize: 14, fontStyle: "italic", color: "white", lineHeight: 1 }}>ß</span>
-            </div>
+            <img
+              src="/logo.png"
+              alt="Beyond ERP"
+              width={28}
+              height={28}
+              style={{ borderRadius: "50%", flexShrink: 0, display: "block" }}
+            />
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 12.5, fontWeight: 700, color: text, lineHeight: 1.2 }}>Beyond ERP</div>
+              <div style={{ fontSize: 12.5, fontWeight: 700, lineHeight: 1.2 }}>
+                <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
+                <span style={{ color: "#3b82f6" }}>ERP</span>
+              </div>
               <div style={{ fontSize: 11, color: muted, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: 134 }}>
                 {companyName}
               </div>
@@ -213,14 +209,13 @@ export function Sidebar({
           </div>
         )}
         {collapsed && (
-          <div
-            style={{
-              width: 28, height: 28, borderRadius: 7, background: "#2563eb",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
-          >
-            <span style={{ fontFamily: "Georgia, serif", fontSize: 14, fontStyle: "italic", color: "white", lineHeight: 1 }}>ß</span>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Beyond ERP"
+            width={28}
+            height={28}
+            style={{ borderRadius: "50%", flexShrink: 0, display: "block" }}
+          />
         )}
         <button
           onClick={onToggle}

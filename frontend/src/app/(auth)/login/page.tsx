@@ -70,16 +70,16 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
-            <span aria-hidden="true" style={{ width: 24, height: 24, display: "block", background: 'url("/beyond.ico") center / contain no-repeat' }} />
-          </div>
-          <span style={{ fontWeight: 700, fontSize: 15, color: "white" }}>Beyond ERP</span>
+          <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
+            <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
+            <span style={{ color: "#60a5fa" }}>ERP</span>
+          </span>
         </div>
 
         {/* Hero copy */}
         <div style={{ position: "relative" }}>
           <p style={{ margin: "0 0 20px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.7)" }}>
-            001 — Ethiopian Business Suite
+            Ethiopian Business Suite
           </p>
           <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
             The operating<br />system for<br />
@@ -109,12 +109,12 @@ export default function LoginPage() {
 
         {/* Top row: mobile logo + theme toggle */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
-          {/* Mobile-only logo */}
-          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span aria-hidden="true" style={{ width: 18, height: 18, display: "block", background: 'url("/beyond.ico") center / contain no-repeat' }} />
-            </div>
-            <span style={{ fontWeight: 700, fontSize: 14, color: ink }}>Beyond ERP</span>
+          {/* Mobile-only brand */}
+          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
+              <span style={{ color: ink }}>Beyond</span>{" "}
+              <span style={{ color: "#2563eb" }}>ERP</span>
+            </span>
           </div>
           <ThemeToggle />
         </div>

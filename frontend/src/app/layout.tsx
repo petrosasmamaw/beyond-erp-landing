@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "Beyond ERP System",
   description: "Business management built for Ethiopia - works offline, speaks your language.",
   manifest: "/manifest.json",
-  icons: { icon: "/beyond.ico" }
+  icons: { icon: "/logo.png", apple: "/logo.png" }
 };
 
 export const viewport: Viewport = {

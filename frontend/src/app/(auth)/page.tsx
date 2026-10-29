@@ -51,14 +51,8 @@ export default function LandingPage() {
         {/* ============= NAV ============= */}
         <nav className="landing-nav">
           <a className="nav-brand" href="#" style={{ textDecoration: "none" }}>
-            <img
-              src="/icon.svg"
-              alt="Beyond ERP Logo"
-              width={32}
-              height={32}
-              style={{ borderRadius: 8, flexShrink: 0, display: "block" }}
-            />
-            <span>Beyond ERP</span>
+            <span style={{ color: "var(--landing-ink)", fontWeight: 800 }}>Beyond</span>
+            <span style={{ color: "#3b82f6", fontWeight: 800, marginLeft: "4px" }}>ERP</span>
           </a>
 
           <div className="nav-links">
@@ -465,13 +459,16 @@ export default function LandingPage() {
             <div className="footer-brand-side">
               <div className="footer-brand-header">
                 <img
-                  src="/icon.svg"
+                  src="/logo.png"
                   alt="Beyond ERP Logo"
-                  width={28}
-                  height={28}
-                  style={{ borderRadius: 7, flexShrink: 0, display: "block" }}
+                  width={36}
+                  height={36}
+                  style={{ borderRadius: "50%", flexShrink: 0, display: "block", objectFit: "contain" }}
                 />
-                <span className="footer-brand-name">Beyond ERP</span>
+                <span className="footer-brand-name">
+                  <span style={{ color: "#ffffff", fontWeight: 800 }}>Beyond</span>{" "}
+                  <span style={{ color: "#3b82f6", fontWeight: 800 }}>ERP</span>
+                </span>
               </div>
               <p className="footer-tagline">
                 Mobile-first ERP &amp; CRM for Ethiopian businesses.
@@ -514,7 +511,7 @@ export default function LandingPage() {
 
           <div className="footer-bottom">
             <div className="footer-meta">
-              <span>&copy; {new Date().getFullYear()} Beyond ERP. All rights reserved.</span>
+              <span>&copy; {new Date().getFullYear()} <span style={{ color: "#ffffff", fontWeight: 700 }}>Beyond</span> <span style={{ color: "#3b82f6", fontWeight: 700 }}>ERP</span>. All rights reserved.</span>
               <span className="footer-dot">&middot;</span>
               <span>Amharic &middot; English &middot; Afan Oromo</span>
               <span className="footer-dot">&middot;</span>
@@ -528,45 +525,5 @@ export default function LandingPage() {
         </footer>
       </div>
     </main>
-  );
-}
-
-/* ============ HELPERS ============ */
-
-function LogoTile({
-  tileSize,
-  iconSize,
-  background,
-  border = "none",
-}: {
-  tileSize: number;
-  iconSize: number;
-  background: string;
-  border?: string;
-}) {
-  return (
-    <span
-      style={{
-        width: tileSize,
-        height: tileSize,
-        borderRadius: Math.max(8, Math.round(tileSize * 0.28)),
-        background,
-        border,
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-      }}
-    >
-      <span
-        aria-hidden="true"
-        style={{
-          width: iconSize,
-          height: iconSize,
-          display: "block",
-          background: 'url("/beyond.ico") center / contain no-repeat',
-        }}
-      />
-    </span>
   );
 }
