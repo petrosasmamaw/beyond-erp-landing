@@ -4,6 +4,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AppProvider } from "@/contexts/AppContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import "./globals.css";
+import "./landing.css";
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
@@ -30,8 +31,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={interTight.variable} suppressHydrationWarning>
       <head>
-        {/* Prevent flash of wrong theme */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('beyond_theme')||( window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})()` }} />
+        {/* Prevent flash of wrong theme - default to dark blue theme */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('beyond_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()` }} />
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"

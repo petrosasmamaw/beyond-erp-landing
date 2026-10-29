@@ -6,16 +6,16 @@ type Theme = "light" | "dark";
 const STORAGE_KEY = "beyond_theme";
 
 const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
-  theme: "light",
+  theme: "dark",
   toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const initial = stored ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const initial = stored ?? "dark";
     setTheme(initial);
     document.documentElement.setAttribute("data-theme", initial);
   }, []);
