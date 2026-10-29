@@ -955,23 +955,27 @@ export default function LandingPage() {
 
         /* ===== FOOTER ===== */
         .footer {
-          padding: 40px 36px 32px;
+          padding: 44px 36px 32px;
           border-top: 1px solid ${borderSoft};
         }
 
         .footer-main {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 28px;
-          flex-wrap: wrap;
-          margin-bottom: 28px;
+          display: grid;
+          grid-template-columns: 1.2fr 1.3fr 0.9fr;
+          gap: 40px;
+          margin-bottom: 36px;
         }
 
         .footer-brand-side {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 12px;
+        }
+
+        .footer-brand-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
 
         .footer-brand-name {
@@ -989,22 +993,78 @@ export default function LandingPage() {
           line-height: 1.5;
         }
 
-        .footer-nav {
+        .footer-powered {
+          margin-top: 4px;
+          font-size: 13px;
+          color: ${muted};
+        }
+
+        .footer-powered strong {
+          color: ${blue};
+        }
+
+        .footer-contact-side {
           display: flex;
-          align-items: center;
-          gap: 24px;
+          flex-direction: column;
+          gap: 10px;
+          font-size: 13.5px;
+          color: ${inkSoft};
+        }
+
+        .footer-contact-title {
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: ${muted};
+          margin-bottom: 4px;
+        }
+
+        .footer-contact-item {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          line-height: 1.5;
           flex-wrap: wrap;
         }
 
-        .footer-nav a {
+        .footer-contact-item strong {
+          color: ${ink};
+          font-weight: 600;
+          min-width: 58px;
+        }
+
+        .footer-contact-item a {
           color: ${inkSoft};
           text-decoration: none;
-          font-size: 14px;
-          font-weight: 600;
           transition: color 0.15s ease;
         }
 
-        .footer-nav a:hover {
+        .footer-contact-item a:hover {
+          color: ${blue};
+        }
+
+        .footer-nav-side {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .footer-nav-links {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px 16px;
+        }
+
+        .footer-nav-links a {
+          color: ${inkSoft};
+          text-decoration: none;
+          font-size: 13.5px;
+          font-weight: 500;
+          transition: color 0.15s ease;
+        }
+
+        .footer-nav-links a:hover {
           color: ${blue};
         }
 
@@ -1128,6 +1188,10 @@ export default function LandingPage() {
           .cta-right {
             padding: 40px 28px;
           }
+          .footer-main {
+            grid-template-columns: 1fr;
+            gap: 28px;
+          }
         }
 
         @media (max-width: 560px) {
@@ -1143,10 +1207,8 @@ export default function LandingPage() {
           .bento-wide {
             grid-column: span 1;
           }
-          .footer-main {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 20px;
+          .footer-nav-links {
+            grid-template-columns: 1fr;
           }
           .hero-proof {
             gap: 18px;
@@ -1161,7 +1223,14 @@ export default function LandingPage() {
         {/* ============= NAV ============= */}
         <nav className="landing-nav">
           <a className="nav-brand" href="#" style={{ textDecoration: "none" }}>
-            Beyond ERP
+            <img
+              src="/icon.svg"
+              alt="Beyond ERP Logo"
+              width={32}
+              height={32}
+              style={{ borderRadius: 8, flexShrink: 0, display: "block" }}
+            />
+            <span>Beyond ERP</span>
           </a>
 
           <div className="nav-links">
@@ -1206,9 +1275,8 @@ export default function LandingPage() {
             </div>
 
             <div className="hero-proof">
-              <span className="proof-label">CERTIFIED</span>
               <span className="proof-logo">
-                <ShieldCheck size={16} /> Compliance &amp; Tax Ready
+                <ShieldCheck size={16} /> Audit Ready
               </span>
               <span className="proof-logo">
                 <Languages size={16} /> Amharic · English
@@ -1498,7 +1566,7 @@ export default function LandingPage() {
                   <BarChart3 size={20} />
                 </div>
                 <h3 style={{ color: ink }}>Reports that read themselves</h3>
-                <p style={{ color: muted }}>Daily, weekly, monthly. Sales, stock, finance — all in one workspace, in Amharic or English.</p>
+                <p style={{ color: muted }}>Daily, weekly, monthly. Sales, stock, finance — all in one workspace, in Amharic, English, or Afan Oromo.</p>
               </div>
 
               <div className="bento-card bento-wide">
@@ -1506,7 +1574,7 @@ export default function LandingPage() {
                   <Globe2 size={20} />
                 </div>
                 <h3 style={{ color: ink }}>Three languages, one team</h3>
-                <p style={{ color: muted }}>Amharic, Oromo, and Tigrinya at the interface level. Switch per user, not per company.</p>
+                <p style={{ color: muted }}>Amharic, English, and Afan Oromo at the interface level. Switch per user, not per company.</p>
               </div>
             </div>
           </div>
@@ -1567,19 +1635,52 @@ export default function LandingPage() {
         <footer className="footer">
           <div className="footer-main">
             <div className="footer-brand-side">
-              <span className="footer-brand-name">Beyond ERP</span>
+              <div className="footer-brand-header">
+                <img
+                  src="/icon.svg"
+                  alt="Beyond ERP Logo"
+                  width={28}
+                  height={28}
+                  style={{ borderRadius: 7, flexShrink: 0, display: "block" }}
+                />
+                <span className="footer-brand-name">Beyond ERP</span>
+              </div>
               <p className="footer-tagline">
                 Mobile-first ERP &amp; CRM for Ethiopian businesses.
               </p>
+              <div className="footer-powered">
+                Powered by <strong>beyond.et</strong>
+              </div>
             </div>
 
-            <div className="footer-nav">
-              <a href="#sectors">Sectors</a>
-              <a href="#features">Features</a>
-              <a href="#start">Pricing</a>
-              <a href="#start">Contact</a>
-              <a href="/login">Sign In</a>
-              <a href="/register">Get Started</a>
+            <div className="footer-contact-side">
+              <span className="footer-contact-title">Contact &amp; Location</span>
+              <div className="footer-contact-item">
+                <strong>Contact:</strong>
+                <a href="tel:+25128151599">+25128151599</a>
+                <span>·</span>
+                <a href="tel:+25139048523">+25139048523</a>
+              </div>
+              <div className="footer-contact-item">
+                <strong>Email:</strong>
+                <a href="mailto:beyondsolutionsupport@gmail.com">beyondsolutionsupport@gmail.com</a>
+              </div>
+              <div className="footer-contact-item">
+                <strong>Office:</strong>
+                <span>Addis Ababa ,22 bata complex 3rd floor .</span>
+              </div>
+            </div>
+
+            <div className="footer-nav-side">
+              <span className="footer-contact-title">Navigation</span>
+              <div className="footer-nav-links">
+                <a href="#sectors">Sectors</a>
+                <a href="#features">Features</a>
+                <a href="#start">Pricing</a>
+                <a href="#start">Contact</a>
+                <a href="/login">Sign In</a>
+                <a href="/register">Get Started</a>
+              </div>
             </div>
           </div>
 
@@ -1587,7 +1688,7 @@ export default function LandingPage() {
             <div className="footer-meta">
               <span>&copy; {new Date().getFullYear()} Beyond ERP. All rights reserved.</span>
               <span className="footer-dot">&middot;</span>
-              <span>Amharic &middot; English</span>
+              <span>Amharic &middot; English &middot; Afan Oromo</span>
               <span className="footer-dot">&middot;</span>
               <span>Addis Ababa, Ethiopia</span>
             </div>

@@ -318,22 +318,18 @@ export const sectorDefinitions: SectorDefinition[] = [
     ]
   },
   {
-    id: "government-services",
-    shortName: "Government",
-    name: "Government Services",
-    description: "Permits, citizen cases, revenue receipts, documents, service counters, and audit.",
-    icon: "fa-solid fa-landmark-flag",
-    color: "#64748b",
-    tint: "#f8fafc",
+    id: "request-custom",
+    shortName: "Custom",
+    name: "Request Custom",
+    description: "Tailored ERP workflows, specialized modules, and bespoke integrations built for your business.",
+    icon: "fa-solid fa-wand-magic-sparkles",
+    color: "#8b5cf6",
+    tint: "#f5f3ff",
     features: [
-      { title: "Permits", description: "Applications, review stages, fees, and issuance.", icon: "fa-solid fa-file-contract", color: "#2563eb" },
-      { title: "Citizens", description: "Citizen records, requests, cases, and service history.", icon: "fa-solid fa-users", color: "#10b981" },
-      { title: "Service Cases", description: "Case queues, SLAs, assignments, and resolutions.", icon: "fa-solid fa-list-check", color: "#8b5cf6" },
-      { title: "Revenue", description: "Revenue collection, receipts, reconciliation, and deposits.", icon: "fa-solid fa-coins", color: "#f59e0b" },
-      { title: "Documents", description: "Document registry, approvals, and expiry dates.", icon: "fa-solid fa-folder-open", color: "#f97316" },
-      { title: "Counters", description: "Counter activity, wait times, and service volume.", icon: "fa-solid fa-building-user", color: "#06b6d4" },
-      { title: "Audit", description: "Activity logs, findings, evidence, and controls.", icon: "fa-solid fa-shield-halved", color: "#64748b" },
-      { title: "Performance", description: "Department KPIs, backlog, and service analytics.", icon: "fa-solid fa-chart-bar", color: "#ef4444" }
+      { title: "Custom Workflows", description: "Tailored business processes, rules, and automation.", icon: "fa-solid fa-diagram-project", color: "#8b5cf6" },
+      { title: "Specialized Modules", description: "Custom tables, operational views, and fields.", icon: "fa-solid fa-cubes", color: "#2563eb" },
+      { title: "Bespoke Integrations", description: "Hardware, Telebirr/CBE payment rails, and proprietary APIs.", icon: "fa-solid fa-network-wired", color: "#10b981" },
+      { title: "Dedicated Reporting", description: "Custom BI dashboards, audit trails, and export templates.", icon: "fa-solid fa-chart-line", color: "#f59e0b" }
     ]
   }
 ];
@@ -348,7 +344,10 @@ export function getSectorDefinition(sectorId?: string | null) {
     finance: "finance-banking",
     realestate: "real-estate",
     ngo: "ngo-development",
-    government: "government-services",
+    government: "request-custom",
+    "government-services": "request-custom",
+    custom: "request-custom",
+    "request-custom": "request-custom",
     "health-sector": "healthcare",
     "edu-sector": "education",
     "hotel-sector": "hospitality"
@@ -448,9 +447,12 @@ export const sectorWorkflowTemplates: Record<string, { recordType: string; title
     { recordType: "Donor", title: "Add donor profile", metadata: { module: "donor" } },
     { recordType: "Impact Report", title: "Start impact report", metadata: { module: "impact" } }
   ],
+  "request-custom": [
+    { recordType: "Custom Workflow", title: "Submit custom module request", metadata: { module: "custom" } },
+    { recordType: "Integration", title: "Request API or bank integration", metadata: { module: "integration" } },
+    { recordType: "Consultation", title: "Schedule enterprise consultation", metadata: { module: "consultation" } }
+  ],
   "government-services": [
-    { recordType: "Permit", title: "Create permit case", metadata: { module: "permit" } },
-    { recordType: "Citizen Record", title: "Register citizen record", metadata: { module: "citizen" } },
-    { recordType: "Revenue Case", title: "Open revenue case", metadata: { module: "revenue" } }
+    { recordType: "Custom Workflow", title: "Submit custom module request", metadata: { module: "custom" } }
   ]
 };
