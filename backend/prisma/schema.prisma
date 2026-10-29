@@ -1,0 +1,412 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TeamMemberType {
+  ADMIN
+  MANAGER
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  COMPLETED
+  PENDING
+  DRAFT
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MANAGER
+  STAFF
+  VIEWER
+}
+
+enum AccountStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum RegistrationStatus {
+  PENDING_PAYMENT
+  PAID
+  APPROVED
+  REJECTED
+}
+
+enum WorkItemStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  DONE
+}
+
+enum WorkItemPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum EmailStatus {
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum ApprovalStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  PAID
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+enum PayrollStatus {
+  DRAFT
+  APPROVED
+  PAID
+}
+
+enum SectorRecordStatus {
+  ACTIVE
+  PENDING
+  CLOSED
+}
+
+model Sector {
+  id          String        @id
+  name        String
+  icon        String
+  color       String
+  lightColor  String
+  textColor   String
+  description String
+  features    Json
+  teamMembers TeamMember[]
+  transactions Transaction[]
+  workItems   SectorWorkItem[]
+  invoices    Invoice[]
+  expenseApprovals ExpenseApproval[]
+  sectorRecords SectorRecord[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model TeamMember {
+  id               String         @id @default(cuid())
+  type             TeamMemberType
+  fullName         String
+  contact          String?
+  department       String?
+  permissions      Json?
+  assignedFeatures Json?
+  sectorId         String
+  sector           Sector         @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([sectorId])
+}
+
+model Transaction {
+  id            String            @id @default(cuid())
+  type          TransactionType
+  amount        Decimal           @db.Decimal(14, 2)
+  description   String
+  category      String
+  sectorId      String?
+  sector        Sector?           @relation(fields: [sectorId], references: [id], onDelete: SetNull)
+  paymentMethod String
+  vatAmount     Decimal           @default(0) @db.Decimal(14, 2)
+  status        TransactionStatus @default(COMPLETED)
+  synced        Boolean           @default(true)
+  occurredAt    DateTime          @default(now())
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([type])
+  @@index([sectorId])
+  @@index([occurredAt])
+}
+
+model Employee {
+  id         String         @id @default(cuid())
+  fullName   String
+  position   String
+  department String
+  phone      String
+  email      String?
+  salary     Decimal        @db.Decimal(14, 2)
+  status     EmployeeStatus @default(ACTIVE)
+  hiredDate  DateTime
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+}
+
+model User {
+  id           String        @id @default(cuid())
+  fullName     String
+  email        String        @unique
+  phone        String?
+  companyName  String?
+  companyTinNumber String?
+  companySectorId String?
+  passwordHash String
+  role         UserRole      @default(STAFF)
+  permissions  Json          @default("[]")
+  status       AccountStatus @default(ACTIVE)
+  lastLoginAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([role])
+  @@index([status])
+  @@index([companySectorId])
+}
+
+model RegistrationRequest {
+  id                String             @id @default(cuid())
+  companyName       String
+  tinNumber         String?
+  sectorId          String
+  fullName          String
+  email             String
+  phone             String?
+  notes             String?
+  status            RegistrationStatus @default(PENDING_PAYMENT)
+  paymentReference  String?
+  approvedById      String?
+  createdUserId     String?
+  rejectionReason   String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([status])
+  @@index([sectorId])
+  @@index([email])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorEmail String?
+  action     String
+  entity     String?
+  entityId   String?
+  method     String
+  path       String
+  ip         String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([entity])
+  @@index([createdAt])
+}
+
+model EmailLog {
+  id        String      @id @default(cuid())
+  to        String
+  subject   String
+  status    EmailStatus
+  provider  String      @default("nodemailer")
+  messageId String?
+  error     String?
+  createdAt DateTime    @default(now())
+
+  @@index([to])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model SectorWorkItem {
+  id           String           @id @default(cuid())
+  sectorId     String
+  sector       Sector           @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  status       WorkItemStatus   @default(TODO)
+  priority     WorkItemPriority @default(MEDIUM)
+  dueDate      DateTime?
+  assignedToId String?
+  createdById  String?
+  metadata     Json?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([sectorId])
+  @@index([status])
+  @@index([priority])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  customerName  String
+  customerPhone String?
+  sectorId      String?
+  sector        Sector?       @relation(fields: [sectorId], references: [id], onDelete: SetNull)
+  items         Json
+  subtotal      Decimal       @db.Decimal(14, 2)
+  vatAmount     Decimal       @default(0) @db.Decimal(14, 2)
+  total         Decimal       @db.Decimal(14, 2)
+  status        InvoiceStatus @default(DRAFT)
+  issuedAt      DateTime      @default(now())
+  dueDate       DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([sectorId])
+  @@index([issuedAt])
+}
+
+model Receipt {
+  id            String   @id @default(cuid())
+  receiptNumber String   @unique
+  transactionId String?
+  payerName     String
+  amount        Decimal  @db.Decimal(14, 2)
+  paymentMethod String
+  issuedAt      DateTime @default(now())
+  createdAt     DateTime @default(now())
+}
+
+model ExpenseApproval {
+  id            String         @id @default(cuid())
+  title         String
+  amount        Decimal        @db.Decimal(14, 2)
+  category      String
+  sectorId      String?
+  sector        Sector?        @relation(fields: [sectorId], references: [id], onDelete: SetNull)
+  requestedById String?
+  approvedById  String?
+  status        ApprovalStatus @default(REQUESTED)
+  notes         String?
+  requestedAt   DateTime       @default(now())
+  decidedAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([status])
+  @@index([sectorId])
+}
+
+model ChartAccount {
+  id          String        @id @default(cuid())
+  code        String        @unique
+  name        String
+  type        AccountType
+  description String?
+  active      Boolean       @default(true)
+  entries     LedgerEntry[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([type])
+}
+
+model LedgerEntry {
+  id          String       @id @default(cuid())
+  accountId   String
+  account     ChartAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  debit       Decimal      @default(0) @db.Decimal(14, 2)
+  credit      Decimal      @default(0) @db.Decimal(14, 2)
+  description String
+  reference   String?
+  occurredAt  DateTime     @default(now())
+  createdAt   DateTime     @default(now())
+
+  @@index([accountId])
+  @@index([occurredAt])
+}
+
+model PayrollRun {
+  id         String        @id @default(cuid())
+  period     String
+  status     PayrollStatus @default(DRAFT)
+  grossPay   Decimal       @default(0) @db.Decimal(14, 2)
+  deductions Decimal       @default(0) @db.Decimal(14, 2)
+  netPay     Decimal       @default(0) @db.Decimal(14, 2)
+  items      Json
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([period])
+  @@index([status])
+}
+
+model SectorRecord {
+  id          String             @id @default(cuid())
+  sectorId    String
+  sector      Sector             @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  recordType  String
+  title       String
+  ownerName   String?
+  status      SectorRecordStatus @default(ACTIVE)
+  value       Decimal?           @db.Decimal(14, 2)
+  metadata    Json?
+  startedAt   DateTime?
+  closedAt    DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([sectorId])
+  @@index([recordType])
+  @@index([status])
+}
+
+model AppSetting {
+  id                  String   @id @default("default")
+  companyName         String   @default("Beyond ERP Demo PLC")
+  tinNumber           String   @default("0000000000")
+  companySectorId     String   @default("retail-trading")
+  businessType        String   @default("PLC")
+  language            String   @default("English")
+  currency            String   @default("ETB")
+  taxRate             Decimal  @default(15) @db.Decimal(5, 2)
+  telebirrEnabled     Boolean  @default(true)
+  cbeEnabled          Boolean  @default(false)
+  ehmisEnabled        Boolean  @default(false)
+  emailEnabled        Boolean  @default(false)
+  telegramEnabled     Boolean  @default(false)
+  smsEnabled          Boolean  @default(false)
+  offlineMode         Boolean  @default(true)
+  autoSync            Boolean  @default(true)
+  dataCompression     Boolean  @default(true)
+  vatRegistered       Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}

@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Beyond ERP System</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' },
+        accent: '#f59e0b',
+        success: '#10b981',
+        danger: '#ef4444',
+        warning: '#f59e0b',
+      }
+    }
+  }
+}
+</script>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --primary-light: #60a5fa;
+    --accent: #f59e0b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --bg: #f0f4ff;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; min-height: 100vh; display: flex; justify-content: center; }
+  #app-container { width: 100%; max-width: 448px; min-height: 100vh; background: var(--bg); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+  .page { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding-bottom: 72px; }
+  .page.active { display: flex; }
+  .page-content { flex: 1; }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 2px; }
+  /* Gradient Header */
+  .grad-header { background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%); }
+  /* Cards */
+  .card { background: white; border-radius: 16px; box-shadow: 0 2px 12px rgba(37,99,235,0.08); }
+  .stat-card { background: white; border-radius: 16px; padding: 14px; box-shadow: 0 2px 8px rgba(37,99,235,0.06); }
+  /* Bottom Nav */
+  #bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 448px; background: white; border-top: 1px solid var(--border); z-index: 100; display: flex; padding: 8px 0 12px; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; padding: 4px 0; transition: all 0.2s; }
+  .nav-item i { font-size: 20px; color: var(--text-muted); transition: all 0.2s; }
+  .nav-item span { font-size: 10px; color: var(--text-muted); font-weight: 500; transition: all 0.2s; }
+  .nav-item.active i, .nav-item.active span { color: var(--primary); }
+  .nav-item.active i { transform: translateY(-2px); }
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; justify-content: center; align-items: flex-end; }
+  .modal-overlay.active { display: flex; }
+  .modal-box { background: white; border-radius: 24px 24px 0 0; width: 100%; max-width: 448px; max-height: 92vh; overflow-y: auto; padding: 20px; animation: slideUp 0.3s ease; }
+  .modal-box.center-modal { border-radius: 24px; margin: 16px; max-height: 88vh; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  /* Toast */
+  #toast-container { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 500; display: flex; flex-direction: column; gap: 8px; min-width: 280px; max-width: 400px; }
+  .toast { padding: 12px 16px; border-radius: 12px; color: white; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; animation: toastIn 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .toast.success { background: var(--success); }
+  .toast.error { background: var(--danger); }
+  .toast.info { background: var(--primary); }
+  .toast.warning { background: var(--accent); color: #1e293b; }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+  /* Offline banner */
+  #offline-banner { display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 448px; background: #f59e0b; color: #1e293b; text-align: center; padding: 6px; font-size: 12px; font-weight: 600; z-index: 400; }
+  /* Input styles */
+  .form-input { width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 14px; outline: none; transition: border 0.2s; background: white; color: var(--text); }
+  .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; display: block; }
+  .form-group { margin-bottom: 14px; }
+  /* Buttons */
+  .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 12px; padding: 12px 20px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,0.4); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary { background: var(--bg); color: var(--primary); border: 1.5px solid var(--primary); border-radius: 12px; padding: 11px 20px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; }
+  .btn-danger { background: var(--danger); color: white; border: none; border-radius: 12px; padding: 11px 20px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; }
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  /* Sector pills */
+  .sector-pill { border: 2px solid var(--border); border-radius: 12px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; text-align: center; font-size: 12px; font-weight: 600; }
+  .sector-pill.selected { border-color: var(--primary); background: #eff6ff; color: var(--primary); }
+  /* Chart bars */
+  .chart-bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .chart-bar-inner { width: 100%; border-radius: 6px 6px 0 0; background: linear-gradient(to top, #1d4ed8, #60a5fa); transition: height 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+  /* Toggle */
+  .toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #cbd5e1; border-radius: 24px; transition: 0.3s; }
+  .toggle-slider:before { content:''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+  input:checked + .toggle-slider { background: var(--primary); }
+  input:checked + .toggle-slider:before { transform: translateX(20px); }
+  /* Transition */
+  .page-enter { animation: fadeSlide 0.25s ease; }
+  @keyframes fadeSlide { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  /* Ethiopian calendar widget */
+  .eth-cal { background: linear-gradient(135deg, #1e40af, #3b82f6); border-radius: 16px; color: white; padding: 16px; }
+  /* AI Assistant */
+  #ai-panel { position: fixed; bottom: 80px; right: 8px; width: 320px; max-width: calc(100vw - 16px); background: white; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); z-index: 300; display: none; flex-direction: column; max-height: 480px; overflow: hidden; }
+  #ai-panel.open { display: flex; }
+  .ai-bubble { padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.5; max-width: 85%; }
+  .ai-bubble.bot { background: #eff6ff; color: var(--text); border-bottom-left-radius: 4px; }
+  .ai-bubble.user { background: var(--primary); color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+  .ai-fab { position: fixed; bottom: 86px; right: 12px; width: 52px; height: 52px; background: linear-gradient(135deg, #7c3aed, #4f46e5); border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(124,58,237,0.4); cursor: pointer; z-index: 299; }
+  .ai-fab.visible { display: flex; }
+  /* Splash */
+  #splash { position: fixed; inset: 0; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.5s; }
+  /* Auth pages */
+  #auth-container { position: fixed; inset: 0; background: linear-gradient(135deg, #1e3a8a, #2563eb); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 999; overflow-y: auto; }
+  #auth-container.active { display: flex; }
+  .auth-card { background: white; border-radius: 24px; padding: 28px 24px; width: 100%; max-width: 400px; margin: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  /* Scrollable lists */
+  .scroll-list { overflow-y: auto; max-height: 300px; }
+  /* Feature grid */
+  .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .feature-item { background: white; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(37,99,235,0.06); }
+  .feature-item:active { transform: scale(0.96); }
+  /* Responsive for desktop */
+  @media (min-width: 480px) {
+    #app-container { box-shadow: 0 0 60px rgba(0,0,0,0.3); margin: 0 auto; }
+    body { align-items: center; padding: 20px 0; }
+    #bottom-nav { left: 50%; }
+  }
+  /* Amharic font support */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wdth,wght@75..125,100..900&display=swap');
+  .amh { font-family: 'Noto Sans Ethiopic', sans-serif; }
+  /* Progress ring */
+  .ring-chart { transform: rotate(-90deg); }
+  /* Sector icon colors */
+  .s-retail { color: #f59e0b; } .s-manufacturing { color: #8b5cf6; } .s-agriculture { color: #10b981; }
+  .s-construction { color: #f97316; } .s-healthcare { color: #ef4444; } .s-education { color: #06b6d4; }
+  .s-hospitality { color: #ec4899; } .s-transport { color: #6366f1; } .s-finance { color: #2563eb; }
+  .s-realestate { color: #84cc16; } .s-ngo { color: #14b8a6; } .s-government { color: #64748b; }
+</style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div id="splash">
+  <div class="text-center text-white">
+    <div class="w-24 h-24 rounded-3xl bg-white/20 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+      <i class="fas fa-cube text-5xl text-white"></i>
+    </div>
+    <h1 class="text-3xl font-black tracking-tight">Beyond ERP</h1>
+    <p class="text-blue-200 mt-1 text-sm">Ethiopian Business Intelligence System</p>
+    <div class="mt-8 flex flex-col items-center gap-2">
+      <div class="w-40 h-1.5 bg-white/20 rounded-full overflow-hidden">
+        <div id="splash-progress" class="h-full bg-white rounded-full transition-all duration-300" style="width:0%"></div>
+      </div>
+      <p class="text-blue-200 text-xs" id="splash-text">Initializing...</p>
+    </div>
+  </div>
+</div>
+
+<!-- Auth Container -->
+<div id="auth-container">
+  <!-- Login Page -->
+  <div id="login-page" class="auth-card">
+    <div class="text-center mb-6">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center mx-auto mb-3">
+        <i class="fas fa-cube text-2xl text-white"></i>
+      </div>
+      <h2 class="text-2xl font-black text-gray-900">Beyond ERP</h2>
+      <p class="text-gray-500 text-sm mt-1">Sign in to your account</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Username / Email</label>
+      <input type="text" id="login-user" class="form-input" placeholder="Enter username or email" value="admin">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="relative">
+        <input type="password" id="login-pass" class="form-input pr-10" placeholder="Enter password" value="admin123">
+        <button onclick="togglePwd('login-pass')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-eye text-sm"></i></button>
+      </div>
+    </div>
+    <button class="btn-primary mb-3" onclick="doLogin()"><i class="fas fa-sign-in-alt mr-2"></i>Sign In</button>
+    <button class="btn-secondary" onclick="showRegister()"><i class="fas fa-building mr-2"></i>Register Business</button>
+    <div class="mt-4 p-3 bg-blue-50 rounded-xl">
+      <p class="text-xs text-blue-700 font-semibold mb-1">Demo Credentials:</p>
+      <p class="text-xs text-blue-600">Admin: admin / admin123</p>
+      <p class="text-xs text-blue-600">Developer: dev / dev@beyond2024</p>
+    </div>
+  </div>
+  <!-- Register Page -->
+  <div id="register-page" class="auth-card" style="display:none">
+    <div class="flex items-center gap-3 mb-5">
+      <button onclick="showLogin()" class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center"><i class="fas fa-arrow-left text-gray-600"></i></button>
+      <div>
+        <h2 class="text-xl font-black text-gray-900">Register Business</h2>
+        <p class="text-xs text-gray-500">Set up your company profile</p>
+      </div>
+    </div>
+    <div id="reg-step-1">
+      <div class="form-group">
+        <label class="form-label">Business Name *</label>
+        <input type="text" id="reg-biz" class="form-input" placeholder="e.g. Addis Trading PLC">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TIN Number</label>
+        <input type="text" id="reg-tin" class="form-input" placeholder="e.g. 0012345678">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Admin Name *</label>
+        <input type="text" id="reg-name" class="form-input" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" id="reg-email" class="form-input" placeholder="admin@company.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password *</label>
+        <input type="password" id="reg-pwd" class="form-input" placeholder="Min 6 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select Business Sector *</label>
+        <div class="grid grid-cols-3 gap-2 mt-2">
+          <div class="sector-pill" onclick="selectSector(this,'retail')"><i class="fas fa-store s-retail mb-1"></i><br>Retail</div>
+          <div class="sector-pill" onclick="selectSector(this,'manufacturing')"><i class="fas fa-industry s-manufacturing mb-1"></i><br>Manufacturing</div>
+          <div class="sector-pill" onclick="selectSector(this,'agriculture')"><i class="fas fa-seedling s-agriculture mb-1"></i><br>Agriculture</div>
+          <div class="sector-pill" onclick="selectSector(this,'construction')"><i class="fas fa-hard-hat s-construction mb-1"></i><br>Construction</div>
+          <div class="sector-pill" onclick="selectSector(this,'healthcare')"><i class="fas fa-heartbeat s-healthcare mb-1"></i><br>Healthcare</div>
+          <div class="sector-pill" onclick="selectSector(this,'education')"><i class="fas fa-graduation-cap s-education mb-1"></i><br>Education</div>
+          <div class="sector-pill" onclick="selectSector(this,'hospitality')"><i class="fas fa-hotel s-hospitality mb-1"></i><br>Hospitality</div>
+          <div class="sector-pill" onclick="selectSector(this,'transport')"><i class="fas fa-truck s-transport mb-1"></i><br>Transport</div>
+          <div class="sector-pill" onclick="selectSector(this,'finance')"><i class="fas fa-landmark s-finance mb-1"></i><br>Finance</div>
+          <div class="sector-pill" onclick="selectSector(this,'realestate')"><i class="fas fa-building s-realestate mb-1"></i><br>Real Estate</div>
+          <div class="sector-pill" onclick="selectSector(this,'ngo')"><i class="fas fa-hands-helping s-ngo mb-1"></i><br>NGO</div>
+          <div class="sector-pill" onclick="selectSector(this,'government')"><i class="fas fa-flag s-government mb-1"></i><br>Government</div>
+        </div>
+        <input type="hidden" id="reg-sector" value="">
+      </div>
+      <button class="btn-primary" onclick="doRegister()"><i class="fas fa-check mr-2"></i>Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Offline Banner -->
+<div id="offline-banner"><i class="fas fa-wifi-slash mr-1"></i> You are offline — changes will sync when connected</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Main App Container -->
+<div id="app-container" style="display:none">
+
+  <!-- Dashboard Page -->
+  <div class="page active" id="page-dashboard">
+    <div class="grad-header p-4 pt-5">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="text-blue-200 text-xs font-medium" id="dash-greeting">Good Morning</p>
+          <h2 class="text-white font-black text-xl" id="dash-username">Admin</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <div id="dash-sector-badge" class="px-3 py-1 bg-white/20 rounded-full text-white text-xs font-semibold"></div>
+          <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center cursor-pointer" onclick="showPage('settings')">
+            <i class="fas fa-user text-white"></i>
+          </div>
+        </div>
+      </div>
+      <!-- Ethiopian Calendar Widget -->
+      <div class="eth-cal mb-3">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs text-blue-200 font-medium">Ethiopian Calendar</p>
+            <p class="text-xl font-black" id="eth-date-display">Loading...</p>
+            <p class="text-blue-200 text-xs" id="greg-date-display"></p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-blue-200">Month</p>
+            <p class="text-lg font-bold" id="eth-month-display"></p>
+            <p class="text-xs text-blue-200" id="eth-year-display"></p>
+          </div>
+        </div>
+      </div>
+      <!-- Stats Row -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white/15 rounded-2xl p-3">
+          <p class="text-blue-200 text-xs">Total Revenue</p>
+          <p class="text-white font-black text-lg" id="dash-revenue">ETB 0</p>
+          <p class="text-green-300 text-xs"><i class="fas fa-arrow-up mr-1"></i><span id="dash-revenue-pct">0%</span> this month</p>
+        </div>
+        <div class="bg-white/15 rounded-2xl p-3">
+          <p class="text-blue-200 text-xs">Total Expenses</p>
+          <p class="text-white font-black text-lg" id="dash-expense">ETB 0</p>
+          <p class="text-red-300 text-xs"><i class="fas fa-arrow-down mr-1"></i><span id="dash-expense-pct">0%</span> this month</p>
+        </div>
+        <div class="bg-white/15 rounded-2xl p-3">
+          <p class="text-blue-200 text-xs">Employees</p>
+          <p class="text-white font-black text-lg" id="dash-emp-count">0</p>
+          <p class="text-blue-200 text-xs">Active staff</p>
+        </div>
+        <div class="bg-white/15 rounded-2xl p-3">
+          <p class="text-blue-200 text-xs">VAT Collected</p>
+          <p class="text-white font-black text-lg" id="dash-vat">ETB 0</p>
+          <p class="text-yellow-300 text-xs">15% Rate</p>
+        </div>
+      </div>
+    </div>
+    <div class="p-4 flex flex-col gap-4">
+      <!-- Revenue Chart -->
+      <div class="card p-4">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-gray-800 text-sm">Revenue vs Expenses</h3>
+          <span class="badge bg-blue-50 text-blue-600">Last 6 Months</span>
+        </div>
+        <div id="revenue-chart" class="flex items-end gap-1.5 h-32"></div>
+        <div class="flex items-center gap-4 mt-3">
+          <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-blue-500"></div><span class="text-xs text-gray-500">Income</span></div>
+          <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-red-400"></div><span class="text-xs text-gray-500">Expense</span></div>
+        </div>
+      </div>
+      <!-- Quick Actions -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3">Quick Actions</h3>
+        <div class="grid grid-cols-4 gap-2">
+          <div class="flex flex-col items-center gap-1 cursor-pointer" onclick="openAddTransaction('income')">
+            <div class="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center"><i class="fas fa-plus-circle text-green-500 text-xl"></i></div>
+            <span class="text-xs text-gray-600 text-center">Income</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 cursor-pointer" onclick="openAddTransaction('expense')">
+            <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center"><i class="fas fa-minus-circle text-red-500 text-xl"></i></div>
+            <span class="text-xs text-gray-600 text-center">Expense</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 cursor-pointer" onclick="openTelebirr()">
+            <div class="w-12 h-12 rounded-2xl bg-yellow-50 flex items-center justify-center"><i class="fas fa-mobile-alt text-yellow-500 text-xl"></i></div>
+            <span class="text-xs text-gray-600 text-center">Telebirr</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 cursor-pointer" onclick="openVATCalc()">
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center"><i class="fas fa-calculator text-purple-500 text-xl"></i></div>
+            <span class="text-xs text-gray-600 text-center">VAT Calc</span>
+          </div>
+        </div>
+      </div>
+      <!-- Recent Transactions -->
+      <div class="card p-4">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-gray-800 text-sm">Recent Transactions</h3>
+          <button onclick="showPage('transactions')" class="text-primary text-xs font-semibold">See all</button>
+        </div>
+        <div id="recent-tx-list" class="flex flex-col gap-2"></div>
+      </div>
+      <!-- Sector Features -->
+      <div class="card p-4">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-gray-800 text-sm">Sector Features</h3>
+          <span id="sector-name-badge" class="badge bg-blue-50 text-blue-600"></span>
+        </div>
+        <div id="sector-features-grid" class="feature-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions Page -->
+  <div class="page" id="page-transactions">
+    <div class="grad-header p-4 pt-5 pb-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-white font-black text-xl">Transactions</h2>
+          <p class="text-blue-200 text-xs">Income & Expense Records</p>
+        </div>
+        <button onclick="openAddTransaction()" class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      <div class="flex gap-2 mt-3">
+        <button onclick="filterTx('all')" class="tx-filter-btn active px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-blue-600">All</button>
+        <button onclick="filterTx('income')" class="tx-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/20 text-white">Income</button>
+        <button onclick="filterTx('expense')" class="tx-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/20 text-white">Expense</button>
+      </div>
+    </div>
+    <!-- Summary Cards -->
+    <div class="p-4 grid grid-cols-3 gap-2">
+      <div class="stat-card text-center">
+        <p class="text-xs text-gray-500">Income</p>
+        <p class="font-bold text-green-600 text-sm" id="tx-total-income">ETB 0</p>
+      </div>
+      <div class="stat-card text-center">
+        <p class="text-xs text-gray-500">Expense</p>
+        <p class="font-bold text-red-500 text-sm" id="tx-total-expense">ETB 0</p>
+      </div>
+      <div class="stat-card text-center">
+        <p class="text-xs text-gray-500">Net</p>
+        <p class="font-bold text-blue-600 text-sm" id="tx-net">ETB 0</p>
+      </div>
+    </div>
+    <div class="px-4 flex flex-col gap-2 pb-4" id="tx-list"></div>
+  </div>
+
+  <!-- Employees Page -->
+  <div class="page" id="page-employees">
+    <div class="grad-header p-4 pt-5 pb-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-white font-black text-xl">Employees</h2>
+          <p class="text-blue-200 text-xs">Staff Directory & Payroll</p>
+        </div>
+        <button onclick="openAddEmployee()" class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
+          <i class="fas fa-user-plus"></i>
+        </button>
+      </div>
+      <div class="mt-3 relative">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-blue-300 text-sm"></i>
+        <input type="text" id="emp-search" oninput="filterEmployees()" placeholder="Search employees..." class="w-full bg-white/20 text-white placeholder-blue-300 rounded-xl pl-9 pr-3 py-2 text-sm outline-none">
+      </div>
+    </div>
+    <div class="p-4 grid grid-cols-3 gap-2 mb-2">
+      <div class="stat-card text-center">
+        <p class="text-xs text-gray-500">Total Staff</p>
+        <p class="font-black text-blue-600 text-lg" id="emp-total-count">0</p>
+      </div>
+      <div class="stat-card text-center">
+        <p class="text-xs text-gray-500">Monthly Payroll</p>
+        <p class="font-bold text-gray-700 text-sm" id="emp-total-salary">ETB 0</p>
+      </div>
+      <div class="stat-card text-center">
+        <p class="text-xs text-gray-500">Departments</p>
+        <p class="font-black text-blue-600 text-lg" id="emp-dept-count">0</p>
+      </div>
+    </div>
+    <div class="px-4 flex flex-col gap-3" id="emp-list"></div>
+  </div>
+
+  <!-- Reports Page -->
+  <div class="page" id="page-reports">
+    <div class="grad-header p-4 pt-5 pb-5">
+      <h2 class="text-white font-black text-xl">Reports & Analytics</h2>
+      <p class="text-blue-200 text-xs">Financial insights & tax summary</p>
+    </div>
+    <div class="p-4 flex flex-col gap-4">
+      <!-- Tax Summary -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-file-invoice text-blue-500 mr-2"></i>Tax Summary (15% VAT)</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-blue-50 rounded-xl p-3">
+            <p class="text-xs text-blue-600">Taxable Income</p>
+            <p class="font-bold text-blue-800 text-sm" id="rep-taxable">ETB 0</p>
+          </div>
+          <div class="bg-yellow-50 rounded-xl p-3">
+            <p class="text-xs text-yellow-600">VAT Collected</p>
+            <p class="font-bold text-yellow-800 text-sm" id="rep-vat-col">ETB 0</p>
+          </div>
+          <div class="bg-green-50 rounded-xl p-3">
+            <p class="text-xs text-green-600">Net After VAT</p>
+            <p class="font-bold text-green-800 text-sm" id="rep-net-vat">ETB 0</p>
+          </div>
+          <div class="bg-red-50 rounded-xl p-3">
+            <p class="text-xs text-red-600">Total Expenses</p>
+            <p class="font-bold text-red-800 text-sm" id="rep-total-exp">ETB 0</p>
+          </div>
+        </div>
+      </div>
+      <!-- Sector Breakdown -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-chart-pie text-purple-500 mr-2"></i>Transaction Breakdown</h3>
+        <div id="sector-breakdown-chart" class="flex flex-col gap-2"></div>
+      </div>
+      <!-- Export Options -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-download text-green-500 mr-2"></i>Export Reports</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="exportCSV()" class="btn-secondary text-sm py-3"><i class="fas fa-file-csv mr-2 text-green-500"></i>Export CSV</button>
+          <button onclick="exportPDF()" class="btn-secondary text-sm py-3"><i class="fas fa-file-pdf mr-2 text-red-500"></i>Export PDF</button>
+          <button onclick="exportTaxReport()" class="btn-secondary text-sm py-3 col-span-2"><i class="fas fa-file-invoice-dollar mr-2 text-blue-500"></i>Full Tax Report</button>
+        </div>
+      </div>
+      <!-- TIN Info -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-id-card text-orange-500 mr-2"></i>Business Registration</h3>
+        <div class="flex flex-col gap-2">
+          <div class="flex justify-between"><span class="text-xs text-gray-500">TIN Number</span><span class="text-xs font-bold text-gray-800" id="rep-tin">N/A</span></div>
+          <div class="flex justify-between"><span class="text-xs text-gray-500">Business Name</span><span class="text-xs font-bold text-gray-800" id="rep-bizname">N/A</span></div>
+          <div class="flex justify-between"><span class="text-xs text-gray-500">Sector</span><span class="text-xs font-bold text-gray-800" id="rep-sector">N/A</span></div>
+          <div class="flex justify-between"><span class="text-xs text-gray-500">VAT Rate</span><span class="text-xs font-bold text-yellow-600">15%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Page -->
+  <div class="page" id="page-settings">
+    <div class="grad-header p-4 pt-5 pb-5">
+      <h2 class="text-white font-black text-xl">Settings</h2>
+      <p class="text-blue-200 text-xs">Business configuration & preferences</p>
+    </div>
+    <div class="p-4 flex flex-col gap-4">
+      <!-- Business Info -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-building text-blue-500 mr-2"></i>Business Information</h3>
+        <div class="form-group">
+          <label class="form-label">Business Name</label>
+          <input type="text" id="set-bizname" class="form-input text-sm">
+        </div>
+        <div class="form-group">
+          <label class="form-label">TIN Number</label>
+          <input type="text" id="set-tin" class="form-input text-sm">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="text" id="set-phone" class="form-input text-sm" placeholder="+251 9XX XXX XXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Address</label>
+          <input type="text" id="set-address" class="form-input text-sm" placeholder="Addis Ababa, Ethiopia">
+        </div>
+        <button onclick="saveBizSettings()" class="btn-primary text-sm py-2.5">Save Business Info</button>
+      </div>
+      <!-- Integrations -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-plug text-purple-500 mr-2"></i>Integrations</h3>
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2"><span class="text-2xl">📱</span><div><p class="text-sm font-semibold">Telebirr</p><p class="text-xs text-gray-500">Mobile payment gateway</p></div></div>
+            <label class="toggle"><input type="checkbox" id="toggle-telebirr" checked onchange="toggleIntegration('telebirr',this.checked)"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2"><span class="text-2xl">🏦</span><div><p class="text-sm font-semibold">CBE Birr</p><p class="text-xs text-gray-500">Commercial Bank of Ethiopia</p></div></div>
+            <label class="toggle"><input type="checkbox" id="toggle-cbe" onchange="toggleIntegration('cbe',this.checked)"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2"><span class="text-2xl">🏥</span><div><p class="text-sm font-semibold">EHMIS</p><p class="text-xs text-gray-500">Health Management Info System</p></div></div>
+            <label class="toggle"><input type="checkbox" id="toggle-ehmis" onchange="toggleIntegration('ehmis',this.checked)"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2"><span class="text-2xl">✈️</span><div><p class="text-sm font-semibold">Telegram Mini App</p><p class="text-xs text-gray-500">WebApp API integration</p></div></div>
+            <label class="toggle"><input type="checkbox" id="toggle-telegram" onchange="toggleIntegration('telegram',this.checked)"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+      <!-- Localization -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-globe text-green-500 mr-2"></i>Localization</h3>
+        <div class="form-group">
+          <label class="form-label">Language</label>
+          <select class="form-input text-sm" id="set-lang" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="am">አማርኛ (Amharic)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Currency</label>
+          <select class="form-input text-sm"><option>ETB - Ethiopian Birr</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Calendar</label>
+          <select class="form-input text-sm"><option>Ethiopian Calendar (ETC)</option><option>Gregorian</option></select>
+        </div>
+      </div>
+      <!-- AI Assistant -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-robot text-indigo-500 mr-2"></i>AI Assistant (Pro)</h3>
+        <div class="flex items-center justify-between mb-3">
+          <div><p class="text-sm font-semibold">Enable AI Assistant</p><p class="text-xs text-gray-500">Voice & text in Amharic/English</p></div>
+          <label class="toggle"><input type="checkbox" id="toggle-ai" onchange="toggleAI(this.checked)"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="flex items-center justify-between">
+          <div><p class="text-sm font-semibold">AI Voice Mode</p><p class="text-xs text-gray-500">Audio responses enabled</p></div>
+          <label class="toggle"><input type="checkbox" id="toggle-ai-voice" onchange="toggleAIVoice(this.checked)"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+      <!-- Data Management -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-database text-orange-500 mr-2"></i>Data Management</h3>
+        <div class="flex flex-col gap-2">
+          <button onclick="exportData()" class="btn-secondary text-sm py-2.5"><i class="fas fa-upload mr-2"></i>Export All Data</button>
+          <button onclick="confirmClearData()" class="btn-danger text-sm py-2.5"><i class="fas fa-trash mr-2"></i>Clear All Data</button>
+        </div>
+      </div>
+      <!-- Version Info -->
+      <div class="card p-4">
+        <div class="flex justify-between items-center">
+          <div><p class="text-sm font-bold text-gray-800">Beyond ERP System</p><p class="text-xs text-gray-500">Version 2.0.0 Pro | Ethiopian Edition</p></div>
+          <span class="badge bg-yellow-100 text-yellow-700"><i class="fas fa-crown mr-1"></i>PRO</span>
+        </div>
+      </div>
+      <!-- Logout -->
+      <button onclick="logout()" class="btn-danger mb-4"><i class="fas fa-sign-out-alt mr-2"></i>Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Developer/Admin Page -->
+  <div class="page" id="page-developer">
+    <div class="grad-header p-4 pt-5 pb-5">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><i class="fas fa-code text-white"></i></div>
+        <div>
+          <h2 class="text-white font-black text-xl">Developer Mode</h2>
+          <p class="text-blue-200 text-xs">Master Admin Control Panel</p>
+        </div>
+      </div>
+    </div>
+    <div class="p-4 flex flex-col gap-4">
+      <!-- System Stats -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-server text-blue-500 mr-2"></i>System Overview</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-xs text-blue-600">Companies</p><p class="font-black text-blue-800 text-xl" id="dev-companies">0</p></div>
+          <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-xs text-green-600">Total Users</p><p class="font-black text-green-800 text-xl" id="dev-users">0</p></div>
+          <div class="bg-purple-50 rounded-xl p-3 text-center"><p class="text-xs text-purple-600">Transactions</p><p class="font-black text-purple-800 text-xl" id="dev-txns">0</p></div>
+          <div class="bg-yellow-50 rounded-xl p-3 text-center"><p class="text-xs text-yellow-600">Sync Queue</p><p class="font-black text-yellow-800 text-xl" id="dev-sync">0</p></div>
+        </div>
+      </div>
+      <!-- Company Management -->
+      <div class="card p-4">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-gray-800 text-sm"><i class="fas fa-building text-purple-500 mr-2"></i>Company Management</h3>
+          <button onclick="openAddCompany()" class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg font-semibold"><i class="fas fa-plus mr-1"></i>Add</button>
+        </div>
+        <div id="dev-company-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto"></div>
+      </div>
+      <!-- All Sectors Access -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-th text-green-500 mr-2"></i>Sector Access (All)</h3>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="switchSector('retail')" class="px-2 py-2 bg-yellow-50 rounded-xl text-xs font-semibold text-yellow-700"><i class="fas fa-store mr-1"></i>Retail</button>
+          <button onclick="switchSector('manufacturing')" class="px-2 py-2 bg-purple-50 rounded-xl text-xs font-semibold text-purple-700"><i class="fas fa-industry mr-1"></i>Mfg</button>
+          <button onclick="switchSector('agriculture')" class="px-2 py-2 bg-green-50 rounded-xl text-xs font-semibold text-green-700"><i class="fas fa-seedling mr-1"></i>Agri</button>
+          <button onclick="switchSector('construction')" class="px-2 py-2 bg-orange-50 rounded-xl text-xs font-semibold text-orange-700"><i class="fas fa-hard-hat mr-1"></i>Const.</button>
+          <button onclick="switchSector('healthcare')" class="px-2 py-2 bg-red-50 rounded-xl text-xs font-semibold text-red-700"><i class="fas fa-heartbeat mr-1"></i>Health</button>
+          <button onclick="switchSector('education')" class="px-2 py-2 bg-cyan-50 rounded-xl text-xs font-semibold text-cyan-700"><i class="fas fa-graduation-cap mr-1"></i>Edu</button>
+          <button onclick="switchSector('hospitality')" class="px-2 py-2 bg-pink-50 rounded-xl text-xs font-semibold text-pink-700"><i class="fas fa-hotel mr-1"></i>Hotel</button>
+          <button onclick="switchSector('transport')" class="px-2 py-2 bg-indigo-50 rounded-xl text-xs font-semibold text-indigo-700"><i class="fas fa-truck mr-1"></i>Trans.</button>
+          <button onclick="switchSector('finance')" class="px-2 py-2 bg-blue-50 rounded-xl text-xs font-semibold text-blue-700"><i class="fas fa-landmark mr-1"></i>Fin.</button>
+          <button onclick="switchSector('realestate')" class="px-2 py-2 bg-lime-50 rounded-xl text-xs font-semibold text-lime-700"><i class="fas fa-building mr-1"></i>Real Est.</button>
+          <button onclick="switchSector('ngo')" class="px-2 py-2 bg-teal-50 rounded-xl text-xs font-semibold text-teal-700"><i class="fas fa-hands-helping mr-1"></i>NGO</button>
+          <button onclick="switchSector('government')" class="px-2 py-2 bg-gray-50 rounded-xl text-xs font-semibold text-gray-700"><i class="fas fa-flag mr-1"></i>Govt.</button>
+        </div>
+      </div>
+      <!-- System Controls -->
+      <div class="card p-4">
+        <h3 class="font-bold text-gray-800 text-sm mb-3"><i class="fas fa-cogs text-gray-500 mr-2"></i>System Controls</h3>
+        <div class="flex flex-col gap-2">
+          <button onclick="generateDemoData()" class="btn-secondary text-sm py-2.5"><i class="fas fa-magic mr-2 text-purple-500"></i>Generate Demo Data</button>
+          <button onclick="clearSyncQueue()" class="btn-secondary text-sm py-2.5"><i class="fas fa-sync mr-2 text-green-500"></i>Clear Sync Queue</button>
+          <button onclick="viewSystemLogs()" class="btn-secondary text-sm py-2.5"><i class="fas fa-list mr-2 text-blue-500"></i>View System Logs</button>
+          <button onclick="resetSystem()" class="btn-danger text-sm py-2.5"><i class="fas fa-exclamation-triangle mr-2"></i>Factory Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav id="bottom-nav">
+    <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+      <i class="fas fa-home"></i><span>Home</span>
+    </div>
+    <div class="nav-item" onclick="showPage('transactions')" id="nav-transactions">
+      <i class="fas fa-exchange-alt"></i><span>Transactions</span>
+    </div>
+    <div class="nav-item" onclick="showPage('employees')" id="nav-employees">
+      <i class="fas fa-users"></i><span>Employees</span>
+    </div>
+    <div class="nav-item" onclick="showPage('reports')" id="nav-reports">
+      <i class="fas fa-chart-bar"></i><span>Reports</span>
+    </div>
+    <div class="nav-item" onclick="showPage('settings')" id="nav-settings">
+      <i class="fas fa-cog"></i><span>Settings</span>
+    </div>
+    <div class="nav-item" onclick="showPage('developer')" id="nav-developer" style="display:none">
+      <i class="fas fa-code"></i><span>Dev</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Transaction Modal -->
+<div class="modal-overlay" id="modal-transaction">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-black text-gray-900 text-lg" id="tx-modal-title">Add Transaction</h3>
+      <button onclick="closeModal('modal-transaction')" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fas fa-times text-gray-500 text-sm"></i></button>
+    </div>
+    <div class="flex gap-2 mb-4">
+      <button onclick="setTxType('income')" id="tx-type-income" class="flex-1 py-2 rounded-xl text-sm font-semibold bg-green-500 text-white transition-all">Income</button>
+      <button onclick="setTxType('expense')" id="tx-type-expense" class="flex-1 py-2 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 transition-all">Expense</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description *</label>
+      <input type="text" id="tx-desc" class="form-input" placeholder="e.g. Product sales, Office rent">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount (ETB) *</label>
+      <input type="number" id="tx-amount" class="form-input" placeholder="0.00" oninput="calcVAT()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select id="tx-category" class="form-input">
+        <option>Sales Revenue</option><option>Service Income</option><option>Product Purchase</option>
+        <option>Payroll</option><option>Utilities</option><option>Rent</option><option>Marketing</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div class="flex items-center justify-between mb-2">
+        <label class="form-label mb-0">Apply 15% VAT</label>
+        <label class="toggle"><input type="checkbox" id="tx-vat-toggle" onchange="calcVAT()" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div id="vat-display" class="bg-yellow-50 rounded-xl p-3 flex justify-between items-center">
+        <span class="text-xs text-yellow-700">VAT (15%)</span>
+        <span class="font-bold text-yellow-800 text-sm" id="vat-amount-display">ETB 0.00</span>
+      </div>
+      <div class="mt-2 bg-blue-50 rounded-xl p-3 flex justify-between items-center">
+        <span class="text-xs text-blue-700">Total with VAT</span>
+        <span class="font-bold text-blue-800 text-sm" id="total-amount-display">ETB 0.00</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Payment Method</label>
+      <select id="tx-method" class="form-input">
+        <option>Cash</option><option>Telebirr</option><option>CBE Birr</option><option>Bank Transfer</option><option>Cheque</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" id="tx-date" class="form-input">
+    </div>
+    <button onclick="saveTransaction()" class="btn-primary">Save Transaction</button>
+  </div>
+</div>
+
+<!-- Add Employee Modal -->
+<div class="modal-overlay" id="modal-employee">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-black text-gray-900 text-lg">Add Employee</h3>
+      <button onclick="closeModal('modal-employee')" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fas fa-times text-gray-500 text-sm"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Full Name *</label>
+      <input type="text" id="emp-name" class="form-input" placeholder="Abebe Kebede">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Job Title *</label>
+      <input type="text" id="emp-title" class="form-input" placeholder="e.g. Sales Manager">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Department</label>
+      <input type="text" id="emp-dept" class="form-input" placeholder="e.g. Sales & Marketing">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Monthly Salary (ETB) *</label>
+      <input type="number" id="emp-salary" class="form-input" placeholder="15000">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phone</label>
+      <input type="text" id="emp-phone" class="form-input" placeholder="+251 9XX XXX XXX">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" id="emp-email" class="form-input" placeholder="name@company.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Start Date</label>
+      <input type="date" id="emp-start" class="form-input">
+    </div>
+    <button onclick="saveEmployee()" class="btn-primary">Add Employee</button>
+  </div>
+</div>
+
+<!-- Telebirr Payment Modal -->
+<div class="modal-overlay" id="modal-telebirr">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-black text-gray-900 text-lg">Telebirr Payment</h3>
+      <button onclick="closeModal('modal-telebirr')" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fas fa-times text-gray-500 text-sm"></i></button>
+    </div>
+    <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 text-white text-center mb-4">
+      <i class="fas fa-mobile-alt text-5xl mb-3"></i>
+      <p class="text-xl font-black">Telebirr</p>
+      <p class="text-yellow-100 text-sm">Ethiopia's Leading Mobile Payment</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Recipient Phone Number</label>
+      <input type="tel" id="tele-phone" class="form-input" placeholder="+251 9XX XXX XXX">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount (ETB)</label>
+      <input type="number" id="tele-amount" class="form-input" placeholder="0.00">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Note / Reason</label>
+      <input type="text" id="tele-note" class="form-input" placeholder="Payment for...">
+    </div>
+    <div class="bg-blue-50 rounded-xl p-3 mb-4">
+      <p class="text-xs text-blue-700 font-semibold"><i class="fas fa-info-circle mr-1"></i>This will initiate a Telebirr payment request</p>
+    </div>
+    <button onclick="processTelebirr()" class="btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+      <i class="fas fa-paper-plane mr-2"></i>Send Payment
+    </button>
+  </div>
+</div>
+
+<!-- VAT Calculator Modal -->
+<div class="modal-overlay" id="modal-vat">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-black text-gray-900 text-lg">VAT Calculator</h3>
+      <button onclick="closeModal('modal-vat')" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fas fa-times text-gray-500 text-sm"></i></button>
+    </div>
+    <div class="bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl p-4 text-white mb-4">
+      <p class="text-xs text-purple-200 mb-1">Ethiopian VAT Rate</p>
+      <p class="text-5xl font-black">15%</p>
+      <p class="text-purple-200 text-xs mt-1">Standard VAT rate per ERCA regulations</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Enter Amount (ETB)</label>
+      <input type="number" id="vat-calc-input" class="form-input" placeholder="0.00" oninput="updateVATCalc()">
+    </div>
+    <div class="flex gap-2 mb-4">
+      <button onclick="setVATMode('exclusive')" id="vat-mode-excl" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white">Exclusive (add VAT)</button>
+      <button onclick="setVATMode('inclusive')" id="vat-mode-incl" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600">Inclusive (extract VAT)</button>
+    </div>
+    <div class="bg-gray-50 rounded-2xl p-4 flex flex-col gap-3">
+      <div class="flex justify-between"><span class="text-sm text-gray-600">Base Amount</span><span class="font-bold text-gray-900" id="vat-base">ETB 0.00</span></div>
+      <div class="flex justify-between"><span class="text-sm text-yellow-600">VAT (15%)</span><span class="font-bold text-yellow-700" id="vat-result">ETB 0.00</span></div>
+      <div class="border-t pt-2 flex justify-between"><span class="text-sm font-bold text-gray-900">Total</span><span class="font-black text-blue-700 text-lg" id="vat-total">ETB 0.00</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Company Modal (Dev Only) -->
+<div class="modal-overlay" id="modal-add-company">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-black text-gray-900 text-lg">Add Company</h3>
+      <button onclick="closeModal('modal-add-company')" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fas fa-times text-gray-500 text-sm"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Company Name *</label>
+      <input type="text" id="comp-name" class="form-input" placeholder="Company name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Admin Email *</label>
+      <input type="email" id="comp-email" class="form-input" placeholder="admin@company.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Sector *</label>
+      <select id="comp-sector" class="form-input">
+        <option value="retail">Retail</option><option value="manufacturing">Manufacturing</option>
+        <option value="agriculture">Agriculture</option><option value="construction">Construction</option>
+        <option value="healthcare">Healthcare</option><option value="education">Education</option>
+        <option value="hospitality">Hospitality</option><option value="transport">Transport</option>
+        <option value="finance">Finance</option><option value="realestate">Real Estate</option>
+        <option value="ngo">NGO</option><option value="government">Government</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">TIN Number</label>
+      <input type="text" id="comp-tin" class="form-input" placeholder="TIN">
+    </div>
+    <button onclick="saveNewCompany()" class="btn-primary">Add Company</button>
+  </div>
+</div>
+
+<!-- Feature Modal -->
+<div class="modal-overlay" id="modal-feature">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-black text-gray-900 text-lg" id="feature-modal-title">Feature</h3>
+      <button onclick="closeModal('modal-feature')" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fas fa-times text-gray-500 text-sm"></i></button>
+    </div>
+    <div id="feature-modal-content" class="text-gray-700 text-sm"></div>
+  </div>
+</div>
+
+<!-- AI Assistant Panel -->
+<div id="ai-panel">
+  <div class="flex items-center gap-2 p-3 border-b bg-gradient-to-r from-indigo-600 to-purple-600 rounded-t-2xl">
+    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><i class="fas fa-robot text-white text-sm"></i></div>
+    <div class="flex-1"><p class="text-white font-bold text-sm">Beyond AI Assistant</p><p class="text-indigo-200 text-xs">Amharic & English support</p></div>
+    <button onclick="toggleAIPanel()" class="text-white/70"><i class="fas fa-times"></i></button>
+  </div>
+  <div id="ai-messages" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2" style="max-height:280px">
+    <div class="ai-bubble bot">
+      <span class="amh">ሰላም! እኔ Beyond ERP AI ረዳት ነኝ።</span><br>
+      <span class="text-xs text-gray-500">Hello! I am the Beyond ERP AI assistant. How can I help you today?</span>
+    </div>
+  </div>
+  <div id="ai-suggestions" class="px-3 py-2 flex gap-2 overflow-x-auto border-t">
+    <button onclick="askAI('How to add transaction?')" class="flex-shrink-0 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold">Add transaction</button>
+    <button onclick="askAI('Show VAT calculation')" class="flex-shrink-0 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold">VAT help</button>
+    <button onclick="askAI('How to export report?')" class="flex-shrink-0 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold">Export report</button>
+  </div>
+  <div class="p-3 border-t flex gap-2">
+    <input type="text" id="ai-input" class="form-input flex-1 text-sm py-2" placeholder="Ask in English or አማርኛ..." onkeypress="if(event.key==='Enter')sendAIMessage()">
+    <button onclick="toggleAIVoiceInput()" id="ai-voice-btn" class="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center"><i class="fas fa-microphone text-indigo-600 text-sm"></i></button>
+    <button onclick="sendAIMessage()" class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center"><i class="fas fa-paper-plane text-white text-sm"></i></button>
+  </div>
+</div>
+<!-- AI FAB -->
+<div class="ai-fab" id="ai-fab" onclick="toggleAIPanel()">
+  <i class="fas fa-robot text-white text-xl"></i>
+</div>
+
+<script>
+// ============================================================
+// DATA & STATE
+// ============================================================
+let APP_STATE = {
+  currentUser: null,
+  currentPage: 'dashboard',
+  currentTxType: 'income',
+  vatMode: 'exclusive',
+  isOnline: navigator.onLine,
+  aiEnabled: false,
+  aiVoiceEnabled: false,
+  syncQueue: [],
+  language: 'en'
+};
+
+// Sector Features Configuration
+const SECTOR_FEATURES = {
+  retail: [
+    {icon:'fas fa-cash-register',label:'POS System',color:'#f59e0b'},
+    {icon:'fas fa-boxes',label:'Inventory',color:'#8b5cf6'},
+    {icon:'fas fa-tags',label:'Pricing',color:'#10b981'},
+    {icon:'fas fa-barcode',label:'Barcode Scan',color:'#2563eb'},
+    {icon:'fas fa-chart-line',label:'Sales Report',color:'#ef4444'},
+    {icon:'fas fa-users',label:'Customers',color:'#06b6d4'},
+    {icon:'fas fa-truck',label:'Suppliers',color:'#f97316'},
+    {icon:'fas fa-percentage',label:'Discounts',color:'#ec4899'}
+  ],
+  manufacturing: [
+    {icon:'fas fa-industry',label:'Production',color:'#8b5cf6'},
+    {icon:'fas fa-cogs',label:'Machinery',color:'#64748b'},
+    {icon:'fas fa-boxes',label:'Raw Materials',color:'#f59e0b'},
+    {icon:'fas fa-clipboard-list',label:'Work Orders',color:'#2563eb'},
+    {icon:'fas fa-hard-hat',label:'Safety',color:'#ef4444'},
+    {icon:'fas fa-chart-bar',label:'Output Report',color:'#10b981'},
+    {icon:'fas fa-wrench',label:'Maintenance',color:'#f97316'},
+    {icon:'fas fa-box',label:'Finished Goods',color:'#06b6d4'}
+  ],
+  agriculture: [
+    {icon:'fas fa-seedling',label:'Crop Mgmt',color:'#10b981'},
+    {icon:'fas fa-tractor',label:'Equipment',color:'#f59e0b'},
+    {icon:'fas fa-cloud-rain',label:'Weather',color:'#06b6d4'},
+    {icon:'fas fa-warehouse',label:'Storage',color:'#8b5cf6'},
+    {icon:'fas fa-truck',label:'Distribution',color:'#f97316'},
+    {icon:'fas fa-leaf',label:'Livestock',color:'#84cc16'},
+    {icon:'fas fa-chart-line',label:'Yield Report',color:'#2563eb'},
+    {icon:'fas fa-coins',label:'Market Price',color:'#ef4444'}
+  ],
+  construction: [
+    {icon:'fas fa-hard-hat',label:'Projects',color:'#f97316'},
+    {icon:'fas fa-drafting-compass',label:'Blueprints',color:'#2563eb'},
+    {icon:'fas fa-hammer',label:'Equipment',color:'#64748b'},
+    {icon:'fas fa-cube',label:'Materials',color:'#8b5cf6'},
+    {icon:'fas fa-user-hard-hat',label:'Site Workers',color:'#10b981'},
+    {icon:'fas fa-chart-gantt',label:'Timeline',color:'#f59e0b'},
+    {icon:'fas fa-file-contract',label:'Contracts',color:'#ec4899'},
+    {icon:'fas fa-shield-alt',label:'Safety Log',color:'#ef4444'}
+  ],
+  healthcare: [
+    {icon:'fas fa-user-md',label:'Patients',color:'#ef4444'},
+    {icon:'fas fa-calendar-check',label:'Appointments',color:'#2563eb'},
+    {icon:'fas fa-pills',label:'Pharmacy',color:'#10b981'},
+    {icon:'fas fa-stethoscope',label:'Diagnosis',color:'#8b5cf6'},
+    {icon:'fas fa-file-medical',label:'Records',color:'#f59e0b'},
+    {icon:'fas fa-ambulance',label:'Emergency',color:'#ef4444'},
+    {icon:'fas fa-microscope',label:'Lab Results',color:'#06b6d4'},
+    {icon:'fas fa-receipt',label:'Billing',color:'#f97316'}
+  ],
+  education: [
+    {icon:'fas fa-chalkboard-teacher',label:'Classes',color:'#06b6d4'},
+    {icon:'fas fa-user-graduate',label:'Students',color:'#2563eb'},
+    {icon:'fas fa-book',label:'Curriculum',color:'#8b5cf6'},
+    {icon:'fas fa-calendar-alt',label:'Schedule',color:'#10b981'},
+    {icon:'fas fa-clipboard-check',label:'Grades',color:'#f59e0b'},
+    {icon:'fas fa-money-check',label:'Fees',color:'#ef4444'},
+    {icon:'fas fa-bus',label:'Transport',color:'#f97316'},
+    {icon:'fas fa-certificate',label:'Certificates',color:'#84cc16'}
+  ],
+  hospitality: [
+    {icon:'fas fa-bed',label:'Rooms',color:'#ec4899'},
+    {icon:'fas fa-concierge-bell',label:'Reception',color:'#f59e0b'},
+    {icon:'fas fa-utensils',label:'Restaurant',color:'#ef4444'},
+    {icon:'fas fa-calendar-check',label:'Reservations',color:'#2563eb'},
+    {icon:'fas fa-broom',label:'Housekeeping',color:'#10b981'},
+    {icon:'fas fa-swimming-pool',label:'Amenities',color:'#06b6d4'},
+    {icon:'fas fa-star',label:'Reviews',color:'#f97316'},
+    {icon:'fas fa-receipt',label:'Invoices',color:'#8b5cf6'}
+  ],
+  transport: [
+    {icon:'fas fa-truck',label:'Fleet Mgmt',color:'#6366f1'},
+    {icon:'fas fa-route',label:'Routes',color:'#2563eb'},
+    {icon:'fas fa-gas-pump',label:'Fuel Track',color:'#f59e0b'},
+    {icon:'fas fa-user-tie',label:'Drivers',color:'#10b981'},
+    {icon:'fas fa-wrench',label:'Maintenance',color:'#f97316'},
+    {icon:'fas fa-clipboard-list',label:'Manifests',color:'#8b5cf6'},
+    {icon:'fas fa-map-marker-alt',label:'GPS Track',color:'#ef4444'},
+    {icon:'fas fa-file-invoice',label:'Billing',color:'#06b6d4'}
+  ],
+  finance: [
+    {icon:'fas fa-university',label:'Accounts',color:'#2563eb'},
+    {icon:'fas fa-chart-line',label:'Investments',color:'#10b981'},
+    {icon:'fas fa-hand-holding-usd',label:'Loans',color:'#f59e0b'},
+    {icon:'fas fa-piggy-bank',label:'Savings',color:'#ec4899'},
+    {icon:'fas fa-exchange-alt',label:'Transfers',color:'#8b5cf6'},
+    {icon:'fas fa-file-invoice-dollar',label:'Statements',color:'#ef4444'},
+    {icon:'fas fa-percentage',label:'Interest',color:'#f97316'},
+    {icon:'fas fa-shield-alt',label:'Compliance',color:'#64748b'}
+  ],
+  realestate: [
+    {icon:'fas fa-building',label:'Properties',color:'#84cc16'},
+    {icon:'fas fa-home',label:'Listings',color:'#2563eb'},
+    {icon:'fas fa-key',label:'Rentals',color:'#f59e0b'},
+    {icon:'fas fa-file-signature',label:'Contracts',color:'#8b5cf6'},
+    {icon:'fas fa-calculator',label:'Valuation',color:'#10b981'},
+    {icon:'fas fa-map',label:'Land Map',color:'#ef4444'},
+    {icon:'fas fa-users',label:'Clients',color:'#06b6d4'},
+    {icon:'fas fa-hard-hat',label:'Construction',color:'#f97316'}
+  ],
+  ngo: [
+    {icon:'fas fa-hands-helping',label:'Programs',color:'#14b8a6'},
+    {icon:'fas fa-donate',label:'Donations',color:'#10b981'},
+    {icon:'fas fa-users',label:'Beneficiaries',color:'#2563eb'},
+    {icon:'fas fa-globe',label:'Projects',color:'#8b5cf6'},
+    {icon:'fas fa-file-alt',label:'Reports',color:'#f59e0b'},
+    {icon:'fas fa-handshake',label:'Partners',color:'#f97316'},
+    {icon:'fas fa-chart-pie',label:'Impact',color:'#ec4899'},
+    {icon:'fas fa-clipboard-check',label:'Compliance',color:'#64748b'}
+  ],
+  government: [
+    {icon:'fas fa-flag',label:'Departments',color:'#64748b'},
+    {icon:'fas fa-file-contract',label:'Policies',color:'#2563eb'},
+    {icon:'fas fa-users',label:'Citizens',color:'#10b981'},
+    {icon:'fas fa-coins',label:'Budget',color:'#f59e0b'},
+    {icon:'fas fa-gavel',label:'Regulations',color:'#ef4444'},
+    {icon:'fas fa-chart-bar',label:'Analytics',color:'#8b5cf6'},
+    {icon:'fas fa-envelope',label:'Documents',color:'#f97316'},
+    {icon:'fas fa-shield-alt',label:'Audit',color:'#06b6d4'}
+  ]
+};
+
+// AI Knowledge Base
+const AI_KB = {
+  'transaction': { en: 'To add a transaction: Go to Transactions tab → tap + button → fill in description, amount, category → toggle VAT if needed → Save.', am: '거래를 추가하려면: ምርምር 탭으로 이동 → + 버튼 탭 → 설명, 금액, 카테고리 입력 → 필요시 VAT 토글 → 저장.\n\nትራንዛክሽን ለማከል፡ ወደ ግብይቶች ትር ይሂዱ → + ቁልፍ ይጫኑ → መግለጫ፣ መጠን፣ ምድብ ይሙሉ → VAT ያካትቱ → አስቀምጡ።' },
+  'vat': { en: 'Ethiopia uses a 15% VAT rate as per ERCA regulations. The VAT calculator automatically computes exclusive (add on) or inclusive (extract) VAT. Access it from the home quick actions.', am: 'ኢትዮጵያ 15% ቫ.ኤ.ት ያጠቃልላል። ቁጣ ካልኩሌተር ሁለት ዓይነቶችን ያሰላሉ፡ ብዕር ወይም ብዕር.' },
+  'report': { en: 'To export reports: Go to Reports tab → choose Export CSV or Export PDF. You can also export a full tax report with VAT summary.', am: 'ሪፖርቶችን ለማውጣት፡ ወደ ሪፖርቶች ትር ይሂዱ → CSV ወይም PDF ይምረጡ።' },
+  'employee': { en: 'To add an employee: Go to Employees tab → tap the + icon → fill in name, title, department, salary → Save.', am: 'ሰራተኛ ለማከል፡ ወደ ሰራተኞች ትር ይሂዱ → + አዶ ይጫኑ → ስም፣ ማዕረግ፣ ክፍል፣ ደሞዝ ይሙሉ → አስቀምጡ።' },
+  'telebirr': { en: 'Telebirr is Ethiopia\'s top mobile payment. Access it from Dashboard Quick Actions. Enter recipient phone, amount and send.', am: 'ቴሌቢር የኢትዮጵያ ዋና የሞባይል ክፍያ ነው። ዳሽቦርድ ፈጣን ድርጊቶች ይድረሱ። ስልክ ቁጥር፣ መጠን ያስገቡ።' },
+  'calendar': { en: 'Beyond ERP uses the Ethiopian calendar. The current date is shown on the dashboard. Ethiopian months: Meskerem, Tikemet, Hidar, Tahsas, Tir, Yekatit, Megabit, Miazia, Ginbot, Sene, Hamle, Nehase, Pagume.', am: 'Beyond ERP የኢትዮጵያ ዘመን አቆጣጠር ይጠቀማል። ወሮቹ፡ መስከረም፣ ጥቅምት፣ ህዳር፣ ታህሳስ፣ ጥር፣ የካቲት፣ መጋቢት፣ ሚያዚያ፣ ግንቦት፣ ሰኔ፣ ሐምሌ፣ ነሐሴ፣ ጳጉሜ።' }
+};
+
+// Ethiopian months
+const ETH_MONTHS = ['መስከረም','ጥቅምት','ህዳር','ታህሳስ','ጥር','የካቲት','መጋቢት','ሚያዚያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ','ጳጉሜ'];
+const ETH_MONTHS_EN = ['Meskerem','Tikemt','Hidar','Tahsas','Tir','Yekatit','Megabit','Miazia','Ginbot','Sene','Hamle','Nehase','Pagume'];
+
+// ============================================================
+// STORAGE HELPERS
+// ============================================================
+function ls(key, def=null) { try { const v=localStorage.getItem(key); return v?JSON.parse(v):def; } catch(e) { return def; } }
+function lss(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+
+// ============================================================
+// ETHIOPIAN CALENDAR
+// ============================================================
+function gregToEthiopian(year, month, day) {
+  const jdn = gregorianToJDN(year, month, day);
+  return jdnToEthiopian(jdn);
+}
+function gregorianToJDN(y, m, d) {
+  return Math.floor((1461*(y+4800+Math.floor((m-14)/12)))/4)
+    + Math.floor((367*(m-2-12*Math.floor((m-14)/12)))/12)
+    - Math.floor((3*Math.floor((y+4900+Math.floor((m-14)/12))/100))/4) + d - 32075;
+}
+function jdnToEthiopian(jdn) {
+  const r = (jdn - 1723856) % 1461;
+  const n = r % 365 + 365 * Math.floor(r / 1460);
+  const year = 4 * Math.floor((jdn - 1723856) / 1461) + Math.floor(r / 365) - Math.floor(r / 1460);
+  const month = Math.floor(n / 30) + 1;
+  const day = n % 30 + 1;
+  return { year, month: Math.min(month, 13), day };
+}
+function updateEthCalendar() {
+  const now = new Date();
+  const eth = gregToEthiopian(now.getFullYear(), now.getMonth()+1, now.getDate());
+  const monthName = ETH_MONTHS[eth.month-1] || 'ጳጉሜ';
+  const monthNameEn = ETH_MONTHS_EN[eth.month-1] || 'Pagume';
+  document.getElementById('eth-date-display').textContent = `${eth.day} ${monthNameEn} ${eth.year}`;
+  document.getElementById('eth-month-display').textContent = monthName;
+  document.getElementById('eth-year-display').textContent = `${eth.year} ዓ.ም`;
+  document.getElementById('greg-date-display').textContent = now.toLocaleDateString('en-GB', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function showLogin() {
+  document.getElementById('login-page').style.display = 'block';
+  document.getElementById('register-page').style.display = 'none';
+}
+function showRegister() {
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('register-page').style.display = 'block';
+}
+function togglePwd(id) {
+  const i = document.getElementById(id);
+  i.type = i.type==='password'?'text':'password';
+}
+let selectedSector = '';
+function selectSector(el, sector) {
+  document.querySelectorAll('.sector-pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSector = sector;
+  document.getElementById('reg-sector').value = sector;
+}
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  // Dev login
+  if (u === 'dev' && p === 'dev@beyond2024') {
+    APP_STATE.currentUser = { username:'dev', name:'Developer', role:'developer', sector:'retail' };
+    lss('beyond_session', APP_STATE.currentUser);
+    launchApp();
+    return;
+  }
+  // Check registered companies
+  const companies = ls('beyond_companies', []);
+  let found = null;
+  for (const c of companies) {
+    if ((c.adminEmail === u || c.adminName === u) && c.adminPwd === p) {
+      found = c; break;
+    }
+  }
+  if (found) {
+    APP_STATE.currentUser = { username: found.adminEmail, name: found.adminName, role: 'admin', sector: found.sector, companyId: found.id, companyName: found.bizName, tin: found.tin };
+    lss('beyond_session', APP_STATE.currentUser);
+    launchApp();
+    return;
+  }
+  // Default admin
+  if ((u === 'admin' || u === 'Admin') && p === 'admin123') {
+    const demoCompany = ls('beyond_demo_company', null);
+    if (!demoCompany) {
+      initDemoData();
+    }
+    const dc = ls('beyond_demo_company', {sector:'retail',bizName:'Addis Demo PLC',tin:'0012345678'});
+    APP_STATE.currentUser = { username:'admin', name:'Admin User', role:'admin', sector: dc.sector, companyName: dc.bizName, tin: dc.tin };
+    lss('beyond_session', APP_STATE.currentUser);
+    launchApp();
+    return;
+  }
+  showToast('Invalid credentials. Try admin/admin123','error');
+}
+function doRegister() {
+  const biz = document.getElementById('reg-biz').value.trim();
+  const tin = document.getElementById('reg-tin').value.trim();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pwd = document.getElementById('reg-pwd').value;
+  const sector = document.getElementById('reg-sector').value;
+  if (!biz||!name||!email||!pwd||!sector) { showToast('Please fill all required fields','error'); return; }
+  if (pwd.length < 6) { showToast('Password must be at least 6 characters','error'); return; }
+  const companies = ls('beyond_companies', []);
+  if (companies.find(c=>c.adminEmail===email)) { showToast('Email already registered','error'); return; }
+  const company = { id: Date.now(), bizName: biz, tin, adminName: name, adminEmail: email, adminPwd: pwd, sector, createdAt: new Date().toISOString() };
+  companies.push(company);
+  lss('beyond_companies', companies);
+  showToast('Account created! Please sign in.','success');
+  showLogin();
+  document.getElementById('login-user').value = email;
+  document.getElementById('login-pass').value = pwd;
+}
+function logout() {
+  lss('beyond_session', null);
+  APP_STATE.currentUser = null;
+  document.getElementById('app-container').style.display = 'none';
+  document.getElementById('auth-container').classList.add('active');
+  document.getElementById('ai-fab').classList.remove('visible');
+  document.getElementById('ai-panel').classList.remove('open');
+  showLogin();
+}
+function launchApp() {
+  document.getElementById('auth-container').classList.remove('active');
+  document.getElementById('app-container').style.display = 'flex';
+  const u = APP_STATE.currentUser;
+  // Setup developer nav
+  if (u.role === 'developer') {
+    document.getElementById('nav-developer').style.display = 'flex';
+  }
+  initDashboard();
+  renderTransactions();
+  renderEmployees();
+  renderReports();
+  loadSettings();
+  if (u.role === 'developer') renderDevPanel();
+  showPage('dashboard');
+}
+
+// ============================================================
+// DEMO DATA
+// ============================================================
+function initDemoData() {
+  lss('beyond_demo_company', {sector:'retail', bizName:'Addis Trading PLC', tin:'0012345678'});
+  const existingTx = ls('beyond_transactions', null);
+  if (!existingTx) {
+    lss('beyond_transactions', [
+      { id:1, type:'income', desc:'Product Sales - Electronics', amount:45000, vatAmount:5869.57, totalAmount:45000, category:'Sales Revenue', method:'Cash', date:'2026-05-15', vatApplied:true },
+      { id:2, type:'expense', desc:'Office Rent - May 2026', amount:15000, vatAmount:0, totalAmount:15000, category:'Rent', method:'CBE Birr', date:'2026-05-01', vatApplied:false },
+      { id:3, type:'income', desc:'Consulting Service Fee', amount:28500, vatAmount:3717.39, totalAmount:28500, category:'Service Income', method:'Telebirr', date:'2026-05-10', vatApplied:true }
+    ]);
+  }
+  const existingEmp = ls('beyond_employees', null);
+  if (!existingEmp) {
+    lss('beyond_employees', [
+      { id:1, name:'Abebe Kebede', title:'Sales Manager', dept:'Sales & Marketing', salary:25000, phone:'+251 911 234 567', email:'abebe@addis.com', startDate:'2024-01-15', status:'active' },
+      { id:2, name:'Tigist Haile', title:'Accountant', dept:'Finance', salary:20000, phone:'+251 922 345 678', email:'tigist@addis.com', startDate:'2023-06-01', status:'active' },
+      { id:3, name:'Dawit Tesfaye', title:'IT Officer', dept:'Technology', salary:30000, phone:'+251 933 456 789', email:'dawit@addis.com', startDate:'2022-03-20', status:'active' }
+    ]);
+  }
+}
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg = document.getElementById('page-'+page);
+  if (pg) { pg.classList.add('active'); pg.classList.add('page-enter'); setTimeout(()=>pg.classList.remove('page-enter'),300); }
+  const nv = document.getElementById('nav-'+page);
+  if (nv) nv.classList.add('active');
+  APP_STATE.currentPage = page;
+  // Refresh data on page switch
+  if (page==='dashboard') initDashboard();
+  if (page==='transactions') renderTransactions();
+  if (page==='employees') renderEmployees();
+  if (page==='reports') renderReports();
+  if (page==='settings') loadSettings();
+  if (page==='developer') renderDevPanel();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function initDashboard() {
+  const u = APP_STATE.currentUser;
+  const h = new Date().getHours();
+  const greet = h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+  document.getElementById('dash-greeting').textContent = greet;
+  document.getElementById('dash-username').textContent = u.name || 'User';
+  const sector = u.sector || 'retail';
+  const sectorName = sector.charAt(0).toUpperCase()+sector.slice(1);
+  document.getElementById('dash-sector-badge').textContent = sectorName;
+  document.getElementById('sector-name-badge').textContent = sectorName;
+  updateEthCalendar();
+  const txs = ls('beyond_transactions',[]);
+  const income = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const expense = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const vatTotal = txs.filter(t=>t.vatApplied).reduce((s,t)=>s+t.vatAmount,0);
+  document.getElementById('dash-revenue').textContent = 'ETB '+fmtNum(income);
+  document.getElementById('dash-expense').textContent = 'ETB '+fmtNum(expense);
+  document.getElementById('dash-vat').textContent = 'ETB '+fmtNum(vatTotal);
+  document.getElementById('dash-revenue-pct').textContent = income>0?'+12.5%':'0%';
+  document.getElementById('dash-expense-pct').textContent = expense>0?'8.3%':'0%';
+  const emps = ls('beyond_employees',[]);
+  document.getElementById('dash-emp-count').textContent = emps.length;
+  renderRecentTx();
+  renderRevenueChart();
+  renderSectorFeatures(sector);
+}
+function fmtNum(n) { return Number(n).toLocaleString('en-ET',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtETB(n) { return 'ETB '+fmtNum(n); }
+function renderRecentTx() {
+  const txs = ls('beyond_transactions',[]).slice(-3).reverse();
+  const el = document.getElementById('recent-tx-list');
+  if (!txs.length) { el.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">No transactions yet</p>'; return; }
+  el.innerHTML = txs.map(t=>txCard(t)).join('');
+}
+function txCard(t) {
+  const isIn = t.type==='income';
+  return `<div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-xl">
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center ${isIn?'bg-green-100':'bg-red-100'}">
+      <i class="fas ${isIn?'fa-arrow-down text-green-600':'fa-arrow-up text-red-500'} text-sm"></i>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-xs font-semibold text-gray-800 truncate">${t.desc}</p>
+      <p class="text-xs text-gray-400">${t.date} · ${t.method}</p>
+    </div>
+    <div class="text-right">
+      <p class="text-sm font-bold ${isIn?'text-green-600':'text-red-500'}">${isIn?'+':'-'}${fmtETB(t.amount)}</p>
+      ${t.vatApplied?`<p class="text-xs text-yellow-600">+VAT ${fmtETB(t.vatAmount)}</p>`:''}
+    </div>
+  </div>`;
+}
+function renderRevenueChart() {
+  const months = ['Dec','Jan','Feb','Mar','Apr','May'];
+  const incomeData = [18000,25000,22000,30000,28000,45000];
+  const expenseData = [12000,15000,13000,18000,16000,22000];
+  const maxVal = Math.max(...incomeData, ...expenseData);
+  const el = document.getElementById('revenue-chart');
+  el.innerHTML = months.map((m,i)=>`
+    <div class="chart-bar">
+      <div class="flex gap-0.5 items-end w-full" style="height:104px">
+        <div class="flex-1 rounded-t-md bg-blue-500" style="height:${(incomeData[i]/maxVal*100)}%"></div>
+        <div class="flex-1 rounded-t-md bg-red-400" style="height:${(expenseData[i]/maxVal*100)}%"></div>
+      </div>
+      <span class="text-xs text-gray-400">${m}</span>
+    </div>`).join('');
+}
+function renderSectorFeatures(sector) {
+  const feats = SECTOR_FEATURES[sector] || SECTOR_FEATURES.retail;
+  document.getElementById('sector-features-grid').innerHTML = feats.map(f=>`
+    <div class="feature-item" onclick="openFeature('${f.label}','${sector}')">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${f.color}22">
+        <i class="${f.icon} text-lg" style="color:${f.color}"></i>
+      </div>
+      <span class="text-xs font-semibold text-gray-700">${f.label}</span>
+    </div>`).join('');
+}
+function openFeature(name, sector) {
+  document.getElementById('feature-modal-title').textContent = name;
+  document.getElementById('feature-modal-content').innerHTML = `
+    <div class="flex flex-col items-center py-6">
+      <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-4">
+        <i class="fas fa-layer-group text-blue-500 text-3xl"></i>
+      </div>
+      <h3 class="font-bold text-gray-800 text-base mb-2">${name}</h3>
+      <p class="text-gray-500 text-center text-sm mb-4">This ${name} module is available for the <strong>${sector.charAt(0).toUpperCase()+sector.slice(1)}</strong> sector. Full functionality helps you manage your ${name.toLowerCase()} operations efficiently.</p>
+      <div class="w-full bg-blue-50 rounded-xl p-3 mb-4">
+        <p class="text-xs text-blue-700 font-semibold mb-1"><i class="fas fa-star mr-1"></i>Module Features:</p>
+        <ul class="text-xs text-blue-600 flex flex-col gap-1">
+          <li>• Real-time tracking & monitoring</li>
+          <li>• ETB currency support with VAT</li>
+          <li>• Offline-first data storage</li>
+          <li>• Export reports (CSV/PDF)</li>
+          <li>• Telegram Mini App compatible</li>
+        </ul>
+      </div>
+      <button onclick="closeModal('modal-feature');showToast('${name} module opened!','info')" class="btn-primary">Open ${name} Module</button>
+    </div>`;
+  openModal('modal-feature');
+}
+
+// ============================================================
+// TRANSACTIONS
+// ============================================================
+let txFilter = 'all';
+function filterTx(f) {
+  txFilter = f;
+  document.querySelectorAll('.tx-filter-btn').forEach(b=>{ b.classList.remove('active','bg-white','text-blue-600'); b.classList.add('bg-white/20','text-white'); });
+  event.target.classList.remove('bg-white/20','text-white'); event.target.classList.add('active','bg-white','text-blue-600');
+  renderTransactions();
+}
+function renderTransactions() {
+  let txs = ls('beyond_transactions',[]);
+  if (txFilter!=='all') txs = txs.filter(t=>t.type===txFilter);
+  txs = [...txs].reverse();
+  const allTx = ls('beyond_transactions',[]);
+  const income = allTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const expense = allTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('tx-total-income').textContent = fmtETB(income);
+  document.getElementById('tx-total-expense').textContent = fmtETB(expense);
+  document.getElementById('tx-net').textContent = fmtETB(income-expense);
+  const el = document.getElementById('tx-list');
+  if (!txs.length) { el.innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fas fa-receipt text-4xl mb-2 block"></i><p>No transactions found</p></div>'; return; }
+  el.innerHTML = txs.map(t=>`
+    <div class="card p-3 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${t.type==='income'?'bg-green-100':'bg-red-100'}">
+        <i class="fas ${t.type==='income'?'fa-arrow-trend-up text-green-600':'fa-arrow-trend-down text-red-500'}"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-gray-800 text-sm truncate">${t.desc}</p>
+        <p class="text-xs text-gray-400">${t.date} · ${t.category} · ${t.method}</p>
+        ${t.vatApplied?`<span class="badge bg-yellow-100 text-yellow-700 text-xs mt-0.5">VAT: ${fmtETB(t.vatAmount)}</span>`:''}
+      </div>
+      <div class="text-right">
+        <p class="font-bold ${t.type==='income'?'text-green-600':'text-red-500'} text-sm">${t.type==='income'?'+':'-'}${fmtETB(t.amount)}</p>
+        <button onclick="deleteTx(${t.id})" class="text-gray-300 hover:text-red-500 mt-1"><i class="fas fa-trash text-xs"></i></button>
+      </div>
+    </div>`).join('');
+}
+function openAddTransaction(type='income') {
+  APP_STATE.currentTxType = type;
+  setTxType(type);
+  document.getElementById('tx-desc').value = '';
+  document.getElementById('tx-amount').value = '';
+  document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('vat-amount-display').textContent = 'ETB 0.00';
+  document.getElementById('total-amount-display').textContent = 'ETB 0.00';
+  document.getElementById('tx-modal-title').textContent = 'Add Transaction';
+  openModal('modal-transaction');
+}
+function setTxType(type) {
+  APP_STATE.currentTxType = type;
+  const inc = document.getElementById('tx-type-income');
+  const exp = document.getElementById('tx-type-expense');
+  if (type==='income') {
+    inc.className='flex-1 py-2 rounded-xl text-sm font-semibold bg-green-500 text-white';
+    exp.className='flex-1 py-2 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600';
+  } else {
+    exp.className='flex-1 py-2 rounded-xl text-sm font-semibold bg-red-500 text-white';
+    inc.className='flex-1 py-2 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600';
+  }
+}
+function calcVAT() {
+  const amt = parseFloat(document.getElementById('tx-amount').value)||0;
+  const vatOn = document.getElementById('tx-vat-toggle').checked;
+  const vat = vatOn?(amt*0.15):0;
+  document.getElementById('vat-amount-display').textContent = fmtETB(vat);
+  document.getElementById('total-amount-display').textContent = fmtETB(amt+vat);
+}
+function saveTransaction() {
+  const desc = document.getElementById('tx-desc').value.trim();
+  const amount = parseFloat(document.getElementById('tx-amount').value);
+  const category = document.getElementById('tx-category').value;
+  const method = document.getElementById('tx-method').value;
+  const date = document.getElementById('tx-date').value;
+  const vatOn = document.getElementById('tx-vat-toggle').checked;
+  if (!desc||!amount||!date) { showToast('Please fill required fields','error'); return; }
+  const vatAmount = vatOn?(amount*0.15):0;
+  const tx = { id: Date.now(), type: APP_STATE.currentTxType, desc, amount, vatAmount, totalAmount: amount+vatAmount, category, method, date, vatApplied: vatOn };
+  const txs = ls('beyond_transactions',[]);
+  txs.push(tx);
+  lss('beyond_transactions', txs);
+  addToSyncQueue('transaction', tx);
+  closeModal('modal-transaction');
+  showToast(`Transaction saved! ${vatOn?`VAT: ${fmtETB(vatAmount)}`:''}`, 'success');
+  renderTransactions();
+  initDashboard();
+}
+function deleteTx(id) {
+  if (!confirm('Delete this transaction?')) return;
+  let txs = ls('beyond_transactions',[]);
+  txs = txs.filter(t=>t.id!==id);
+  lss('beyond_transactions', txs);
+  showToast('Transaction deleted','info');
+  renderTransactions();
+  initDashboard();
+}
+
+// ============================================================
+// EMPLOYEES
+// ============================================================
+function renderEmployees() {
+  const emps = ls('beyond_employees',[]);
+  const search = document.getElementById('emp-search')?.value.toLowerCase()||'';
+  const filtered = emps.filter(e=>e.name.toLowerCase().includes(search)||e.title.toLowerCase().includes(search)||e.dept.toLowerCase().includes(search));
+  const totalSalary = emps.reduce((s,e)=>s+e.salary,0);
+  const depts = [...new Set(emps.map(e=>e.dept))];
+  document.getElementById('emp-total-count').textContent = emps.length;
+  document.getElementById('emp-total-salary').textContent = fmtETB(totalSalary);
+  document.getElementById('emp-dept-count').textContent = depts.length;
+  const el = document.getElementById('emp-list');
+  if (!filtered.length) { el.innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fas fa-users text-4xl mb-2 block"></i><p>No employees found</p></div>'; return; }
+  el.innerHTML = filtered.map((e,i)=>{
+    const colors = ['bg-blue-500','bg-purple-500','bg-green-500','bg-pink-500','bg-orange-500'];
+    const col = colors[i%colors.length];
+    return `<div class="card p-3 flex items-center gap-3">
+      <div class="w-11 h-11 rounded-2xl ${col} flex items-center justify-center flex-shrink-0 text-white font-bold text-base">${e.name.charAt(0)}</div>
+      <div class="flex-1 min-w-0">
+        <p class="font-bold text-gray-800 text-sm">${e.name}</p>
+        <p class="text-xs text-gray-500">${e.title} · ${e.dept}</p>
+        <p class="text-xs text-gray-400">${e.phone||''}</p>
+      </div>
+      <div class="text-right">
+        <p class="font-bold text-blue-600 text-sm">${fmtETB(e.salary)}</p>
+        <p class="text-xs text-gray-400">/month</p>
+        <button onclick="deleteEmployee(${e.id})" class="text-gray-300 hover:text-red-500 mt-1"><i class="fas fa-trash text-xs"></i></button>
+      </div>
+    </div>`;}).join('');
+}
+function filterEmployees() { renderEmployees(); }
+function openAddEmployee() {
+  document.getElementById('emp-name').value=''; document.getElementById('emp-title').value='';
+  document.getElementById('emp-dept').value=''; document.getElementById('emp-salary').value='';
+  document.getElementById('emp-phone').value=''; document.getElementById('emp-email').value='';
+  document.getElementById('emp-start').value=new Date().toISOString().split('T')[0];
+  openModal('modal-employee');
+}
+function saveEmployee() {
+  const name = document.getElementById('emp-name').value.trim();
+  const title = document.getElementById('emp-title').value.trim();
+  const dept = document.getElementById('emp-dept').value.trim();
+  const salary = parseFloat(document.getElementById('emp-salary').value)||0;
+  const phone = document.getElementById('emp-phone').value.trim();
+  const email = document.getElementById('emp-email').value.trim();
+  const startDate = document.getElementById('emp-start').value;
+  if (!name||!title||!salary) { showToast('Please fill required fields','error'); return; }
+  const emp = { id: Date.now(), name, title, dept, salary, phone, email, startDate, status:'active' };
+  const emps = ls('beyond_employees',[]);
+  emps.push(emp);
+  lss('beyond_employees', emps);
+  closeModal('modal-employee');
+  showToast('Employee added successfully!','success');
+  renderEmployees();
+  initDashboard();
+}
+function deleteEmployee(id) {
+  if (!confirm('Remove this employee?')) return;
+  let emps = ls('beyond_employees',[]);
+  emps = emps.filter(e=>e.id!==id);
+  lss('beyond_employees', emps);
+  showToast('Employee removed','info');
+  renderEmployees();
+  initDashboard();
+}
+
+// ============================================================
+// REPORTS
+// ============================================================
+function renderReports() {
+  const txs = ls('beyond_transactions',[]);
+  const income = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const expense = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const vatTotal = txs.filter(t=>t.vatApplied).reduce((s,t)=>s+t.vatAmount,0);
+  const taxableIncome = txs.filter(t=>t.type==='income'&&t.vatApplied).reduce((s,t)=>s+t.amount,0);
+  document.getElementById('rep-taxable').textContent = fmtETB(taxableIncome);
+  document.getElementById('rep-vat-col').textContent = fmtETB(vatTotal);
+  document.getElementById('rep-net-vat').textContent = fmtETB(income-vatTotal);
+  document.getElementById('rep-total-exp').textContent = fmtETB(expense);
+  const u = APP_STATE.currentUser;
+  const biz = ls('beyond_biz_settings',{});
+  document.getElementById('rep-tin').textContent = u.tin||biz.tin||'N/A';
+  document.getElementById('rep-bizname').textContent = u.companyName||biz.bizName||'N/A';
+  document.getElementById('rep-sector').textContent = (u.sector||biz.sector||'N/A').charAt(0).toUpperCase()+((u.sector||biz.sector||'N/A').slice(1));
+  renderBreakdown(txs, income, expense);
+}
+function renderBreakdown(txs, income, expense) {
+  const categories = {};
+  txs.forEach(t=>{ if (!categories[t.category]) categories[t.category]={income:0,expense:0}; categories[t.category][t.type]+=t.amount; });
+  const total = income+expense;
+  const el = document.getElementById('sector-breakdown-chart');
+  if (!Object.keys(categories).length) { el.innerHTML='<p class="text-center text-gray-400 text-sm py-4">No data available</p>'; return; }
+  el.innerHTML = Object.entries(categories).map(([cat,vals])=>{
+    const catTotal = vals.income+vals.expense;
+    const pct = total>0?Math.round(catTotal/total*100):0;
+    const colors=['bg-blue-500','bg-green-500','bg-purple-500','bg-yellow-500','bg-red-500','bg-pink-500'];
+    const col = colors[Object.keys(categories).indexOf(cat)%colors.length];
+    return `<div>
+      <div class="flex justify-between items-center mb-1">
+        <span class="text-xs font-semibold text-gray-700">${cat}</span>
+        <span class="text-xs text-gray-500">${pct}% · ${fmtETB(catTotal)}</span>
+      </div>
+      <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div class="${col} h-full rounded-full" style="width:${pct}%"></div>
+      </div>
+    </div>`;}).join('');
+}
+function exportCSV() {
+  const txs = ls('beyond_transactions',[]);
+  const headers = ['ID','Type','Description','Amount','VAT Amount','Total','Category','Method','Date','VAT Applied'];
+  const rows = txs.map(t=>[t.id,t.type,`"${t.desc}"`,t.amount,t.vatAmount,t.totalAmount,t.category,t.method,t.date,t.vatApplied]);
+  const csv = [headers, ...rows].map(r=>r.join(',')).join('\n');
+  downloadFile('beyond_erp_transactions.csv', csv, 'text/csv');
+  showToast('CSV exported successfully!','success');
+}
+function exportPDF() {
+  const txs = ls('beyond_transactions',[]);
+  const u = APP_STATE.currentUser;
+  const income = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const expense = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const vatTotal = txs.filter(t=>t.vatApplied).reduce((s,t)=>s+t.vatAmount,0);
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Beyond ERP Report</title>
+  <style>body{font-family:Arial;margin:40px;color:#1e293b}h1{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:8px;border:1px solid #e2e8f0;text-align:left}th{background:#eff6ff;color:#2563eb}.summary{display:flex;gap:20px;margin:20px 0}.sum-box{flex:1;background:#f0f4ff;padding:12px;border-radius:8px}</style>
+  </head><body>
+  <h1>Beyond ERP System - Financial Report</h1>
+  <p><strong>Business:</strong> ${u.companyName||'N/A'} | <strong>TIN:</strong> ${u.tin||'N/A'} | <strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+  <div class="summary">
+    <div class="sum-box"><p style="font-size:12px;color:#64748b">Total Income</p><p style="font-size:20px;font-weight:bold;color:#10b981">ETB ${fmtNum(income)}</p></div>
+    <div class="sum-box"><p style="font-size:12px;color:#64748b">Total Expenses</p><p style="font-size:20px;font-weight:bold;color:#ef4444">ETB ${fmtNum(expense)}</p></div>
+    <div class="sum-box"><p style="font-size:12px;color:#64748b">VAT Collected (15%)</p><p style="font-size:20px;font-weight:bold;color:#f59e0b">ETB ${fmtNum(vatTotal)}</p></div>
+  </div>
+  <table><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Amount</th><th>VAT</th><th>Method</th></tr></thead>
+  <tbody>${txs.map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td>${t.desc}</td><td>ETB ${fmtNum(t.amount)}</td><td>${t.vatApplied?'ETB '+fmtNum(t.vatAmount):'—'}</td><td>${t.method}</td></tr>`).join('')}</tbody></table>
+  </body></html>`;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='beyond_erp_report.html'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('PDF report ready to print (HTML format)','success');
+}
+function exportTaxReport() {
+  const txs = ls('beyond_transactions',[]);
+  const u = APP_STATE.currentUser;
+  const income = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const taxableIncome = txs.filter(t=>t.type==='income'&&t.vatApplied).reduce((s,t)=>s+t.amount,0);
+  const vatTotal = txs.filter(t=>t.vatApplied).reduce((s,t)=>s+t.vatAmount,0);
+  const expense = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const report = `BEYOND ERP SYSTEM - TAX REPORT
+====================================
+Business: ${u.companyName||'N/A'}
+TIN: ${u.tin||'N/A'}
+Report Date: ${new Date().toLocaleDateString('en-GB')}
+Report Period: All Time
+
+INCOME SUMMARY
+--------------
+Total Income: ETB ${fmtNum(income)}
+Taxable Income: ETB ${fmtNum(taxableIncome)}
+VAT Collected (15%): ETB ${fmtNum(vatTotal)}
+Net Income (after VAT): ETB ${fmtNum(income-vatTotal)}
+
+EXPENSE SUMMARY
+---------------
+Total Expenses: ETB ${fmtNum(expense)}
+Net Profit/Loss: ETB ${fmtNum(income-expense)}
+
+TRANSACTION DETAILS
+-------------------
+${txs.map(t=>`${t.date} | ${t.type.toUpperCase()} | ${t.desc} | ETB ${fmtNum(t.amount)} | VAT: ${t.vatApplied?'ETB '+fmtNum(t.vatAmount):'N/A'}`).join('\n')}
+
+Generated by Beyond ERP System v2.0
+Ethiopian Revenue & Customs Authority (ERCA) Compliant`;
+  downloadFile('beyond_tax_report.txt', report, 'text/plain');
+  showToast('Tax report exported!','success');
+}
+function downloadFile(filename, content, type) {
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function loadSettings() {
+  const biz = ls('beyond_biz_settings',{});
+  const u = APP_STATE.currentUser;
+  document.getElementById('set-bizname').value = biz.bizName||u.companyName||'';
+  document.getElementById('set-tin').value = biz.tin||u.tin||'';
+  document.getElementById('set-phone').value = biz.phone||'';
+  document.getElementById('set-address').value = biz.address||'Addis Ababa, Ethiopia';
+  const integrations = ls('beyond_integrations',{telebirr:true});
+  document.getElementById('toggle-telebirr').checked = integrations.telebirr!==false;
+  document.getElementById('toggle-cbe').checked = !!integrations.cbe;
+  document.getElementById('toggle-ehmis').checked = !!integrations.ehmis;
+  document.getElementById('toggle-telegram').checked = !!integrations.telegram;
+  document.getElementById('toggle-ai').checked = APP_STATE.aiEnabled;
+  document.getElementById('toggle-ai-voice').checked = APP_STATE.aiVoiceEnabled;
+}
+function saveBizSettings() {
+  const biz = { bizName: document.getElementById('set-bizname').value, tin: document.getElementById('set-tin').value, phone: document.getElementById('set-phone').value, address: document.getElementById('set-address').value };
+  lss('beyond_biz_settings', biz);
+  if (APP_STATE.currentUser) { APP_STATE.currentUser.companyName = biz.bizName; APP_STATE.currentUser.tin = biz.tin; lss('beyond_session', APP_STATE.currentUser); }
+  showToast('Business settings saved!','success');
+}
+function toggleIntegration(name, val) {
+  const integrations = ls('beyond_integrations',{});
+  integrations[name] = val;
+  lss('beyond_integrations', integrations);
+  showToast(`${name.charAt(0).toUpperCase()+name.slice(1)} ${val?'enabled':'disabled'}`, 'info');
+}
+function toggleAI(val) {
+  APP_STATE.aiEnabled = val;
+  lss('beyond_ai_enabled', val);
+  const fab = document.getElementById('ai-fab');
+  if (val) { fab.classList.add('visible'); showToast('AI Assistant enabled! 🤖','success'); }
+  else { fab.classList.remove('visible'); document.getElementById('ai-panel').classList.remove('open'); showToast('AI Assistant disabled','info'); }
+}
+function toggleAIVoice(val) {
+  APP_STATE.aiVoiceEnabled = val;
+  showToast(`AI Voice ${val?'enabled':'disabled'}`, 'info');
+}
+function changeLanguage(lang) {
+  APP_STATE.language = lang;
+  showToast(lang==='am'?'ቋንቋ ተቀይሯል! (Language changed)':'Language changed to English','info');
+}
+function exportData() {
+  const data = { transactions: ls('beyond_transactions',[]), employees: ls('beyond_employees',[]), settings: ls('beyond_biz_settings',{}), exportedAt: new Date().toISOString() };
+  downloadFile('beyond_erp_backup.json', JSON.stringify(data, null, 2), 'application/json');
+  showToast('Data exported successfully!','success');
+}
+function confirmClearData() {
+  if (confirm('Are you sure? This will delete ALL transactions and employees. This cannot be undone.')) {
+    lss('beyond_transactions', []);
+    lss('beyond_employees', []);
+    showToast('All data cleared','warning');
+    initDashboard();
+    renderTransactions();
+    renderEmployees();
+    renderReports();
+  }
+}
+
+// ============================================================
+// TELEBIRR & VAT MODALS
+// ============================================================
+function openTelebirr() { openModal('modal-telebirr'); }
+function processTelebirr() {
+  const phone = document.getElementById('tele-phone').value;
+  const amount = document.getElementById('tele-amount').value;
+  if (!phone||!amount) { showToast('Please fill all fields','error'); return; }
+  closeModal('modal-telebirr');
+  showToast(`Telebirr payment of ETB ${amount} initiated to ${phone}!`, 'success');
+}
+function openVATCalc() { openModal('modal-vat'); }
+let vatCalcMode = 'exclusive';
+function setVATMode(mode) {
+  vatCalcMode = mode;
+  document.getElementById('vat-mode-excl').className = 'flex-1 py-2 rounded-xl text-xs font-semibold ' + (mode==='exclusive'?'bg-blue-600 text-white':'bg-gray-100 text-gray-600');
+  document.getElementById('vat-mode-incl').className = 'flex-1 py-2 rounded-xl text-xs font-semibold ' + (mode==='inclusive'?'bg-blue-600 text-white':'bg-gray-100 text-gray-600');
+  updateVATCalc();
+}
+function updateVATCalc() {
+  const amt = parseFloat(document.getElementById('vat-calc-input').value)||0;
+  let base, vat, total;
+  if (vatCalcMode==='exclusive') { base=amt; vat=amt*0.15; total=amt+vat; }
+  else { total=amt; base=amt/1.15; vat=amt-base; }
+  document.getElementById('vat-base').textContent = fmtETB(base);
+  document.getElementById('vat-result').textContent = fmtETB(vat);
+  document.getElementById('vat-total').textContent = fmtETB(total);
+}
+
+// ============================================================
+// DEVELOPER PANEL
+// ============================================================
+function renderDevPanel() {
+  const companies = ls('beyond_companies',[]);
+  const txs = ls('beyond_transactions',[]);
+  const emps = ls('beyond_employees',[]);
+  const syncQ = ls('beyond_sync_queue',[]);
+  document.getElementById('dev-companies').textContent = companies.length+1;
+  document.getElementById('dev-users').textContent = companies.length+2;
+  document.getElementById('dev-txns').textContent = txs.length;
+  document.getElementById('dev-sync').textContent = syncQ.length;
+  const el = document.getElementById('dev-company-list');
+  const allComps = [{id:'demo', bizName:'Addis Trading PLC (Demo)', sector:'retail', adminEmail:'admin@demo.com', createdAt: new Date().toISOString()}, ...companies];
+  el.innerHTML = allComps.map(c=>`
+    <div class="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl">
+      <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center"><i class="fas fa-building text-blue-500 text-sm"></i></div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-gray-800 truncate">${c.bizName}</p>
+        <p class="text-xs text-gray-500">${c.sector} · ${c.adminEmail}</p>
+      </div>
+      ${c.id!=='demo'?`<button onclick="removeCompany(${c.id})" class="text-red-400"><i class="fas fa-trash text-xs"></i></button>`:'<span class="badge bg-blue-100 text-blue-600">Demo</span>'}
+    </div>`).join('');
+}
+function openAddCompany() { openModal('modal-add-company'); }
+function saveNewCompany() {
+  const name = document.getElementById('comp-name').value.trim();
+  const email = document.getElementById('comp-email').value.trim();
+  const sector = document.getElementById('comp-sector').value;
+  const tin = document.getElementById('comp-tin').value.trim();
+  if (!name||!email||!sector) { showToast('Fill required fields','error'); return; }
+  const companies = ls('beyond_companies',[]);
+  companies.push({ id: Date.now(), bizName: name, adminEmail: email, adminName: 'Admin', adminPwd: 'admin123', sector, tin, createdAt: new Date().toISOString() });
+  lss('beyond_companies', companies);
+  closeModal('modal-add-company');
+  showToast('Company added!','success');
+  renderDevPanel();
+}
+function removeCompany(id) {
+  if (!confirm('Remove this company?')) return;
+  let companies = ls('beyond_companies',[]);
+  companies = companies.filter(c=>c.id!==id);
+  lss('beyond_companies', companies);
+  showToast('Company removed','info');
+  renderDevPanel();
+}
+function switchSector(sector) {
+  if (APP_STATE.currentUser) { APP_STATE.currentUser.sector = sector; lss('beyond_session', APP_STATE.currentUser); }
+  showPage('dashboard');
+  showToast(`Switched to ${sector.charAt(0).toUpperCase()+sector.slice(1)} sector`,'info');
+}
+function generateDemoData() {
+  const txs = ls('beyond_transactions',[]);
+  const newTxs = [
+    { id: Date.now()+1, type:'income', desc:'Bulk Order Sales', amount:62000, vatAmount:8086.96, totalAmount:70086.96, category:'Sales Revenue', method:'CBE Birr', date:'2026-05-20', vatApplied:true },
+    { id: Date.now()+2, type:'expense', desc:'Marketing Campaign', amount:8000, vatAmount:0, totalAmount:8000, category:'Marketing', method:'Cash', date:'2026-05-18', vatApplied:false },
+  ];
+  lss('beyond_transactions', [...txs, ...newTxs]);
+  showToast('Demo data generated!','success');
+  renderDevPanel();
+}
+function clearSyncQueue() { lss('beyond_sync_queue',[]); showToast('Sync queue cleared','info'); renderDevPanel(); }
+function viewSystemLogs() {
+  const logs = ls('beyond_logs',[]);
+  showToast(logs.length>0?`${logs.length} system log entries`:'No logs yet','info');
+}
+function resetSystem() {
+  if (!confirm('FACTORY RESET: This will delete everything. Are you absolutely sure?')) return;
+  if (!confirm('Last chance! All data will be permanently lost.')) return;
+  ['beyond_transactions','beyond_employees','beyond_biz_settings','beyond_companies','beyond_demo_company','beyond_sync_queue','beyond_logs','beyond_integrations','beyond_session'].forEach(k=>localStorage.removeItem(k));
+  showToast('System reset complete. Reloading...','warning');
+  setTimeout(()=>location.reload(), 1500);
+}
+
+// ============================================================
+// AI ASSISTANT
+// ============================================================
+let aiPanelOpen = false;
+function toggleAIPanel() {
+  aiPanelOpen = !aiPanelOpen;
+  const panel = document.getElementById('ai-panel');
+  if (aiPanelOpen) panel.classList.add('open'); else panel.classList.remove('open');
+}
+function askAI(q) { document.getElementById('ai-input').value=q; sendAIMessage(); }
+function sendAIMessage() {
+  const input = document.getElementById('ai-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addAIMessage(msg, 'user');
+  setTimeout(()=>{ addAIMessage(getAIResponse(msg), 'bot'); }, 600);
+}
+function getAIResponse(msg) {
+  const lower = msg.toLowerCase();
+  for (const [key, resp] of Object.entries(AI_KB)) {
+    if (lower.includes(key)) {
+      return APP_STATE.language==='am'?(resp.am||resp.en):resp.en;
+    }
+  }
+  // Context-aware responses
+  if (lower.includes('hello')||lower.includes('hi')||lower.includes('ሰላም')) {
+    return APP_STATE.language==='am'?
+      'ሰላም! Beyond ERP ውስጥ ሁሉ ነገር እንዴት ነው? ምን ልርዳዎ?\nHello! How can I help you with Beyond ERP today?':
+      'Hello! I\'m your Beyond ERP AI assistant. I can help you with transactions, VAT calculations, employee management, reports, and more. What do you need?';
+  }
+  if (lower.includes('salary')||lower.includes('payroll')) {
+    return 'To manage employee salaries: Go to Employees tab → view monthly payroll summary at the top. Click + to add employees with their salary details.';
+  }
+  if (lower.includes('telebirr')||lower.includes('payment')) {
+    return 'Telebirr integration is active. Go to Dashboard → Quick Actions → Telebirr to send payments. You can also enable/disable it in Settings → Integrations.';
+  }
+  if (lower.includes('offline')) {
+    return 'Beyond ERP works offline! Your data is stored locally. When you reconnect, changes sync automatically. You\'ll see an orange banner when offline.';
+  }
+  if (lower.includes('ወጪ')||lower.includes('ገቢ')||lower.includes('expense')||lower.includes('income')) {
+    return APP_STATE.language==='am'?
+      'ገቢ ወይም ወጪ ለማከል፡ ወደ ግብይቶች ትር ይሂዱ → + ቁልፍ ይጫኑ → ዓይነት ይምረጡ → ይሙሉ → አስቀምጡ።':
+      'To record income or expense: Transactions tab → + button → select type → fill details → Save. VAT is auto-calculated at 15%.';
+  }
+  return APP_STATE.language==='am'?
+    'ጥያቄዎን ተቀብያለሁ። Beyond ERP ን ስለ ግብይቶች፣ ሰራተኞች፣ ሪፖርቶች፣ ቫ.ኤ.ት ያላቸው ጥያቄዎች ልርዳዎ እችላለሁ።\nI\'m here to help! Ask me about transactions, employees, reports, VAT, Telebirr, or any ERP feature.':
+    'I\'m here to help! You can ask me about:\n• Recording transactions\n• VAT calculations (15%)\n• Employee management\n• Generating reports\n• Telebirr payments\n• Ethiopian calendar\n• Data export';
+}
+function addAIMessage(text, role) {
+  const el = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = `ai-bubble ${role}`;
+  div.innerHTML = text.replace(/\n/g,'<br>');
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  if (role==='bot' && APP_STATE.aiVoiceEnabled) speakText(text);
+}
+function speakText(text) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text.replace(/<[^>]*>/g,'').substring(0,200));
+    utt.lang = APP_STATE.language==='am'?'am-ET':'en-US';
+    utt.rate = 0.9;
+    window.speechSynthesis.speak(utt);
+  }
+}
+let isRecording = false;
+function toggleAIVoiceInput() {
+  if (!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)) { showToast('Voice input not supported in this browser','error'); return; }
+  if (isRecording) { recognition.stop(); isRecording=false; document.getElementById('ai-voice-btn').innerHTML='<i class="fas fa-microphone text-indigo-600 text-sm"></i>'; return; }
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  const recognition = new SR();
+  recognition.lang = APP_STATE.language==='am'?'am-ET':'en-US';
+  recognition.onresult = e => { document.getElementById('ai-input').value = e.results[0][0].transcript; sendAIMessage(); };
+  recognition.onend = () => { isRecording=false; document.getElementById('ai-voice-btn').innerHTML='<i class="fas fa-microphone text-indigo-600 text-sm"></i>'; };
+  recognition.start();
+  isRecording = true;
+  document.getElementById('ai-voice-btn').innerHTML='<i class="fas fa-stop text-red-500 text-sm"></i>';
+  showToast('Listening...','info');
+}
+
+// ============================================================
+// SYNC QUEUE
+// ============================================================
+function addToSyncQueue(type, data) {
+  if (!APP_STATE.isOnline) {
+    const q = ls('beyond_sync_queue',[]);
+    q.push({ type, data, timestamp: Date.now() });
+    lss('beyond_sync_queue', q);
+  }
+}
+function processSyncQueue() {
+  if (!APP_STATE.isOnline) return;
+  const q = ls('beyond_sync_queue',[]);
+  if (q.length) { lss('beyond_sync_queue',[]); showToast(`${q.length} item(s) synced!`,'success'); }
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+// Close on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click', e=>{ if (e.target===m) m.classList.remove('active'); });
+});
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type='info', duration=3000) {
+  const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle', warning:'fa-exclamation-triangle' };
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(-8px)'; t.style.transition='0.3s'; setTimeout(()=>t.remove(),300); }, duration);
+}
+
+// ============================================================
+// ONLINE/OFFLINE
+// ============================================================
+window.addEventListener('online', ()=>{ APP_STATE.isOnline=true; document.getElementById('offline-banner').style.display='none'; processSyncQueue(); });
+window.addEventListener('offline', ()=>{ APP_STATE.isOnline=false; document.getElementById('offline-banner').style.display='block'; });
+if (!navigator.onLine) document.getElementById('offline-banner').style.display='block';
+
+// ============================================================
+// TELEGRAM MINI APP
+// ============================================================
+function initTelegram() {
+  if (window.Telegram?.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#2563eb');
+    tg.setBackgroundColor('#f0f4ff');
+    if (tg.initDataUnsafe?.user) {
+      const tu = tg.initDataUnsafe.user;
+      if (APP_STATE.currentUser) {
+        APP_STATE.currentUser.telegramName = tu.first_name;
+        APP_STATE.currentUser.telegramId = tu.id;
+      }
+      showToast(`Welcome, ${tu.first_name}! 👋`, 'success');
+    }
+    tg.BackButton.onClick(()=>{ if (APP_STATE.currentPage!=='dashboard') showPage('dashboard'); else tg.close(); });
+    tg.MainButton.setText('Add Transaction').show().onClick(()=>openAddTransaction());
+    toggleIntegration('telegram', true);
+    document.getElementById('toggle-telegram').checked = true;
+  }
+}
+
+// ============================================================
+// SPLASH & INIT
+// ============================================================
+function animateSplash() {
+  const steps = [
+    { pct: 20, text: 'Loading modules...' },
+    { pct: 45, text: 'Setting up Ethiopian calendar...' },
+    { pct: 65, text: 'Initializing offline storage...' },
+    { pct: 85, text: 'Configuring VAT calculator...' },
+    { pct: 100, text: 'Ready!' }
+  ];
+  let i = 0;
+  function step() {
+    if (i >= steps.length) { setTimeout(hideSplash, 400); return; }
+    const s = steps[i++];
+    document.getElementById('splash-progress').style.width = s.pct+'%';
+    document.getElementById('splash-text').textContent = s.text;
+    setTimeout(step, 350);
+  }
+  step();
+}
+function hideSplash() {
+  const splash = document.getElementById('splash');
+  splash.style.opacity = '0';
+  setTimeout(()=>{ splash.style.display='none'; checkAuth(); }, 500);
+}
+function checkAuth() {
+  const session = ls('beyond_session', null);
+  if (session && session.username) {
+    APP_STATE.currentUser = session;
+    APP_STATE.aiEnabled = ls('beyond_ai_enabled', false);
+    APP_STATE.aiVoiceEnabled = ls('beyond_ai_voice', false);
+    initDemoData();
+    launchApp();
+    if (APP_STATE.aiEnabled) document.getElementById('ai-fab').classList.add('visible');
+  } else {
+    initDemoData();
+    document.getElementById('auth-container').classList.add('active');
+    showLogin();
+  }
+  initTelegram();
+}
+
+// Start app
+animateSplash();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ffc87f04d5c5452',t:'MTc3OTQ2MDM1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

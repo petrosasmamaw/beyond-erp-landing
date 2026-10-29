@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Beyond ERP icon">
+  <rect width="128" height="128" rx="28" fill="#1a5f2a"/>
+  <path d="M24 36h80v18H24z" fill="#f4d03f"/>
+  <path d="M24 74h80v18H24z" fill="#da020e"/>
+  <circle cx="64" cy="64" r="18" fill="#fff"/>
+  <path d="M54 64h20M64 54v20" stroke="#1a5f2a" stroke-width="8" stroke-linecap="round"/>
+</svg>
