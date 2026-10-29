@@ -78,14 +78,10 @@ export default function LandingPage() {
           align-items: center;
           gap: 10px;
           color: ${ink};
-          font-family: "Instrument Serif", Georgia, serif;
-          font-size: 26px;
-          font-weight: 400;
-          letter-spacing: -0.01em;
-        }
-
-        .nav-brand .dot {
-          color: ${blue};
+          font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+          font-size: 20px;
+          font-weight: 800;
+          letter-spacing: -0.02em;
         }
 
         .nav-links {
@@ -273,14 +269,15 @@ export default function LandingPage() {
         .hero-right {
           position: relative;
           background: linear-gradient(160deg, ${blueDeep} 0%, #1d4ed8 55%, #0f172a 100%);
-          border-top-left-radius: 28px;
-          border-bottom-left-radius: 28px;
-          padding: 40px;
+          border-top-left-radius: 44px;
+          border-bottom-left-radius: 44px;
+          padding: 38px 40px 32px;
           display: flex;
-          align-items: center;
-          justify-content: center;
+          flex-direction: column;
+          justify-content: space-between;
           overflow: hidden;
-          margin: 18px 0 18px 18px;
+          margin: 16px 0 16px 16px;
+          min-height: 560px;
         }
 
         .hero-right::before {
@@ -288,10 +285,11 @@ export default function LandingPage() {
           position: absolute;
           top: -80px;
           right: -80px;
-          width: 280px;
-          height: 280px;
+          width: 320px;
+          height: 320px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(147, 197, 253, 0.18) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(147, 197, 253, 0.22) 0%, transparent 70%);
+          pointer-events: none;
         }
 
         .hero-right::after {
@@ -299,184 +297,144 @@ export default function LandingPage() {
           position: absolute;
           bottom: -60px;
           left: -40px;
-          width: 220px;
-          height: 220px;
+          width: 260px;
+          height: 260px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+          pointer-events: none;
         }
 
-        .floating-badge {
-          position: absolute;
-          top: 28px;
-          left: 28px;
-          background: ${ink};
-          color: ${cardBg};
-          border-radius: 999px;
-          padding: 8px 14px 8px 8px;
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 12px;
-          font-weight: 700;
-          z-index: 3;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-        }
-
-        .floating-badge .avatars {
+        .hero-top-row {
+          position: relative;
+          z-index: 2;
           display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 20px;
         }
 
-        .avatar {
-          width: 22px;
-          height: 22px;
-          border-radius: 50%;
-          border: 2px solid ${ink};
-          margin-left: -8px;
+        .hero-features-list {
+          display: flex;
+          flex-direction: column;
+          gap: 9px;
+        }
+
+        .hero-feature-item {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          color: rgba(255, 255, 255, 0.95);
+          font-size: 13.5px;
+          font-weight: 500;
+          letter-spacing: -0.01em;
+        }
+
+        .hero-feature-item svg {
+          color: rgba(255, 255, 255, 0.9);
+          flex-shrink: 0;
+        }
+
+        .hero-badges-list {
+          display: flex;
+          flex-direction: column;
+          gap: 9px;
+        }
+
+        .hero-badge-item {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          color: white;
+          font-size: 13.5px;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+        }
+
+        .hero-badge-icon {
+          width: 26px;
+          height: 26px;
+          border-radius: 6px;
+          border: 1.5px solid rgba(255, 255, 255, 0.65);
           display: inline-flex;
           align-items: center;
           justify-content: center;
           color: white;
-          font-size: 9px;
+          background: rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(4px);
+          flex-shrink: 0;
+        }
+
+        .ai-text {
+          font-size: 11px;
           font-weight: 800;
+          letter-spacing: -0.02em;
         }
 
-        .avatar:first-child {
-          margin-left: 0;
-        }
-
-        .mockup {
+        .hero-mockup-wrapper {
           position: relative;
           z-index: 2;
-          width: 100%;
-          max-width: 460px;
-          background: ${surface};
-          border-radius: 18px;
-          box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
-          overflow: hidden;
-        }
-
-        .mockup-top {
-          padding: 16px 18px;
-          border-bottom: 1px solid ${borderSoft};
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .mockup-top-left {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .mockup-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-        }
-
-        .mockup-body {
-          padding: 20px;
-          display: grid;
-          gap: 14px;
-        }
-
-        .mockup-metric-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-        }
-
-        .mockup-metric {
-          background: ${surfaceSoft};
-          border-radius: 12px;
-          padding: 14px;
-          border: 1px solid ${borderSoft};
-        }
-
-        .mockup-metric-label {
-          color: ${muted};
-          font-size: 10px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .mockup-metric-value {
-          color: ${ink};
-          font-size: 20px;
-          font-weight: 700;
-          margin-top: 6px;
-          display: flex;
-          align-items: baseline;
-          gap: 6px;
-        }
-
-        .mockup-metric-delta {
-          color: #10b981;
-          font-size: 11px;
-          font-weight: 700;
-        }
-
-        .mockup-chart {
-          background: ${surfaceSoft};
-          border-radius: 12px;
-          border: 1px solid ${borderSoft};
-          padding: 14px;
-        }
-
-        .chart-bars {
-          display: flex;
-          align-items: flex-end;
-          gap: 6px;
-          height: 70px;
-          margin-top: 10px;
-        }
-
-        .chart-bar {
-          flex: 1;
-          background: ${blue};
-          border-radius: 4px 4px 0 0;
-          opacity: 0.85;
-        }
-
-        .mockup-list-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 0;
-          border-top: 1px solid ${borderSoft};
-        }
-
-        .mockup-list-item:first-child {
-          border-top: 0;
-          padding-top: 0;
-        }
-
-        .floating-card {
-          position: absolute;
-          bottom: 40px;
-          right: -10px;
-          z-index: 3;
-          background: ${cardBg};
-          border-radius: 14px;
-          padding: 14px 16px;
-          box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          min-width: 200px;
-        }
-
-        .floating-card-icon {
-          width: 36px;
-          height: 36px;
-          border-radius: 10px;
-          background: #dcfce7;
-          color: #16a34a;
           display: flex;
           align-items: center;
           justify-content: center;
+          margin-top: 6px;
+          margin-bottom: -16px;
+        }
+
+        .hero-mockup-img {
+          width: 100%;
+          max-width: 530px;
+          height: auto;
+          display: block;
+          filter: drop-shadow(0 28px 45px rgba(0, 0, 0, 0.45));
+          user-select: none;
+        }
+
+        .hero-price-badge {
+          position: absolute;
+          bottom: 24px;
+          right: 28px;
+          z-index: 4;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: white;
+          padding: 8px 14px;
+          border-radius: 12px;
+          background: rgba(15, 23, 42, 0.4);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .price-badge-icon {
+          color: rgba(255, 255, 255, 0.95);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .price-badge-body {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.15;
+        }
+
+        .price-badge-label {
+          font-size: 11px;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.8);
+          letter-spacing: 0.01em;
+        }
+
+        .price-badge-amount {
+          font-size: 16px;
+          font-weight: 800;
+          color: white;
+          letter-spacing: -0.02em;
+        }
+
+        .price-badge-sub {
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.65);
         }
 
         /* ===== SECTORS — EDITORIAL ===== */
@@ -1181,11 +1139,21 @@ export default function LandingPage() {
           }
           .hero-right {
             margin: 0 0 22px;
-            border-radius: 22px;
-            min-height: 440px;
+            border-radius: 26px;
+            min-height: auto;
+            padding: 28px 20px 24px;
           }
-          .floating-card {
-            right: 10px;
+          .hero-top-row {
+            flex-direction: column;
+            gap: 16px;
+          }
+          .hero-mockup-img {
+            max-width: 100%;
+          }
+          .hero-price-badge {
+            position: static;
+            align-self: flex-end;
+            margin-top: 14px;
           }
           .sectors-band,
           .features-band {
@@ -1231,8 +1199,7 @@ export default function LandingPage() {
         {/* ============= NAV ============= */}
         <nav className="landing-nav">
           <a className="nav-brand" href="#" style={{ textDecoration: "none" }}>
-            <LogoTile tileSize={32} iconSize={20} background={blue} />
-            Beyond<span className="dot">.</span>
+            Beyond ERP
           </a>
 
           <div className="nav-links">
@@ -1253,22 +1220,22 @@ export default function LandingPage() {
           </div>
         </nav>
 
-        {/* ============= HERO (UNCHANGED) ============= */}
+        {/* ============= HERO ============= */}
         <section className="hero">
           <div className="hero-left">
-            <div className="hero-eyebrow">Beyond ERP · Ethiopia</div>
+            <div className="hero-eyebrow">ENTERPRISE OPERATING SYSTEM</div>
             <h1 className="hero-title">
-              Empower Your<br />
-              Business with<br />
-              <em>Modern</em> Solutions
+              Built for Modern<br />
+              <em>Accounting, Tax</em><br />
+              &amp; Operations
             </h1>
             <p className="hero-copy">
-              A sector-aware ERP workspace for sales, stock, payroll, finance, and reports. NBE compliant, 15% VAT built in, and offline-first for the days the network drops.
+              The unified ERP &amp; CRM platform for modern businesses. Automated tax filing, compliance-ready ledgers, seamless payments, and bilingual workflows.
             </p>
 
             <div className="hero-actions">
               <button type="button" className="btn-primary" onClick={() => router.push("/register")}>
-                Get Started
+                Start Free Trial
                 <ArrowRight size={16} />
               </button>
               <button type="button" className="btn-link" onClick={() => router.push("/login")}>
@@ -1277,107 +1244,111 @@ export default function LandingPage() {
             </div>
 
             <div className="hero-proof">
-              <span className="proof-label">Trusted by</span>
+              <span className="proof-label">CERTIFIED</span>
               <span className="proof-logo">
-                <ShieldCheck size={16} /> NBE Ready
+                <ShieldCheck size={16} /> Compliance &amp; Tax Ready
               </span>
               <span className="proof-logo">
-                <Languages size={16} /> Amharic · Oromo
+                <Languages size={16} /> English · Français
               </span>
               <span className="proof-logo">
-                <Wifi size={16} /> Offline-first
+                <Wifi size={16} /> Offline-First Sync
               </span>
             </div>
           </div>
 
           <div className="hero-right">
-            <div className="floating-badge">
-              <div className="avatars">
-                <span className="avatar" style={{ background: "#f97316" }}>A</span>
-                <span className="avatar" style={{ background: "#7c3aed" }}>M</span>
-                <span className="avatar" style={{ background: "#0f766e" }}>T</span>
+            {/* Top row: Checkmarks on the left, Badges on the right */}
+            <div className="hero-top-row">
+              <div className="hero-features-list">
+                <div className="hero-feature-item">
+                  <svg className="feature-check-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                  <span>Launch in 3 day</span>
+                </div>
+                <div className="hero-feature-item">
+                  <svg className="feature-check-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                  <span>Custom white label</span>
+                </div>
+                <div className="hero-feature-item">
+                  <svg className="feature-check-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                  <span>Free training</span>
+                </div>
+                <div className="hero-feature-item">
+                  <svg className="feature-check-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                  <span>24/7 all year support</span>
+                </div>
               </div>
-              <span>Live · 12 teams online</span>
-            </div>
 
-            <div className="mockup">
-              <div className="mockup-top">
-                <div className="mockup-top-left">
-                  <span className="mockup-dot" style={{ background: "#ef4444" }} />
-                  <span className="mockup-dot" style={{ background: "#f59e0b" }} />
-                  <span className="mockup-dot" style={{ background: "#10b981" }} />
+              <div className="hero-badges-list">
+                <div className="hero-badge-item">
+                  <span className="hero-badge-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="3" width="20" height="18" rx="3" />
+                      <path d="M6 15l3-7 3 7" />
+                      <path d="M7 13h4" />
+                      <path d="M15 9h4" />
+                      <path d="M17 9v6" />
+                    </svg>
+                  </span>
+                  <span>3 local language</span>
                 </div>
-                <span style={{ color: muted, fontSize: 11, fontWeight: 600 }}>
-                  beyond-erp.app
-                </span>
-              </div>
-
-              <div className="mockup-body">
-                <div className="mockup-metric-row">
-                  <div className="mockup-metric">
-                    <div className="mockup-metric-label">Revenue</div>
-                    <div className="mockup-metric-value">
-                      ETB 428k
-                      <span className="mockup-metric-delta">+12%</span>
-                    </div>
-                  </div>
-                  <div className="mockup-metric">
-                    <div className="mockup-metric-label">Orders</div>
-                    <div className="mockup-metric-value">
-                      1,284
-                      <span className="mockup-metric-delta">+8%</span>
-                    </div>
-                  </div>
+                <div className="hero-badge-item">
+                  <span className="hero-badge-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="3" width="20" height="18" rx="3" />
+                      <circle cx="8" cy="10" r="2.5" />
+                      <path d="M5 16c0-1.8 1.4-2.8 3-2.8s3 1 3 2.8" />
+                      <path d="M14 9h5" />
+                      <path d="M14 12h5" />
+                      <path d="M14 15h3" />
+                    </svg>
+                  </span>
+                  <span>Fayda Verification</span>
                 </div>
-
-                <div className="mockup-chart">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ color: ink, fontSize: 12, fontWeight: 700 }}>Weekly sales</span>
-                    <span style={{ color: muted, fontSize: 10, fontWeight: 600 }}>This week</span>
-                  </div>
-                  <div className="chart-bars">
-                    {[40, 65, 50, 80, 45, 90, 70].map((h, i) => (
-                      <div
-                        key={i}
-                        className="chart-bar"
-                        style={{ height: `${h}%`, opacity: i === 5 ? 1 : 0.55 }}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mockup-list-item">
-                    <span style={{ width: 28, height: 28, borderRadius: 8, background: `${blue}18`, color: blue, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Receipt size={14} />
-                    </span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ color: ink, fontSize: 12, fontWeight: 600 }}>Invoice #4821</div>
-                      <div style={{ color: muted, fontSize: 11 }}>VAT receipt issued</div>
-                    </div>
-                    <span style={{ color: "#10b981", fontSize: 11, fontWeight: 700 }}>Paid</span>
-                  </div>
-                  <div className="mockup-list-item">
-                    <span style={{ width: 28, height: 28, borderRadius: 8, background: "#f9731618", color: "#f97316", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Package size={14} />
-                    </span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ color: ink, fontSize: 12, fontWeight: 600 }}>Stock sync</div>
-                      <div style={{ color: muted, fontSize: 11 }}>12 items queued</div>
-                    </div>
-                    <span style={{ color: blue, fontSize: 11, fontWeight: 700 }}>Syncing</span>
-                  </div>
+                <div className="hero-badge-item">
+                  <span className="hero-badge-icon ai-badge-icon">
+                    <span className="ai-text">Ai</span>
+                  </span>
+                  <span>Ai Assistance</span>
                 </div>
               </div>
             </div>
 
-            <div className="floating-card">
-              <div className="floating-card-icon">
-                <CheckCircle2 size={18} />
+            {/* Center: Tablet mockup with hands holding it */}
+            <div className="hero-mockup-wrapper">
+              <img
+                src="/hero-mockup.png"
+                alt="Beyond ERP tablet interface showcasing sector workflows"
+                className="hero-mockup-img"
+              />
+            </div>
+
+            {/* Bottom-right price badge */}
+            <div className="hero-price-badge">
+              <div className="price-badge-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="10" rx="2" />
+                  <path d="M7 7h10" />
+                  <path d="M6 13v7l2-1.5 2 1.5 2-1.5 2 1.5 2-1.5 2 1.5V13" />
+                  <path d="M9 16h6" />
+                </svg>
               </div>
-              <div>
-                <div style={{ color: ink, fontSize: 12, fontWeight: 700 }}>VAT filed</div>
-                <div style={{ color: muted, fontSize: 11 }}>Ready for export</div>
+              <div className="price-badge-body">
+                <span className="price-badge-label">Starting From</span>
+                <span className="price-badge-amount">100 birr/day</span>
+                <span className="price-badge-sub">billed annually</span>
               </div>
             </div>
           </div>
