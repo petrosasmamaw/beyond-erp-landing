@@ -42,7 +42,11 @@ const resetOtpStore = new Map<string, { otp: string; expiresAt: number }>();
 export const app = express();
 const port = Number(process.env.API_PORT ?? 4000);
 
-app.use(cors({ origin: process.env.WEB_ORIGIN ?? true }));
+const allowedOrigins = process.env.WEB_ORIGIN
+  ? process.env.WEB_ORIGIN.split(",").map((o) => o.trim())
+  : true;
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("tiny"));
 app.use(

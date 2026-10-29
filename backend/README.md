@@ -11,19 +11,22 @@ Runs on **http://localhost:4000** by default.
 ### Prerequisites
 
 - Node.js 20+
-- Docker (for the PostgreSQL container) — or an existing PostgreSQL instance
+- Neon PostgreSQL database (from https://neon.tech) or any PostgreSQL instance
 
-### Steps
+### Quick Setup with Neon DB
+
+1. Create a project at [Neon](https://neon.tech).
+2. Copy your **Pooled connection string** into `DATABASE_URL` in `backend/.env`.
+3. Copy your **Direct connection string** into `DIRECT_URL` in `backend/.env`.
+4. Run:
 
 ```bash
 cd backend
-copy .env.example .env    # edit the values below
 npm install
-docker compose up -d      # starts postgres on port 5432
-npm run db:generate       # generates Prisma client
-npm run db:migrate        # runs schema migrations
-npm run seed              # inserts demo data
-npm run dev               # starts tsx watch server
+npm run db:generate   # Generates Prisma client
+npm run db:push       # Pushes all tables, enums & relations to your Neon DB
+npm run seed          # Inserts demo sectors, accounts & admin user
+npm run dev           # Starts the API server on http://localhost:4000
 ```
 
 ---
