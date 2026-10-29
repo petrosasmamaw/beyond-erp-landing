@@ -8,3 +8,8 @@ coverage
 *.log
 prisma/dev.db
 *.zip
+.env
+.gitignore
+.env.*
+.env.local
+.env.*
