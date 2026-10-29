@@ -359,6 +359,7 @@ function getMonthWindow() {
 }
 
 async function ensureSeeded() {
+  await prisma.$connect();
   const sectorCount = await prisma.sector.count();
   if (sectorCount === 0) {
     await seedDatabase(prisma);
