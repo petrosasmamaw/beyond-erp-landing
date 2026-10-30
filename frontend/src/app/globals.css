@@ -2003,6 +2003,121 @@ select:focus {
   .chart-tools-grid {
     grid-template-columns: 1fr !important;
   }
+
+  /* ── Registration flow responsive (details, payment) ─────────── */
+  .reg-right-panel {
+    padding: 0 16px 24px !important;
+  }
+
+  .reg-form-wrap {
+    max-width: 100% !important;
+  }
+
+  .reg-topbar {
+    padding: 16px 16px !important;
+  }
+
+  .reg-heading h2 {
+    font-size: 22px !important;
+  }
+
+  /* Payment method grid stays 2-col but less padding */
+  .pay-method-btn {
+    padding: 10px 12px !important;
+  }
+
+  /* Account detail boxes */
+  .pay-account-box {
+    padding: 14px 12px !important;
+  }
+
+  .pay-account-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .pay-account-row button {
+    align-self: flex-end;
+  }
+
+  /* Telegram callout */
+  .pay-telegram-callout {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .pay-telegram-callout a,
+  .pay-telegram-callout button {
+    align-self: stretch;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Submitted page responsive */
+  .submitted-card {
+    max-width: 100% !important;
+    padding: 28px 20px !important;
+    border-radius: 18px !important;
+  }
+
+  .submitted-main {
+    padding: 20px 16px !important;
+  }
+
+  .submitted-summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .submitted-logo-icon {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .submitted-check {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .submitted-check svg {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .submitted-heading {
+    font-size: 26px !important;
+  }
+
+  .submitted-contact {
+    flex-direction: column !important;
+    text-align: center;
+  }
+
+  /* Sector badge responsive */
+  .reg-sector-badge {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .reg-sector-badge button {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  /* Company overview badge responsive */
+  .pay-company-badge {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .pay-company-badge button {
+    align-self: stretch;
+    text-align: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 899px) {
@@ -2060,6 +2175,34 @@ select:focus {
     width: 68px;
     height: 68px;
     font-size: 30px;
+  }
+
+  /* Sector select page mobile */
+  .sector-select-page {
+    padding: 16px 0 32px;
+  }
+
+  .sector-select-header h1 {
+    font-size: 28px !important;
+  }
+
+  .sector-select-header span {
+    font-size: 14px;
+  }
+
+  .sector-select-grid button {
+    min-height: 140px;
+    padding: 14px;
+  }
+
+  .sector-select-actions {
+    grid-template-columns: 1fr;
+  }
+
+  /* Payment method grid on very small screens */
+  .pay-method-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px !important;
   }
 }
 

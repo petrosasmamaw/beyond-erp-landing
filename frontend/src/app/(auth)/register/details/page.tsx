@@ -254,7 +254,7 @@ function RegisterDetailsContent() {
       </div>
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
+        <div className="reg-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
           <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <img
               src="/logo.png"
@@ -271,9 +271,9 @@ function RegisterDetailsContent() {
           <ThemeToggle />
         </div>
 
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 28px 48px" }}>
-          <div style={{ width: "100%", maxWidth: 620 }}>
-            <div style={{ marginBottom: 24 }}>
+        <div className="reg-right-panel" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 28px 48px" }}>
+          <div className="reg-form-wrap" style={{ width: "100%", maxWidth: 620 }}>
+            <div className="reg-heading" style={{ marginBottom: 24 }}>
               <p style={{ margin: "0 0 10px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#2563eb" }}>
                 Step 2 of 3
               </p>
@@ -285,7 +285,7 @@ function RegisterDetailsContent() {
               </p>
             </div>
 
-            <div style={{ marginBottom: 20, borderRadius: 10, border: `1px solid ${border}`, background: dark ? "#0a1220" : "#f8fafc", padding: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div className="reg-sector-badge" style={{ marginBottom: 20, borderRadius: 10, border: `1px solid ${border}`, background: dark ? "#0a1220" : "#f8fafc", padding: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
                 <div style={{ width: 44, height: 44, borderRadius: 10, border: `1px solid ${border}`, background: sectorTint, color: sectorColor, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {companySector.icon ? <i className={`${companySector.icon} text-xl`} /> : <Briefcase size={20} />}
@@ -466,18 +466,6 @@ function RegisterDetailsContent() {
               </button>
             </div>
 
-            <div style={{ marginTop: 24, padding: "14px 16px", borderRadius: 10, border: `1px solid ${border}`, background: dark ? "#0a1220" : "#f8fafc", textAlign: "center" }}>
-              <p style={{ margin: 0, fontSize: 13, color: muted, lineHeight: 1.45 }}>
-                Need to change your sector?{" "}
-                <button
-                  type="button"
-                  onClick={() => router.push(backToSectorHref)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "#2563eb", fontWeight: 700, fontSize: 13 }}
-                >
-                  Review selection
-                </button>
-              </p>
-            </div>
           </div>
         </div>
       </div>

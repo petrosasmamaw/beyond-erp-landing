@@ -31,7 +31,14 @@ function RegisterContent() {
             <ArrowLeft size={16} />
             Back
           </button>
-          <span>Step 1 of 3</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => router.push("/")}>
+            <img src="/logo.png" alt="Beyond ERP" width={28} height={28} style={{ borderRadius: "50%", objectFit: "contain" }} />
+            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
+              <span style={{ color: "var(--ink)" }}>Beyond</span>{" "}
+              <span style={{ color: "#2563eb" }}>ERP</span>
+            </span>
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)" }}>Step 1 of 3</span>
         </div>
         <div className="sector-select-header">
           <p className="eyebrow">Choose your operating model</p>

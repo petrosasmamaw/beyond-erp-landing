@@ -338,7 +338,7 @@ function PaymentContent() {
       {/* ================= RIGHT INTERACTIVE PAYMENT PANEL ================= */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         {/* Top bar with mobile logo & theme toggle */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
+        <div className="reg-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
           <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <img
               src="/logo.png"
@@ -355,10 +355,10 @@ function PaymentContent() {
           <ThemeToggle />
         </div>
 
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 28px 48px" }}>
-          <div style={{ width: "100%", maxWidth: 620 }}>
+        <div className="reg-right-panel" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 28px 48px" }}>
+          <div className="reg-form-wrap" style={{ width: "100%", maxWidth: 620 }}>
             {/* Header info */}
-            <div style={{ marginBottom: 22 }}>
+            <div className="reg-heading" style={{ marginBottom: 22 }}>
               <p
                 style={{
                   margin: "0 0 8px",
@@ -381,6 +381,7 @@ function PaymentContent() {
 
             {/* Selected company overview badge */}
             <div
+              className="pay-company-badge"
               style={{
                 marginBottom: 20,
                 borderRadius: 10,
@@ -439,10 +440,11 @@ function PaymentContent() {
             </div>
 
             {/* Payment Method Selector (CBE vs Telebirr) */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
+            <div className="pay-method-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
               {/* Option 1: CBE */}
               <button
                 type="button"
+                className="pay-method-btn"
                 onClick={() => setSelectedMethod("CBE")}
                 style={{
                   borderRadius: 12,
@@ -489,6 +491,7 @@ function PaymentContent() {
               {/* Option 2: Telebirr */}
               <button
                 type="button"
+                className="pay-method-btn"
                 onClick={() => setSelectedMethod("TELEBIRR")}
                 style={{
                   borderRadius: 12,
@@ -535,6 +538,7 @@ function PaymentContent() {
 
             {/* Account Details Box */}
             <div
+              className="pay-account-box"
               style={{
                 borderRadius: 12,
                 border: `1.5px solid ${border}`,
@@ -561,6 +565,7 @@ function PaymentContent() {
                   <div style={{ display: "grid", gap: 12 }}>
                     {/* Account Number with Copy */}
                     <div
+                      className="pay-account-row"
                       style={{
                         padding: "12px 14px",
                         borderRadius: 10,
@@ -605,6 +610,7 @@ function PaymentContent() {
 
                     {/* Account Name */}
                     <div
+                      className="pay-account-row"
                       style={{
                         padding: "10px 14px",
                         borderRadius: 10,
@@ -661,6 +667,7 @@ function PaymentContent() {
                   <div style={{ display: "grid", gap: 12 }}>
                     {/* Phone Number with Copy */}
                     <div
+                      className="pay-account-row"
                       style={{
                         padding: "12px 14px",
                         borderRadius: 10,
@@ -705,6 +712,7 @@ function PaymentContent() {
 
                     {/* Receiver Name */}
                     <div
+                      className="pay-account-row"
                       style={{
                         padding: "10px 14px",
                         borderRadius: 10,

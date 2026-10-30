@@ -3,18 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   CheckCircle2,
-  ExternalLink,
   Home,
   Lock,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Phone,
   Send,
-  ShieldCheck,
-  Sparkles
 } from "lucide-react";
 import { getSectorDefinition } from "@/features/erp/config";
 import { useApp } from "@/contexts/AppContext";
@@ -50,27 +42,29 @@ export default function SubmittedPage() {
 
   return (
     <main
+      className="submitted-main"
       style={{
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "40px 20px",
+        padding: "32px 20px",
         background: "linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%)",
-        color: "#0f172a"
+        color: "#0f172a",
       }}
     >
       <div
+        className="submitted-card"
         style={{
           width: "100%",
-          maxWidth: 620,
+          maxWidth: 780,
           background: "#ffffff",
           borderRadius: 24,
           border: "1px solid #e2e8f0",
           boxShadow: "0 20px 60px rgba(15, 23, 42, 0.08)",
-          padding: "44px 38px",
+          padding: "36px 34px",
           textAlign: "center",
-          position: "relative"
+          position: "relative",
         }}
       >
         {/* Centered Brand Logo & Name */}
@@ -80,28 +74,29 @@ export default function SubmittedPage() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: 28
+            marginBottom: 18,
           }}
         >
           <img
+            className="submitted-logo-icon"
             src="/logo.png"
             alt="Beyond ERP"
-            width={60}
-            height={60}
+            width={52}
+            height={52}
             style={{
               borderRadius: "50%",
               display: "block",
               objectFit: "contain",
-              boxShadow: "0 8px 24px rgba(37, 99, 235, 0.18)",
-              border: "2px solid #2563eb"
+              boxShadow: "0 6px 20px rgba(37, 99, 235, 0.18)",
+              border: "2px solid #2563eb",
             }}
           />
           <div
             style={{
-              marginTop: 12,
+              marginTop: 10,
               fontWeight: 800,
-              fontSize: 22,
-              letterSpacing: "-0.02em"
+              fontSize: 20,
+              letterSpacing: "-0.02em",
             }}
           >
             <span style={{ color: "#0f172a" }}>Beyond</span>{" "}
@@ -111,43 +106,45 @@ export default function SubmittedPage() {
 
         {/* Celebratory Checkmark Icon */}
         <div
+          className="submitted-check"
           style={{
-            width: 72,
-            height: 72,
+            width: 60,
+            height: 60,
             borderRadius: "50%",
             background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             color: "#ffffff",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            margin: "0 auto 20px",
-            boxShadow: "0 10px 30px rgba(16, 185, 129, 0.35)"
+            margin: "0 auto 14px",
+            boxShadow: "0 8px 24px rgba(16, 185, 129, 0.3)",
           }}
         >
-          <CheckCircle2 size={40} strokeWidth={2.4} />
+          <CheckCircle2 size={34} strokeWidth={2.4} />
         </div>
 
         {/* Heading */}
         <p
           style={{
-            margin: "0 0 6px",
-            fontSize: 12,
+            margin: "0 0 4px",
+            fontSize: 11,
             fontWeight: 800,
             textTransform: "uppercase",
             letterSpacing: "0.14em",
-            color: "#10b981"
+            color: "#10b981",
           }}
         >
           Registration Received
         </p>
         <h1
+          className="submitted-heading"
           style={{
-            margin: "0 0 14px",
-            fontSize: "clamp(30px, 3.2vw, 40px)",
+            margin: "0 0 10px",
+            fontSize: "clamp(26px, 3vw, 36px)",
             fontWeight: 800,
             color: "#0f172a",
             lineHeight: 1.15,
-            letterSpacing: "-0.02em"
+            letterSpacing: "-0.02em",
           }}
         >
           Congratulations!
@@ -156,11 +153,11 @@ export default function SubmittedPage() {
         {/* Core user message */}
         <p
           style={{
-            margin: "0 auto 26px",
-            fontSize: 16,
+            margin: "0 auto 20px",
+            fontSize: 15,
             color: "#475569",
-            lineHeight: 1.6,
-            maxWidth: 500
+            lineHeight: 1.55,
+            maxWidth: 540,
           }}
         >
           Your registration request and payment submission have been received successfully.
@@ -173,15 +170,15 @@ export default function SubmittedPage() {
         {/* Summary Card */}
         <div
           style={{
-            borderRadius: 14,
+            borderRadius: 12,
             border: "1px solid #e2e8f0",
             background: "#f8fafc",
-            padding: "18px 20px",
+            padding: "14px 16px",
             textAlign: "left",
-            marginBottom: 24
+            marginBottom: 16,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
             <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b" }}>
               Submission Summary
             </span>
@@ -189,41 +186,41 @@ export default function SubmittedPage() {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 6,
-                padding: "3px 10px",
+                gap: 5,
+                padding: "2px 9px",
                 borderRadius: 999,
                 background: "rgba(16, 185, 129, 0.12)",
                 color: "#059669",
-                fontSize: 11,
-                fontWeight: 700
+                fontSize: 10,
+                fontWeight: 700,
               }}
             >
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10b981" }} />
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#10b981" }} />
               Under Verification
             </span>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, fontSize: 13 }}>
+          <div className="submitted-summary-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, fontSize: 13 }}>
             <div>
-              <p style={{ margin: "0 0 2px", fontSize: 11, color: "#64748b" }}>Company</p>
+              <p style={{ margin: "0 0 1px", fontSize: 11, color: "#64748b" }}>Company</p>
               <p style={{ margin: 0, fontWeight: 700, color: "#0f172a", overflowWrap: "anywhere" }}>
                 {reg?.companyName || "Your Company"}
               </p>
             </div>
             <div>
-              <p style={{ margin: "0 0 2px", fontSize: 11, color: "#64748b" }}>Sector</p>
+              <p style={{ margin: "0 0 1px", fontSize: 11, color: "#64748b" }}>Sector</p>
               <p style={{ margin: 0, fontWeight: 700, color: "#0f172a" }}>
                 {sector.name || "Enterprise"}
               </p>
             </div>
             <div>
-              <p style={{ margin: "0 0 2px", fontSize: 11, color: "#64748b" }}>Contact Person</p>
+              <p style={{ margin: "0 0 1px", fontSize: 11, color: "#64748b" }}>Contact Person</p>
               <p style={{ margin: 0, fontWeight: 700, color: "#0f172a" }}>
                 {reg?.fullName || "Company Admin"}
               </p>
             </div>
             <div>
-              <p style={{ margin: "0 0 2px", fontSize: 11, color: "#64748b" }}>Payment Method</p>
+              <p style={{ margin: "0 0 1px", fontSize: 11, color: "#64748b" }}>Payment Method</p>
               <p style={{ margin: 0, fontWeight: 700, color: "#2563eb" }}>
                 {reg?.paymentMethod === "TELEBIRR" ? "Telebirr" : "CBE Bank Transfer"}
               </p>
@@ -233,17 +230,18 @@ export default function SubmittedPage() {
 
         {/* Telegram Direct Connect Callout */}
         <div
+          className="pay-telegram-callout"
           style={{
-            borderRadius: 14,
+            borderRadius: 12,
             border: "1px solid rgba(34, 158, 217, 0.35)",
             background: "rgba(34, 158, 217, 0.06)",
-            padding: "16px 18px",
-            marginBottom: 26,
+            padding: "14px 16px",
+            marginBottom: 18,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: 14,
-            textAlign: "left"
+            gap: 12,
+            textAlign: "left",
           }}
         >
           <div>
@@ -251,7 +249,7 @@ export default function SubmittedPage() {
               Fast-Track Activation on Telegram
             </p>
             <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>
-              Already sent your screenshot? You can chat with our setup manager at <strong>@Nehemiah00</strong>
+              Already sent your screenshot? Chat with our setup manager at <strong>@Nehemiah00</strong>
             </p>
           </div>
           <a
@@ -259,7 +257,7 @@ export default function SubmittedPage() {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              height: 38,
+              height: 36,
               padding: "0 14px",
               borderRadius: 8,
               background: "#229ED9",
@@ -271,7 +269,7 @@ export default function SubmittedPage() {
               gap: 6,
               textDecoration: "none",
               flexShrink: 0,
-              boxShadow: "0 4px 12px rgba(34, 158, 217, 0.3)"
+              boxShadow: "0 4px 12px rgba(34, 158, 217, 0.3)",
             }}
           >
             <Send size={13} />
@@ -280,13 +278,12 @@ export default function SubmittedPage() {
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: "grid", gap: 10 }}>
-          {/* Prominent Back to Home Button */}
+        <div style={{ display: "grid", gap: 8 }}>
           <button
             type="button"
             onClick={() => router.push("/")}
             style={{
-              height: 50,
+              height: 46,
               borderRadius: 12,
               border: 0,
               background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
@@ -299,19 +296,18 @@ export default function SubmittedPage() {
               justifyContent: "center",
               gap: 10,
               boxShadow: "0 6px 20px rgba(37, 99, 235, 0.35)",
-              transition: "transform 0.15s, opacity 0.15s"
+              transition: "transform 0.15s, opacity 0.15s",
             }}
           >
             <Home size={18} />
             Back to Home
           </button>
 
-          {/* Secondary Sign In Button */}
           <button
             type="button"
             onClick={() => router.push("/login")}
             style={{
-              height: 44,
+              height: 40,
               borderRadius: 10,
               border: "1px solid #e2e8f0",
               background: "#ffffff",
@@ -323,7 +319,7 @@ export default function SubmittedPage() {
               alignItems: "center",
               justifyContent: "center",
               gap: 8,
-              transition: "background 0.15s"
+              transition: "background 0.15s",
             }}
           >
             <Lock size={15} />
@@ -333,15 +329,16 @@ export default function SubmittedPage() {
 
         {/* Contact info footer */}
         <div
+          className="submitted-contact"
           style={{
-            marginTop: 28,
-            paddingTop: 20,
+            marginTop: 20,
+            paddingTop: 14,
             borderTop: "1px solid #e2e8f0",
             fontSize: 12,
             color: "#64748b",
             display: "flex",
             flexDirection: "column",
-            gap: 6
+            gap: 4,
           }}
         >
           <p style={{ margin: 0 }}>
