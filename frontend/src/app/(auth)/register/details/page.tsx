@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, type FormEvent, Suspense, useState } from "react";
+import { type CSSProperties, type FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Briefcase, Languages, Loader2, ShieldCheck, Wifi } from "lucide-react";
 import { api } from "@/lib/api";
@@ -31,10 +31,31 @@ function RegisterDetailsContent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const saved = sessionStorage.getItem("beyond_reg_draft");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setForm((f) => ({
+          ...f,
+          companyName: parsed.companyName || f.companyName,
+          tinNumber: parsed.tinNumber || f.tinNumber,
+          fullName: parsed.fullName || f.fullName,
+          email: parsed.email || f.email,
+          phone: parsed.phone || f.phone,
+          notes: parsed.notes || f.notes,
+        }));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const errs: Record<string, string> = {};
-    if (!sectorId) errs.sectorId = "No sector selected";
+    if (!sectorId) errs.sectorId = "No sector selected. Please choose a sector.";
     if (!form.companyName.trim()) errs.companyName = "Company name is required";
     if (!form.fullName.trim()) errs.fullName = "Your full name is required";
     if (!form.email.trim()) errs.email = "Email is required";
@@ -45,30 +66,11 @@ function RegisterDetailsContent() {
       return;
     }
 
-    setLoading(true);
     try {
-      await api.createRegistrationRequest({
-        companyName: form.companyName,
-        tinNumber: form.tinNumber || undefined,
-        sectorId,
-        fullName: form.fullName,
-        email: form.email,
-        phone: form.phone,
-        notes: form.notes || undefined,
-      });
-      sessionStorage.setItem("beyond_reg", JSON.stringify({ ...form, sectorId }));
-      showToast("Registration request submitted");
-      router.push("/submitted");
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to submit";
-      if (msg.includes("already completed")) {
-        showToast("Company already set up - please sign in");
-        router.push("/login");
-      } else {
-        showToast(msg);
-      }
-    } finally {
-      setLoading(false);
+      sessionStorage.setItem("beyond_reg_draft", JSON.stringify({ ...form, sectorId }));
+      router.push(`/register/payment?sectorId=${encodeURIComponent(sectorId)}`);
+    } catch {
+      router.push(`/register/payment?sectorId=${encodeURIComponent(sectorId)}`);
     }
   };
 
@@ -146,50 +148,121 @@ function RegisterDetailsContent() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "40px 48px",
+          padding: "48px 44px",
           position: "relative",
           overflow: "hidden",
           flexShrink: 0,
         }}
         className="login-brand-panel"
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
-          <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
-            <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
-            <span style={{ color: "#60a5fa" }}>ERP</span>
-          </span>
-        </div>
-
         <div style={{ position: "relative" }}>
-          <p style={{ margin: "0 0 20px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.7)" }}>
-            Workspace Onboarding
-          </p>
-          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400 }}>
-            Request access<br />for your<br />
-            <span style={{ fontStyle: "italic", color: "#bfdbfe" }}>company workspace.</span>
-          </h1>
-          <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* Logo and Beyond ERP centered at the top of the text block */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              marginBottom: 34,
+            }}
+          >
+            <img
+              src="/logo.png"
+              alt="Beyond ERP"
+              width={64}
+              height={64}
+              style={{
+                borderRadius: "50%",
+                display: "block",
+                objectFit: "contain",
+                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
+                border: "2.5px solid rgba(255, 255, 255, 0.25)",
+              }}
+            />
+            <div
+              style={{
+                marginTop: 14,
+                fontWeight: 800,
+                fontSize: 26,
+                letterSpacing: "-0.02em",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
+              <span style={{ color: "#60a5fa" }}>ERP</span>
+            </div>
+            <p
+              style={{
+                margin: "4px 0 0",
+                fontSize: 12,
+                fontWeight: 600,
+                color: "rgba(191, 219, 254, 0.8)",
+                letterSpacing: "0.05em",
+              }}
+            >
+              Ethiopian Business Management Platform
+            </p>
+          </div>
+
+          <div style={{ textAlign: "center", marginBottom: 28 }}>
+            <p
+              style={{
+                margin: "0 0 12px",
+                fontSize: 11,
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "0.14em",
+                color: "rgba(191, 219, 254, 0.85)",
+              }}
+            >
+              Step 2 of 3 • Workspace Onboarding
+            </p>
+            <h1
+              style={{
+                margin: 0,
+                fontFamily: '"Instrument Serif", Georgia, serif',
+                fontSize: "clamp(32px, 3.2vw, 50px)",
+                lineHeight: 1.05,
+                color: "white",
+                fontWeight: 400,
+              }}
+            >
+              Request access<br />for your<br />
+              <span style={{ fontStyle: "italic", color: "#bfdbfe" }}>company workspace.</span>
+            </h1>
+          </div>
+
+          <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 14, maxWidth: 360, margin: "28px auto 0" }}>
             {([
-              { icon: <ShieldCheck size={14} />, label: "Admin-reviewed setup after payment" },
-              { icon: <Wifi size={14} />, label: "Offline-first workflows from day one" },
-              { icon: <Languages size={14} />, label: "Amharic, English, and Afan Oromo ready" },
+              { icon: <ShieldCheck size={16} />, label: "Admin-reviewed setup after payment" },
+              { icon: <Wifi size={16} />, label: "Offline-first workflows from day one" },
+              { icon: <Languages size={16} />, label: "Amharic, English, and Afan Oromo ready" },
             ] as const).map(({ icon, label }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.85)", fontSize: 14 }}>
-                <span style={{ color: "#93c5fd", flexShrink: 0 }}>{icon}</span>
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 12, color: "rgba(219, 234, 254, 0.9)", fontSize: 14 }}>
+                <span style={{ color: "#93c5fd", flexShrink: 0, display: "flex" }}>{icon}</span>
                 <span>{label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p style={{ margin: 0, fontSize: 11, color: "rgba(148,163,184,0.5)", position: "relative" }}>
-          &copy; {new Date().getFullYear()} Beyond ERP Ethiopia
+        <p style={{ margin: 0, fontSize: 11, color: "rgba(148, 163, 184, 0.6)", position: "relative", textAlign: "center" }}>
+          &copy; {new Date().getFullYear()} Beyond ERP Ethiopia • All Rights Reserved
         </p>
       </div>
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
-          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <img
+              src="/logo.png"
+              alt="Beyond ERP"
+              width={32}
+              height={32}
+              style={{ borderRadius: "50%", objectFit: "contain" }}
+            />
             <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
               <span style={{ color: ink }}>Beyond</span>{" "}
               <span style={{ color: "#2563eb" }}>ERP</span>
@@ -202,13 +275,13 @@ function RegisterDetailsContent() {
           <div style={{ width: "100%", maxWidth: 620 }}>
             <div style={{ marginBottom: 24 }}>
               <p style={{ margin: "0 0 10px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#2563eb" }}>
-                Step 2 of 2
+                Step 2 of 3
               </p>
               <h2 style={{ margin: "0 0 6px", fontSize: 26, fontWeight: 700, color: ink, lineHeight: 1.15 }}>
-                Request ERP access
+                Company &amp; contact details
               </h2>
               <p style={{ margin: 0, fontSize: 14, color: muted, lineHeight: 1.5 }}>
-                Send your company details to our admin team. After payment and approval, we will create your secure login.
+                Enter your company profile. On the next step, you will choose CBE or Telebirr to complete payment and activate your workspace.
               </p>
             </div>
 
@@ -346,10 +419,10 @@ function RegisterDetailsContent() {
                 type="submit"
                 disabled={loading}
                 style={{
-                  height: 46,
+                  height: 48,
                   borderRadius: 10,
                   border: 0,
-                  marginTop: 4,
+                  marginTop: 6,
                   background: loading ? "#3b82f6" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
                   color: "white",
                   fontWeight: 700,
@@ -360,11 +433,11 @@ function RegisterDetailsContent() {
                   justifyContent: "center",
                   gap: 8,
                   boxShadow: loading ? "none" : "0 4px 14px rgba(37,99,235,0.35)",
-                  transition: "opacity 0.15s",
+                  transition: "opacity 0.15s, transform 0.15s",
                 }}
               >
                 {loading && <Loader2 className="spin" size={17} />}
-                {loading ? "Submitting request..." : "Submit registration request"}
+                {loading ? "Processing..." : "Continue to Payment"}
                 {!loading && <ArrowRight size={16} />}
               </button>
             </form>

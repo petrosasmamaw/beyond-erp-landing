@@ -31,7 +31,7 @@ function RegisterContent() {
             <ArrowLeft size={16} />
             Back
           </button>
-          <span>Step 1 of 2</span>
+          <span>Step 1 of 3</span>
         </div>
         <div className="sector-select-header">
           <p className="eyebrow">Choose your operating model</p>

@@ -1,0 +1,901 @@
+"use client";
+
+import { type CSSProperties, Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ArrowLeft,
+  Briefcase,
+  Check,
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+  HelpCircle,
+  Landmark,
+  Loader2,
+  Send,
+  ShieldAlert,
+  ShieldCheck,
+  Smartphone,
+  Sparkles,
+  Zap
+} from "lucide-react";
+import { api } from "@/lib/api";
+import { getSectorDefinition } from "@/features/erp/config";
+import { useApp } from "@/contexts/AppContext";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useTheme } from "@/contexts/ThemeContext";
+
+interface RegistrationDraft {
+  companyName: string;
+  tinNumber?: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  notes?: string;
+  sectorId?: string;
+}
+
+function PaymentContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast, showToast } = useApp();
+  const { theme } = useTheme();
+  const dark = theme === "dark";
+
+  const sectorIdParam = searchParams.get("sectorId") ?? "";
+  const [draft, setDraft] = useState<RegistrationDraft | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<"CBE" | "TELEBIRR">("CBE");
+  const [copied, setCopied] = useState<string | null>(null);
+  const [reference, setReference] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = sessionStorage.getItem("beyond_reg_draft");
+      if (stored) {
+        setDraft(JSON.parse(stored) as RegistrationDraft);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const sectorId = draft?.sectorId || sectorIdParam;
+  const companySector = getSectorDefinition(sectorId);
+
+  const cbeDetails = {
+    bankName: "Commercial Bank of Ethiopia (CBE)",
+    accountName: "Beyond Solution PLC",
+    accountNumber: "1000598712345",
+    branch: "Addis Ababa Main Branch"
+  };
+
+  const telebirrDetails = {
+    serviceName: "Telebirr (Ethio Telecom)",
+    accountName: "Beyond Solution / Nehemiah",
+    phoneNumber: "0911000001",
+    shortCode: "*127# or Telebirr App"
+  };
+
+  const handleCopy = (text: string, label: string) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopied(label);
+      showToast(`Copied ${label} to clipboard`);
+      setTimeout(() => setCopied(null), 2500);
+    }
+  };
+
+  const handleTelegramClick = () => {
+    window.open("https://t.me/Nehemiah00", "_blank", "noopener,noreferrer");
+  };
+
+  const handleDone = async () => {
+    setError("");
+
+    if (!draft || !draft.companyName || !draft.email) {
+      // Fallback: If draft was cleared, redirect back to details
+      showToast("Please enter your company details first");
+      router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const paymentNote = `[Payment: ${selectedMethod}${reference ? ` | Ref: ${reference.trim()}` : " | Screenshot via Telegram"}]`;
+      const combinedNotes = draft.notes ? `${paymentNote} ${draft.notes}` : paymentNote;
+
+      await api.createRegistrationRequest({
+        companyName: draft.companyName,
+        tinNumber: draft.tinNumber || undefined,
+        sectorId: sectorId || "general",
+        fullName: draft.fullName,
+        email: draft.email,
+        phone: draft.phone,
+        notes: combinedNotes
+      });
+
+      // Save to confirmed reg storage for the congratulations page
+      sessionStorage.setItem(
+        "beyond_reg",
+        JSON.stringify({
+          ...draft,
+          sectorId,
+          paymentMethod: selectedMethod,
+          paymentRef: reference || "Sent via Telegram @Nehemiah00"
+        })
+      );
+
+      showToast("Payment confirmation & request submitted!");
+      router.push("/submitted");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to submit request";
+      if (msg.includes("already exists") || msg.includes("already completed")) {
+        showToast("Account already exists - please sign in");
+        router.push("/login");
+      } else {
+        setError(msg);
+        showToast(msg);
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Color tokens
+  const bg = dark ? "#080e19" : "#f5f8ff";
+  const surface = dark ? "#0f1a2e" : "#ffffff";
+  const border = dark ? "#1a2d42" : "#e2e8f0";
+  const ink = dark ? "#e2e8f0" : "#0f172a";
+  const muted = "#64748b";
+  const inputBg = dark ? "#0a1220" : "#f8fafc";
+  const sectorColor = companySector.color || "#2563eb";
+  const sectorTint = dark ? "rgba(37,99,235,0.14)" : companySector.tint || "#eff6ff";
+
+  return (
+    <main style={{ minHeight: "100vh", display: "flex", background: bg }}>
+      {/* ================= LEFT BRAND PANEL (PURE WHITE WITH BLUE & BLACK TEXT) ================= */}
+      <div
+        style={{
+          width: "42%",
+          minHeight: "100vh",
+          background: "linear-gradient(160deg, #ffffff 0%, #f8fafc 55%, #eff6ff 100%)",
+          borderRight: "1px solid #e2e8f0",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "48px 44px",
+          position: "relative",
+          overflow: "hidden",
+          flexShrink: 0
+        }}
+        className="login-brand-panel"
+      >
+        <div style={{ position: "relative" }}>
+          {/* Logo and Beyond ERP centered at the top of the text block */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              marginBottom: 34
+            }}
+          >
+            <img
+              src="/logo.png"
+              alt="Beyond ERP Logo"
+              width={64}
+              height={64}
+              style={{
+                borderRadius: "50%",
+                display: "block",
+                objectFit: "contain",
+                boxShadow: "0 10px 28px rgba(37, 99, 235, 0.2)",
+                border: "2.5px solid #2563eb"
+              }}
+            />
+            <div
+              style={{
+                marginTop: 14,
+                fontWeight: 800,
+                fontSize: 26,
+                letterSpacing: "-0.02em",
+                display: "flex",
+                alignItems: "center",
+                gap: 6
+              }}
+            >
+              <span style={{ color: "#0f172a" }}>Beyond</span>{" "}
+              <span style={{ color: "#2563eb" }}>ERP</span>
+            </div>
+            <p
+              style={{
+                margin: "4px 0 0",
+                fontSize: 12,
+                fontWeight: 600,
+                color: "#475569",
+                letterSpacing: "0.04em"
+              }}
+            >
+              Ethiopian Business Management Platform
+            </p>
+          </div>
+
+          {/* Centered Headlines in crisp ink & blue */}
+          <div style={{ textAlign: "center", marginBottom: 30 }}>
+            <p
+              style={{
+                margin: "0 0 12px",
+                fontSize: 11,
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "0.14em",
+                color: "#2563eb"
+              }}
+            >
+              Step 3 of 3 • Workspace Activation
+            </p>
+            <h1
+              style={{
+                margin: 0,
+                fontFamily: '"Instrument Serif", Georgia, serif',
+                fontSize: "clamp(32px, 3.2vw, 50px)",
+                lineHeight: 1.05,
+                color: "#0f172a",
+                fontWeight: 400
+              }}
+            >
+              Activate your<br />
+              <span style={{ fontStyle: "italic", color: "#2563eb" }}>company workspace.</span>
+            </h1>
+          </div>
+
+          {/* Benefit items in blue & black */}
+          <div
+            style={{
+              marginTop: 28,
+              display: "flex",
+              flexDirection: "column",
+              gap: 15,
+              maxWidth: 360,
+              margin: "28px auto 0"
+            }}
+          >
+            {([
+              {
+                icon: <Zap size={16} />,
+                title: "Instant Ethiopian Payments",
+                desc: "Official CBE Account & Telebirr direct transfer supported."
+              },
+              {
+                icon: <Send size={16} />,
+                title: "Fast Telegram Verification",
+                desc: "Send receipt to @Nehemiah00 for immediate priority review."
+              },
+              {
+                icon: <ShieldCheck size={16} />,
+                title: "Isolated Company Tenant",
+                desc: "Bank-grade database security with offline-first synchronization."
+              }
+            ] as const).map(({ icon, title, desc }) => (
+              <div
+                key={title}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 12,
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  background: "rgba(37, 99, 235, 0.04)",
+                  border: "1px solid rgba(37, 99, 235, 0.12)"
+                }}
+              >
+                <span
+                  style={{
+                    color: "#2563eb",
+                    background: "rgba(37, 99, 235, 0.12)",
+                    borderRadius: 6,
+                    padding: 5,
+                    display: "flex",
+                    flexShrink: 0,
+                    marginTop: 2
+                  }}
+                >
+                  {icon}
+                </span>
+                <div>
+                  <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
+                    {title}
+                  </p>
+                  <p style={{ margin: 0, fontSize: 12, color: "#475569", lineHeight: 1.35 }}>
+                    {desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p
+          style={{
+            margin: 0,
+            fontSize: 11,
+            color: "#64748b",
+            position: "relative",
+            textAlign: "center"
+          }}
+        >
+          &copy; {new Date().getFullYear()} Beyond ERP Ethiopia • Addis Ababa, 22 Bata Complex
+        </p>
+      </div>
+
+      {/* ================= RIGHT INTERACTIVE PAYMENT PANEL ================= */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+        {/* Top bar with mobile logo & theme toggle */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
+          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <img
+              src="/logo.png"
+              alt="Beyond ERP"
+              width={32}
+              height={32}
+              style={{ borderRadius: "50%", objectFit: "contain" }}
+            />
+            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
+              <span style={{ color: ink }}>Beyond</span>{" "}
+              <span style={{ color: "#2563eb" }}>ERP</span>
+            </span>
+          </div>
+          <ThemeToggle />
+        </div>
+
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 28px 48px" }}>
+          <div style={{ width: "100%", maxWidth: 620 }}>
+            {/* Header info */}
+            <div style={{ marginBottom: 22 }}>
+              <p
+                style={{
+                  margin: "0 0 8px",
+                  fontSize: 11,
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "#2563eb"
+                }}
+              >
+                Step 3 of 3 • Payment &amp; Activation
+              </p>
+              <h2 style={{ margin: "0 0 6px", fontSize: 26, fontWeight: 700, color: ink, lineHeight: 1.15 }}>
+                Choose payment method
+              </h2>
+              <p style={{ margin: 0, fontSize: 14, color: muted, lineHeight: 1.5 }}>
+                Select CBE or Telebirr below to view transfer details. After sending the payment, share your receipt on Telegram for fast workspace setup.
+              </p>
+            </div>
+
+            {/* Selected company overview badge */}
+            <div
+              style={{
+                marginBottom: 20,
+                borderRadius: 10,
+                border: `1px solid ${border}`,
+                background: dark ? "#0a1220" : "#f8fafc",
+                padding: "12px 14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 8,
+                    border: `1px solid ${border}`,
+                    background: sectorTint,
+                    color: sectorColor,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0
+                  }}
+                >
+                  {companySector.icon ? <i className={`${companySector.icon} text-lg`} /> : <Briefcase size={18} />}
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 700, color: ink, overflowWrap: "anywhere" }}>
+                    {draft?.companyName || "Your Company Workspace"}
+                  </p>
+                  <p style={{ margin: 0, fontSize: 12, color: muted }}>
+                    Sector: <strong>{companySector.name}</strong> • {draft?.fullName || "Company Admin"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
+                style={{
+                  minHeight: 34,
+                  borderRadius: 8,
+                  border: `1px solid ${border}`,
+                  background: surface,
+                  color: "#2563eb",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  padding: "0 10px",
+                  flexShrink: 0
+                }}
+              >
+                Edit Details
+              </button>
+            </div>
+
+            {/* Payment Method Selector (CBE vs Telebirr) */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
+              {/* Option 1: CBE */}
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("CBE")}
+                style={{
+                  borderRadius: 12,
+                  padding: "14px 16px",
+                  border: `2px solid ${selectedMethod === "CBE" ? "#2563eb" : border}`,
+                  background: selectedMethod === "CBE" ? (dark ? "rgba(37,99,235,0.14)" : "#eff6ff") : surface,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  textAlign: "left",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  boxShadow: selectedMethod === "CBE" ? "0 4px 14px rgba(37,99,235,0.18)" : "none"
+                }}
+              >
+                <div
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 8,
+                    background: selectedMethod === "CBE" ? "#2563eb" : (dark ? "#1a2d42" : "#f1f5f9"),
+                    color: selectedMethod === "CBE" ? "#ffffff" : "#64748b",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0
+                  }}
+                >
+                  <Landmark size={20} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: ink }}>CBE</p>
+                    {selectedMethod === "CBE" && (
+                      <span style={{ color: "#2563eb", display: "flex" }}>
+                        <CheckCircle2 size={16} />
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ margin: 0, fontSize: 11, color: muted }}>Bank Transfer</p>
+                </div>
+              </button>
+
+              {/* Option 2: Telebirr */}
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("TELEBIRR")}
+                style={{
+                  borderRadius: 12,
+                  padding: "14px 16px",
+                  border: `2px solid ${selectedMethod === "TELEBIRR" ? "#2563eb" : border}`,
+                  background: selectedMethod === "TELEBIRR" ? (dark ? "rgba(37,99,235,0.14)" : "#eff6ff") : surface,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  textAlign: "left",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  boxShadow: selectedMethod === "TELEBIRR" ? "0 4px 14px rgba(37,99,235,0.18)" : "none"
+                }}
+              >
+                <div
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 8,
+                    background: selectedMethod === "TELEBIRR" ? "#2563eb" : (dark ? "#1a2d42" : "#f1f5f9"),
+                    color: selectedMethod === "TELEBIRR" ? "#ffffff" : "#64748b",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0
+                  }}
+                >
+                  <Smartphone size={20} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: ink }}>Telebirr</p>
+                    {selectedMethod === "TELEBIRR" && (
+                      <span style={{ color: "#2563eb", display: "flex" }}>
+                        <CheckCircle2 size={16} />
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ margin: 0, fontSize: 11, color: muted }}>Mobile Money</p>
+                </div>
+              </button>
+            </div>
+
+            {/* Account Details Box */}
+            <div
+              style={{
+                borderRadius: 12,
+                border: `1.5px solid ${border}`,
+                background: surface,
+                padding: "20px 22px",
+                marginBottom: 18,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
+              }}
+            >
+              {selectedMethod === "CBE" ? (
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
+                        CBE Account Details
+                      </span>
+                      <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
+                        {cbeDetails.bankName}
+                      </h3>
+                    </div>
+                    <span style={{ fontSize: 12, color: muted }}>{cbeDetails.branch}</span>
+                  </div>
+
+                  <div style={{ display: "grid", gap: 12 }}>
+                    {/* Account Number with Copy */}
+                    <div
+                      style={{
+                        padding: "12px 14px",
+                        borderRadius: 10,
+                        background: inputBg,
+                        border: `1px solid ${border}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <div>
+                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                          Account Number
+                        </p>
+                        <p style={{ margin: 0, fontSize: 18, fontWeight: 800, color: ink, letterSpacing: "0.05em" }}>
+                          {cbeDetails.accountNumber}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(cbeDetails.accountNumber, "Account Number")}
+                        style={{
+                          height: 36,
+                          padding: "0 14px",
+                          borderRadius: 8,
+                          border: "1px solid #2563eb",
+                          background: copied === "Account Number" ? "#16a34a" : "#2563eb",
+                          color: "#ffffff",
+                          fontSize: 12,
+                          fontWeight: 700,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                          cursor: "pointer",
+                          transition: "all 0.15s"
+                        }}
+                      >
+                        {copied === "Account Number" ? <Check size={14} /> : <Copy size={14} />}
+                        {copied === "Account Number" ? "Copied" : "Copy"}
+                      </button>
+                    </div>
+
+                    {/* Account Name */}
+                    <div
+                      style={{
+                        padding: "10px 14px",
+                        borderRadius: 10,
+                        background: inputBg,
+                        border: `1px solid ${border}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <div>
+                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                          Account Name
+                        </p>
+                        <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: ink }}>
+                          {cbeDetails.accountName}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(cbeDetails.accountName, "Account Name")}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#2563eb",
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4
+                        }}
+                      >
+                        <Copy size={13} />
+                        Copy Name
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
+                        Telebirr Transfer Details
+                      </span>
+                      <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
+                        {telebirrDetails.serviceName}
+                      </h3>
+                    </div>
+                    <span style={{ fontSize: 12, color: muted }}>{telebirrDetails.shortCode}</span>
+                  </div>
+
+                  <div style={{ display: "grid", gap: 12 }}>
+                    {/* Phone Number with Copy */}
+                    <div
+                      style={{
+                        padding: "12px 14px",
+                        borderRadius: 10,
+                        background: inputBg,
+                        border: `1px solid ${border}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <div>
+                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                          Telebirr Phone Number
+                        </p>
+                        <p style={{ margin: 0, fontSize: 18, fontWeight: 800, color: ink, letterSpacing: "0.05em" }}>
+                          {telebirrDetails.phoneNumber}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(telebirrDetails.phoneNumber, "Telebirr Phone")}
+                        style={{
+                          height: 36,
+                          padding: "0 14px",
+                          borderRadius: 8,
+                          border: "1px solid #2563eb",
+                          background: copied === "Telebirr Phone" ? "#16a34a" : "#2563eb",
+                          color: "#ffffff",
+                          fontSize: 12,
+                          fontWeight: 700,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                          cursor: "pointer",
+                          transition: "all 0.15s"
+                        }}
+                      >
+                        {copied === "Telebirr Phone" ? <Check size={14} /> : <Copy size={14} />}
+                        {copied === "Telebirr Phone" ? "Copied" : "Copy"}
+                      </button>
+                    </div>
+
+                    {/* Receiver Name */}
+                    <div
+                      style={{
+                        padding: "10px 14px",
+                        borderRadius: 10,
+                        background: inputBg,
+                        border: `1px solid ${border}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <div>
+                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                          Receiver Name
+                        </p>
+                        <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: ink }}>
+                          {telebirrDetails.accountName}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(telebirrDetails.accountName, "Receiver Name")}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#2563eb",
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4
+                        }}
+                      >
+                        <Copy size={13} />
+                        Copy Name
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Instruction callout & Telegram Action */}
+            <div
+              style={{
+                borderRadius: 12,
+                border: "1.5px solid rgba(34, 158, 217, 0.35)",
+                background: dark ? "rgba(34, 158, 217, 0.08)" : "#f0f9ff",
+                padding: "16px 18px",
+                marginBottom: 20
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
+                <span style={{ color: "#0284c7", flexShrink: 0, marginTop: 2 }}>
+                  <HelpCircle size={18} />
+                </span>
+                <div>
+                  <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: ink }}>
+                    Receipt Screenshot Verification
+                  </p>
+                  <p style={{ margin: 0, fontSize: 13, color: muted, lineHeight: 1.45 }}>
+                    After you send the money, please take a screenshot of your transfer confirmation and send it to our Telegram support account. Our team will verify it immediately and send your workspace access.
+                  </p>
+                </div>
+              </div>
+
+              {/* Telegram Submit Button */}
+              <button
+                type="button"
+                onClick={handleTelegramClick}
+                style={{
+                  width: "100%",
+                  height: 46,
+                  borderRadius: 10,
+                  border: 0,
+                  background: "linear-gradient(135deg, #229ED9 0%, #0088cc 100%)",
+                  color: "#ffffff",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 10,
+                  cursor: "pointer",
+                  boxShadow: "0 4px 14px rgba(34, 158, 217, 0.35)",
+                  transition: "opacity 0.15s, transform 0.15s"
+                }}
+              >
+                <Send size={16} />
+                Submit Receipt on Telegram (@Nehemiah00)
+                <ExternalLink size={14} style={{ opacity: 0.8 }} />
+              </button>
+            </div>
+
+            {/* Optional Reference Input */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13, fontWeight: 600, color: ink }}>
+                Transaction Reference / Sender Phone <span style={{ color: muted, fontWeight: 500 }}>(optional)</span>
+                <input
+                  value={reference}
+                  onChange={(e) => setReference(e.target.value)}
+                  placeholder="e.g. CBE reference FT... or your Telebirr phone number"
+                  style={{
+                    height: 44,
+                    borderRadius: 10,
+                    border: `1.5px solid ${border}`,
+                    background: inputBg,
+                    padding: "0 14px",
+                    color: ink,
+                    fontSize: 14,
+                    outline: "none"
+                  }}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = border)}
+                />
+              </label>
+              <p style={{ margin: "4px 0 0", fontSize: 11, color: muted }}>
+                Entering your transaction reference helps our finance team match your payment faster.
+              </p>
+            </div>
+
+            {error && (
+              <p style={{ margin: "0 0 16px", color: "#e11d48", fontSize: 13, fontWeight: 600 }}>
+                {error}
+              </p>
+            )}
+
+            {/* Primary Action Button: Done */}
+            <div style={{ display: "grid", gap: 10 }}>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={handleDone}
+                style={{
+                  height: 48,
+                  borderRadius: 10,
+                  border: 0,
+                  background: submitting ? "#3b82f6" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  color: "#ffffff",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 10,
+                  cursor: submitting ? "not-allowed" : "pointer",
+                  boxShadow: submitting ? "none" : "0 4px 16px rgba(37, 99, 235, 0.35)",
+                  transition: "all 0.15s"
+                }}
+              >
+                {submitting ? <Loader2 className="spin" size={18} /> : <Check size={18} />}
+                {submitting ? "Confirming Registration..." : "Done — I Have Sent the Payment"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: muted,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  padding: "8px 0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6
+                }}
+              >
+                <ArrowLeft size={14} />
+                Back to Company Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {toast ? <div className="toast">{toast}</div> : null}
+    </main>
+  );
+}
+
+export default function RegisterPaymentPage() {
+  return (
+    <Suspense
+      fallback={
+        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f8ff" }}>
+          <Loader2 className="spin" style={{ color: "#2563eb" }} size={36} />
+        </div>
+      }
+    >
+      <PaymentContent />
+    </Suspense>
+  );
+}
