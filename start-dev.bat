@@ -10,3 +10,4 @@ start "Beyond ERP - Frontend (Port 8080)" cmd /k "cd frontend && npm run dev"
 echo Services launched in separate visible terminal windows!
 echo Backend:  http://localhost:4000
 echo Frontend: http://localhost:8080
+
