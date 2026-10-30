@@ -132,6 +132,12 @@ export function AdminView({
     await loadAdmin();
   };
 
+  const markRegistrationUnpaid = async (request: RegistrationRequest) => {
+    await api.registrationAction(request.id, "mark-unpaid");
+    showToast("Registration marked as unpaid");
+    await loadAdmin();
+  };
+
   const approveRegistration = async (request: RegistrationRequest) => {
     const tmpPwd = window.prompt(`Temporary password for ${request.fullName}`, "Beyond@12345");
     if (!tmpPwd) return;
@@ -311,9 +317,27 @@ export function AdminView({
                   >
                     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
                       <div>
-                        <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: c.ink }}>{request.companyName}</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                          <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: c.ink }}>{request.companyName}</p>
+                          {request.isPaid ? (
+                            <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 10, fontWeight: 700, background: c.dark ? "#032112" : "#d1fae5", color: "#059669" }}>
+                              ✓ Payment Done
+                            </span>
+                          ) : (
+                            <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 10, fontWeight: 700, background: c.dark ? "#1c1200" : "#fffbeb", color: "#d97706" }}>
+                              Payment Pending
+                            </span>
+                          )}
+                        </div>
                         <p style={{ margin: "3px 0 0", fontSize: 12, color: c.muted }}>{request.fullName} · {request.email}</p>
-                        <p style={{ margin: "2px 0 0", fontSize: 12, color: c.muted }}>{sector.name} · {request.phone ?? "No phone"} · {formatDate(request.createdAt)}</p>
+                        <p style={{ margin: "2px 0 0", fontSize: 12, color: c.muted }}>
+                          {sector.name} · {request.phone ?? "No phone"} · {formatDate(request.createdAt)}
+                        </p>
+                        {request.paymentMethod && (
+                          <p style={{ margin: "2px 0 0", fontSize: 12, color: "#2563eb", fontWeight: 600 }}>
+                            Payment Method: {request.paymentMethod} {request.paymentReference ? `· Ref: ${request.paymentReference}` : ""}
+                          </p>
+                        )}
                         {request.notes && <p style={{ margin: "2px 0 0", fontSize: 12, color: c.muted, fontStyle: "italic" }}>{request.notes}</p>}
                       </div>
                       <span style={{ padding: "3px 9px", borderRadius: 20, fontSize: 11, fontWeight: 700, background: statusColor.bg, color: statusColor.color, whiteSpace: "nowrap" as const }}>
@@ -322,12 +346,21 @@ export function AdminView({
                     </div>
                     {isPending && (
                       <div style={{ display: "flex", gap: 8 }}>
-                        <button
-                          onClick={() => void markRegistrationPaid(request)}
-                          style={{ flex: 1, height: 34, borderRadius: 8, border: `1px solid ${c.border}`, background: "transparent", color: c.ink, fontWeight: 600, fontSize: 12, cursor: "pointer" }}
-                        >
-                          Mark Paid
-                        </button>
+                        {request.isPaid ? (
+                          <button
+                            onClick={() => void markRegistrationUnpaid(request)}
+                            style={{ flex: 1, height: 34, borderRadius: 8, border: `1px solid ${c.border}`, background: "transparent", color: c.muted, fontWeight: 600, fontSize: 12, cursor: "pointer" }}
+                          >
+                            Mark Unpaid
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => void markRegistrationPaid(request)}
+                            style={{ flex: 1, height: 34, borderRadius: 8, border: `1px solid ${c.border}`, background: "transparent", color: "#059669", fontWeight: 700, fontSize: 12, cursor: "pointer" }}
+                          >
+                            Mark Paid
+                          </button>
+                        )}
                         <button
                           onClick={() => void approveRegistration(request)}
                           style={{ flex: 1, height: 34, borderRadius: 8, border: 0, background: "linear-gradient(135deg, #059669, #047857)", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}

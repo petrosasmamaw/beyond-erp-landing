@@ -151,7 +151,10 @@ export type RegistrationRequest = {
   phone?: string | null;
   notes?: string | null;
   status: RegistrationStatus;
+  isPaid?: boolean;
+  paymentMethod?: string | null;
   paymentReference?: string | null;
+  paidAt?: string | null;
   approvedById?: string | null;
   createdUserId?: string | null;
   rejectionReason?: string | null;

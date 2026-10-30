@@ -246,15 +246,19 @@ export const api = {
     email: string;
     phone?: string;
     notes?: string;
+    paymentMethod?: string;
+    paymentReference?: string;
+    isPaid?: boolean;
   }) =>
     apiFetch<RegistrationRequest>("/api/registration-requests", {
       method: "POST",
       body: JSON.stringify(input)
     }),
-  registrationRequests: (params: { q?: string; status?: string; page?: number; limit?: number } = {}) => {
+  registrationRequests: (params: { q?: string; status?: string; isPaid?: boolean; page?: number; limit?: number } = {}) => {
     const query = new URLSearchParams({
       q: params.q ?? "",
       status: params.status ?? "",
+      isPaid: params.isPaid !== undefined ? String(params.isPaid) : "",
       page: String(params.page ?? 1),
       limit: String(params.limit ?? 20)
     });
@@ -262,7 +266,7 @@ export const api = {
   },
   registrationAction: (
     id: string,
-    action: "mark-paid" | "approve" | "reject",
+    action: "mark-paid" | "mark-unpaid" | "approve" | "reject",
     input: { paymentReference?: string; temporaryPassword?: string; rejectionReason?: string } = {}
   ) =>
     apiFetch<{ request: RegistrationRequest; user?: User; temporaryPassword?: string } | RegistrationRequest>(

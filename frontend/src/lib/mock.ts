@@ -400,14 +400,18 @@ export async function mockFetch<T>(path: string, init?: RequestInit): Promise<T>
   // Public/client registration requests
   if (path.includes("/api/registration-requests") && !path.includes("/actions/")) {
     if (method === "POST") {
+      const isPaid = Boolean(body?.isPaid);
       const request = {
         id: uid(),
         ...body,
         tinNumber: body?.tinNumber || null,
         phone: body?.phone || null,
         notes: body?.notes || null,
-        status: "PENDING_PAYMENT",
-        paymentReference: null,
+        paymentMethod: body?.paymentMethod || null,
+        paymentReference: body?.paymentReference || null,
+        isPaid,
+        status: isPaid ? "PAID" : "PENDING_PAYMENT",
+        paidAt: isPaid ? new Date().toISOString() : null,
         approvedById: null,
         createdUserId: null,
         rejectionReason: null,
@@ -419,12 +423,13 @@ export async function mockFetch<T>(path: string, init?: RequestInit): Promise<T>
     }
     return paginate(mockRegistrationRequests) as T;
   }
-  if (path.match(/\/api\/registration-requests\/[^/]+\/actions\/(mark-paid|approve|reject)/)) {
+  if (path.match(/\/api\/registration-requests\/[^/]+\/actions\/(mark-paid|mark-unpaid|approve|reject)/)) {
     const parts = path.split("/");
     const id = parts[3];
     const action = parts[5];
     const statusMap: Record<string, RegistrationRequest["status"]> = {
       "mark-paid": "PAID",
+      "mark-unpaid": "PENDING_PAYMENT",
       approve: "APPROVED",
       reject: "REJECTED"
     };
@@ -433,6 +438,8 @@ export async function mockFetch<T>(path: string, init?: RequestInit): Promise<T>
         ? {
             ...request,
             status: statusMap[action] ?? request.status,
+            isPaid: action === "mark-paid" || action === "approve",
+            paidAt: action === "mark-paid" || action === "approve" ? new Date().toISOString() : (action === "mark-unpaid" ? null : request.paidAt),
             paymentReference: body?.paymentReference ?? request.paymentReference,
             rejectionReason: body?.rejectionReason ?? request.rejectionReason,
             createdUserId: action === "approve" ? MOCK_USER.id : request.createdUserId,

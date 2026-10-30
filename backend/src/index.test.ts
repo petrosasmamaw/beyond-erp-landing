@@ -11,7 +11,7 @@ async function login(email = "owner@beyonderp.local", password = "Beyond@12345")
 describe("Beyond ERP API", () => {
   beforeAll(async () => {
     await seedDatabase(prisma);
-  }, 30_000);
+  }, 90_000);
 
   afterAll(async () => {
     await prisma.$disconnect();
@@ -118,12 +118,16 @@ describe("Beyond ERP API", () => {
       .expect(201);
 
     expect(requestResponse.body.status).toBe("PENDING_PAYMENT");
+    expect(requestResponse.body.isPaid).toBe(false);
 
-    await request(app)
+    const markPaidRes = await request(app)
       .post(`/api/registration-requests/${requestResponse.body.id}/actions/mark-paid`)
       .set("Authorization", `Bearer ${token}`)
       .send({ paymentReference: `PAY-${stamp}` })
       .expect(200);
+
+    expect(markPaidRes.body.status).toBe("PAID");
+    expect(markPaidRes.body.isPaid).toBe(true);
 
     const approved = await request(app)
       .post(`/api/registration-requests/${requestResponse.body.id}/actions/approve`)

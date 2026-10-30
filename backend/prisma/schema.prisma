@@ -205,7 +205,10 @@ model RegistrationRequest {
   phone             String?
   notes             String?
   status            RegistrationStatus @default(PENDING_PAYMENT)
+  isPaid            Boolean            @default(false)
+  paymentMethod     String?
   paymentReference  String?
+  paidAt            DateTime?
   approvedById      String?
   createdUserId     String?
   rejectionReason   String?
@@ -213,6 +216,7 @@ model RegistrationRequest {
   updatedAt         DateTime           @updatedAt
 
   @@index([status])
+  @@index([isPaid])
   @@index([sectorId])
   @@index([email])
 }

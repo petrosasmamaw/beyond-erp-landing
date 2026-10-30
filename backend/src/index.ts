@@ -243,7 +243,10 @@ const registrationRequestSchema = z.object({
   fullName: z.string().min(2).max(120),
   email: z.string().email().transform((value) => value.toLowerCase()),
   phone: z.string().min(9).max(32).optional().or(z.literal("")),
-  notes: z.string().max(1000).optional().or(z.literal(""))
+  notes: z.string().max(1000).optional().or(z.literal("")),
+  paymentMethod: z.string().max(80).optional().or(z.literal("")),
+  paymentReference: z.string().max(160).optional().or(z.literal("")),
+  isPaid: z.boolean().optional().default(false)
 });
 
 const registrationActionSchema = z.object({
@@ -575,6 +578,7 @@ app.post("/api/registration-requests", async (req, res, next) => {
       return;
     }
 
+    const isPaid = Boolean(input.isPaid);
     const request = await prisma.registrationRequest.create({
       data: {
         companyName: input.companyName,
@@ -583,7 +587,12 @@ app.post("/api/registration-requests", async (req, res, next) => {
         fullName: input.fullName,
         email: input.email,
         phone: input.phone || null,
-        notes: input.notes || null
+        notes: input.notes || null,
+        paymentMethod: input.paymentMethod || null,
+        paymentReference: input.paymentReference || null,
+        isPaid,
+        status: isPaid ? RegistrationStatus.PAID : RegistrationStatus.PENDING_PAYMENT,
+        paidAt: isPaid ? new Date() : null
       }
     });
 
@@ -746,15 +755,19 @@ app.get("/api/registration-requests", requirePermission("Users"), async (req, re
   try {
     const { page, limit, skip } = pagination(req);
     const status = String(req.query.status ?? "");
+    const isPaidQuery = req.query.isPaid !== undefined ? String(req.query.isPaid) : "";
     const q = String(req.query.q ?? "").trim();
     const where: Prisma.RegistrationRequestWhereInput = {
       ...(status && status !== "ALL" ? { status: status as RegistrationStatus } : {}),
+      ...(isPaidQuery === "true" ? { isPaid: true } : isPaidQuery === "false" ? { isPaid: false } : {}),
       ...(q
         ? {
             OR: [
               { companyName: { contains: q, mode: Prisma.QueryMode.insensitive } },
               { fullName: { contains: q, mode: Prisma.QueryMode.insensitive } },
-              { email: { contains: q, mode: Prisma.QueryMode.insensitive } }
+              { email: { contains: q, mode: Prisma.QueryMode.insensitive } },
+              { paymentMethod: { contains: q, mode: Prisma.QueryMode.insensitive } },
+              { paymentReference: { contains: q, mode: Prisma.QueryMode.insensitive } }
             ]
           }
         : {})
@@ -776,7 +789,25 @@ app.post("/api/registration-requests/:id/actions/mark-paid", requirePermission("
       where: { id: req.params.id },
       data: {
         status: RegistrationStatus.PAID,
-        paymentReference: input.paymentReference || null
+        isPaid: true,
+        paidAt: new Date(),
+        paymentReference: input.paymentReference || undefined
+      }
+    });
+    res.json(request);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/registration-requests/:id/actions/mark-unpaid", requirePermission("Users"), async (req, res, next) => {
+  try {
+    const request = await prisma.registrationRequest.update({
+      where: { id: req.params.id },
+      data: {
+        status: RegistrationStatus.PENDING_PAYMENT,
+        isPaid: false,
+        paidAt: null
       }
     });
     res.json(request);
@@ -844,6 +875,8 @@ app.post("/api/registration-requests/:id/actions/approve", requirePermission("Us
       where: { id: request.id },
       data: {
         status: RegistrationStatus.APPROVED,
+        isPaid: true,
+        paidAt: request.paidAt || new Date(),
         approvedById: req.user?.id ?? null,
         createdUserId: user.id
       }

@@ -114,7 +114,10 @@ function PaymentContent() {
         fullName: draft.fullName,
         email: draft.email,
         phone: draft.phone,
-        notes: combinedNotes
+        notes: combinedNotes,
+        paymentMethod: selectedMethod,
+        paymentReference: reference.trim() || "Sent via Telegram @Nehemiah00",
+        isPaid: true
       });
 
       // Save to confirmed reg storage for the congratulations page

@@ -17,6 +17,11 @@ import {
 } from "./seed-data.js";
 
 export async function seedDatabase(prisma: PrismaClient) {
+  const existingOwner = await prisma.user.findUnique({ where: { email: "owner@beyonderp.local" } });
+  if (existingOwner) {
+    return;
+  }
+
   for (const sector of sectors) {
     await prisma.sector.upsert({
       where: { id: sector.id },
