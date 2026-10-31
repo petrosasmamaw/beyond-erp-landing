@@ -159,17 +159,16 @@ function PaymentContent() {
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", background: bg }}>
-      {/* ================= LEFT BRAND PANEL (ALWAYS LIGHT THEME) ================= */}
+      {/* ================= LEFT BRAND PANEL (BLUE GRADIENT SAME AS DETAIL FORM PAGE) ================= */}
       <div
         style={{
           width: "42%",
           minHeight: "100vh",
-          background: "linear-gradient(160deg, #ffffff 0%, #f8fafc 55%, #eff6ff 100%)",
-          borderRight: "1px solid #e2e8f0",
+          background: "linear-gradient(160deg, #1d4ed8 0%, #1e3a8a 60%, #0f172a 100%)",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "44px 48px",
+          padding: "40px 48px",
           position: "relative",
           overflow: "hidden",
           flexShrink: 0
@@ -177,8 +176,8 @@ function PaymentContent() {
         className="login-brand-panel"
       >
         {/* Atmospheric orbs */}
-        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(191,219,254,0.35) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(219,234,254,0.4) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(96,165,250,0.2) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         {/* Left Brand Content — Logo and Brand at top of contents, starting from left */}
         <div style={{ position: "relative", zIndex: 2 }}>
@@ -222,17 +221,17 @@ function PaymentContent() {
               />
             </div>
             <span style={{ fontWeight: 800, fontSize: 24, letterSpacing: "-0.02em" }}>
-              <span style={{ color: "#0f172a" }}>Beyond</span>{" "}
-              <span style={{ color: "#2563eb" }}>ERP</span>
+              <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
+              <span style={{ color: "#93c5fd" }}>ERP</span>
             </span>
           </div>
 
-          <p style={{ margin: "0 0 18px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#2563eb" }}>
+          <p style={{ margin: "0 0 18px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.75)" }}>
             Step 3 of 3 • Workspace Activation
           </p>
-          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "#0f172a", fontWeight: 400, letterSpacing: "-0.01em" }}>
+          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
             Activate your<br />company<br />
-            <span style={{ fontStyle: "italic", color: "#2563eb" }}>workspace.</span>
+            <span style={{ fontStyle: "italic", color: "#bfdbfe" }}>workspace.</span>
           </h1>
           <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
             {([
@@ -240,8 +239,8 @@ function PaymentContent() {
               { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@beyond_et)" },
               { icon: <ShieldCheck size={14} />, label: "Isolated company database provisioned" },
             ] as const).map(({ icon, label }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "#334155", fontSize: 14 }}>
-                <span style={{ color: "#2563eb", flexShrink: 0, display: "flex" }}>{icon}</span>
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.85)", fontSize: 14 }}>
+                <span style={{ color: "#93c5fd", flexShrink: 0, display: "flex" }}>{icon}</span>
                 <span>{label}</span>
               </div>
             ))}
@@ -249,7 +248,7 @@ function PaymentContent() {
         </div>
 
         {/* Footer */}
-        <p style={{ margin: 0, fontSize: 11, color: "#64748b", position: "relative" }}>
+        <p style={{ margin: 0, fontSize: 11, color: "rgba(148,163,184,0.5)", position: "relative" }}>
           &copy; {new Date().getFullYear()} Beyond ERP Ethiopia • Addis Ababa
         </p>
       </div>
