@@ -110,9 +110,10 @@ export default function LoginPage() {
         {/* Top row: mobile logo + theme toggle */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
           {/* Mobile-only brand */}
-          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <img src="/logo.png" alt="Beyond ERP" width={30} height={30} style={{ borderRadius: "50%", objectFit: "contain" }} />
             <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-              <span style={{ color: ink }}>Beyond</span>{" "}
+              <span style={{ color: dark ? "#ffffff" : "#2563eb" }}>Beyond</span>{" "}
               <span style={{ color: "#2563eb" }}>ERP</span>
             </span>
           </div>

@@ -148,108 +148,50 @@ function RegisterDetailsContent() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "48px 44px",
+          padding: "40px 48px",
           position: "relative",
           overflow: "hidden",
           flexShrink: 0,
         }}
         className="login-brand-panel"
       >
+        {/* Atmospheric orbs */}
+        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(96,165,250,0.2) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
+            <img src="/logo.png" alt="Beyond ERP" width={24} height={24} style={{ borderRadius: "50%", objectFit: "contain" }} />
+          </div>
+          <span style={{ fontWeight: 700, fontSize: 15, color: "white" }}>Beyond ERP</span>
+        </div>
+
+        {/* Hero copy */}
         <div style={{ position: "relative" }}>
-          {/* Logo and Beyond ERP centered at the top of the text block */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              marginBottom: 34,
-            }}
-          >
-            <img
-              src="/logo.png"
-              alt="Beyond ERP"
-              width={64}
-              height={64}
-              style={{
-                borderRadius: "50%",
-                display: "block",
-                objectFit: "contain",
-                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
-                border: "2.5px solid rgba(255, 255, 255, 0.25)",
-              }}
-            />
-            <div
-              style={{
-                marginTop: 14,
-                fontWeight: 800,
-                fontSize: 26,
-                letterSpacing: "-0.02em",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-              }}
-            >
-              <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
-              <span style={{ color: "#60a5fa" }}>ERP</span>
-            </div>
-            <p
-              style={{
-                margin: "4px 0 0",
-                fontSize: 12,
-                fontWeight: 600,
-                color: "rgba(191, 219, 254, 0.8)",
-                letterSpacing: "0.05em",
-              }}
-            >
-              Ethiopian Business Management Platform
-            </p>
-          </div>
-
-          <div style={{ textAlign: "center", marginBottom: 28 }}>
-            <p
-              style={{
-                margin: "0 0 12px",
-                fontSize: 11,
-                fontWeight: 800,
-                textTransform: "uppercase",
-                letterSpacing: "0.14em",
-                color: "rgba(191, 219, 254, 0.85)",
-              }}
-            >
-              Step 2 of 3 • Workspace Onboarding
-            </p>
-            <h1
-              style={{
-                margin: 0,
-                fontFamily: '"Instrument Serif", Georgia, serif',
-                fontSize: "clamp(32px, 3.2vw, 50px)",
-                lineHeight: 1.05,
-                color: "white",
-                fontWeight: 400,
-              }}
-            >
-              Request access<br />for your<br />
-              <span style={{ fontStyle: "italic", color: "#bfdbfe" }}>company workspace.</span>
-            </h1>
-          </div>
-
-          <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 14, maxWidth: 360, margin: "28px auto 0" }}>
+          <p style={{ margin: "0 0 20px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.7)" }}>
+            Step 2 of 3 • Workspace onboarding
+          </p>
+          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
+            Request access<br />for your<br />
+            <span style={{ fontStyle: "italic", color: "#bfdbfe" }}>company workspace.</span>
+          </h1>
+          <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
             {([
-              { icon: <ShieldCheck size={16} />, label: "Admin-reviewed setup after payment" },
-              { icon: <Wifi size={16} />, label: "Offline-first workflows from day one" },
-              { icon: <Languages size={16} />, label: "Amharic, English, and Afan Oromo ready" },
+              { icon: <ShieldCheck size={14} />, label: "Admin-reviewed setup after payment" },
+              { icon: <Wifi size={14} />, label: "Offline-first workflows from day one" },
+              { icon: <Languages size={14} />, label: "Amharic, English, and Afan Oromo ready" },
             ] as const).map(({ icon, label }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 12, color: "rgba(219, 234, 254, 0.9)", fontSize: 14 }}>
-                <span style={{ color: "#93c5fd", flexShrink: 0, display: "flex" }}>{icon}</span>
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.85)", fontSize: 14 }}>
+                <span style={{ color: "#93c5fd", flexShrink: 0 }}>{icon}</span>
                 <span>{label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p style={{ margin: 0, fontSize: 11, color: "rgba(148, 163, 184, 0.6)", position: "relative", textAlign: "center" }}>
-          &copy; {new Date().getFullYear()} Beyond ERP Ethiopia • All Rights Reserved
+        <p style={{ margin: 0, fontSize: 11, color: "rgba(148,163,184,0.5)", position: "relative" }}>
+          &copy; {new Date().getFullYear()} Beyond ERP Ethiopia
         </p>
       </div>
 
@@ -264,7 +206,7 @@ function RegisterDetailsContent() {
               style={{ borderRadius: "50%", objectFit: "contain" }}
             />
             <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-              <span style={{ color: ink }}>Beyond</span>{" "}
+              <span style={{ color: dark ? "#ffffff" : "#2563eb" }}>Beyond</span>{" "}
               <span style={{ color: "#2563eb" }}>ERP</span>
             </span>
           </div>

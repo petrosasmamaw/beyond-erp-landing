@@ -152,8 +152,8 @@ function PaymentContent() {
   const surface = dark ? "#0f1a2e" : "#ffffff";
   const border = dark ? "#1a2d42" : "#e2e8f0";
   const ink = dark ? "#e2e8f0" : "#0f172a";
-  const muted = "#64748b";
-  const inputBg = dark ? "#0a1220" : "#f8fafc";
+  const muted = dark ? "#8b9ab0" : "#64748b";
+  const inputBg = dark ? "#0a1220" : "#ffffff";
   const sectorColor = companySector.color || "#2563eb";
   const sectorTint = dark ? "rgba(37,99,235,0.14)" : companySector.tint || "#eff6ff";
 
@@ -169,169 +169,53 @@ function PaymentContent() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "48px 44px",
+          padding: "40px 48px",
           position: "relative",
           overflow: "hidden",
           flexShrink: 0
         }}
         className="login-brand-panel"
       >
+        {/* Atmospheric orbs */}
+        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(191,219,254,0.35) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(219,234,254,0.4) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+        {/* Top Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(37,99,235,0.08)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(37,99,235,0.18)" }}>
+            <img src="/logo.png" alt="Beyond ERP" width={24} height={24} style={{ borderRadius: "50%", objectFit: "contain" }} />
+          </div>
+          <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
+            <span style={{ color: "#0f172a" }}>Beyond</span> <span style={{ color: "#2563eb" }}>ERP</span>
+          </span>
+        </div>
+
+        {/* Hero copy */}
         <div style={{ position: "relative" }}>
-          {/* Logo and Beyond ERP centered at the top of the text block */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              marginBottom: 34
-            }}
-          >
-            <img
-              src="/logo.png"
-              alt="Beyond ERP Logo"
-              width={64}
-              height={64}
-              style={{
-                borderRadius: "50%",
-                display: "block",
-                objectFit: "contain",
-                boxShadow: "0 10px 28px rgba(37, 99, 235, 0.2)",
-                border: "2.5px solid #2563eb"
-              }}
-            />
-            <div
-              style={{
-                marginTop: 14,
-                fontWeight: 800,
-                fontSize: 26,
-                letterSpacing: "-0.02em",
-                display: "flex",
-                alignItems: "center",
-                gap: 6
-              }}
-            >
-              <span style={{ color: "#0f172a" }}>Beyond</span>{" "}
-              <span style={{ color: "#2563eb" }}>ERP</span>
-            </div>
-            <p
-              style={{
-                margin: "4px 0 0",
-                fontSize: 12,
-                fontWeight: 600,
-                color: "#475569",
-                letterSpacing: "0.04em"
-              }}
-            >
-              Ethiopian Business Management Platform
-            </p>
-          </div>
-
-          {/* Centered Headlines in crisp ink & blue */}
-          <div style={{ textAlign: "center", marginBottom: 30 }}>
-            <p
-              style={{
-                margin: "0 0 12px",
-                fontSize: 11,
-                fontWeight: 800,
-                textTransform: "uppercase",
-                letterSpacing: "0.14em",
-                color: "#2563eb"
-              }}
-            >
-              Step 3 of 3 • Workspace Activation
-            </p>
-            <h1
-              style={{
-                margin: 0,
-                fontFamily: '"Instrument Serif", Georgia, serif',
-                fontSize: "clamp(32px, 3.2vw, 50px)",
-                lineHeight: 1.05,
-                color: "#0f172a",
-                fontWeight: 400
-              }}
-            >
-              Activate your<br />
-              <span style={{ fontStyle: "italic", color: "#2563eb" }}>company workspace.</span>
-            </h1>
-          </div>
-
-          {/* Benefit items in blue & black */}
-          <div
-            style={{
-              marginTop: 28,
-              display: "flex",
-              flexDirection: "column",
-              gap: 15,
-              maxWidth: 360,
-              margin: "28px auto 0"
-            }}
-          >
+          <p style={{ margin: "0 0 20px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#2563eb" }}>
+            Step 3 of 3 • Workspace Activation
+          </p>
+          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "#0f172a", fontWeight: 400, letterSpacing: "-0.01em" }}>
+            Activate your<br />company<br />
+            <span style={{ fontStyle: "italic", color: "#2563eb" }}>workspace.</span>
+          </h1>
+          <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
             {([
-              {
-                icon: <Zap size={16} />,
-                title: "Instant Ethiopian Payments",
-                desc: "Official CBE Account & Telebirr direct transfer supported."
-              },
-              {
-                icon: <Send size={16} />,
-                title: "Fast Telegram Verification",
-                desc: "Send receipt to @Nehemiah00 for immediate priority review."
-              },
-              {
-                icon: <ShieldCheck size={16} />,
-                title: "Isolated Company Tenant",
-                desc: "Bank-grade database security with offline-first synchronization."
-              }
-            ] as const).map(({ icon, title, desc }) => (
-              <div
-                key={title}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 12,
-                  padding: "10px 14px",
-                  borderRadius: 10,
-                  background: "rgba(37, 99, 235, 0.04)",
-                  border: "1px solid rgba(37, 99, 235, 0.12)"
-                }}
-              >
-                <span
-                  style={{
-                    color: "#2563eb",
-                    background: "rgba(37, 99, 235, 0.12)",
-                    borderRadius: 6,
-                    padding: 5,
-                    display: "flex",
-                    flexShrink: 0,
-                    marginTop: 2
-                  }}
-                >
-                  {icon}
-                </span>
-                <div>
-                  <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
-                    {title}
-                  </p>
-                  <p style={{ margin: 0, fontSize: 12, color: "#475569", lineHeight: 1.35 }}>
-                    {desc}
-                  </p>
-                </div>
+              { icon: <Zap size={14} />, label: "Instant CBE & Telebirr direct transfer" },
+              { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@Nehemiah00)" },
+              { icon: <ShieldCheck size={14} />, label: "Isolated company database provisioned" },
+            ] as const).map(({ icon, label }) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "#334155", fontSize: 14 }}>
+                <span style={{ color: "#2563eb", flexShrink: 0, display: "flex" }}>{icon}</span>
+                <span>{label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p
-          style={{
-            margin: 0,
-            fontSize: 11,
-            color: "#64748b",
-            position: "relative",
-            textAlign: "center"
-          }}
-        >
-          &copy; {new Date().getFullYear()} Beyond ERP Ethiopia • Addis Ababa, 22 Bata Complex
+        {/* Footer */}
+        <p style={{ margin: 0, fontSize: 11, color: "#64748b", position: "relative" }}>
+          &copy; {new Date().getFullYear()} Beyond ERP Ethiopia • Addis Ababa
         </p>
       </div>
 
@@ -348,7 +232,7 @@ function PaymentContent() {
               style={{ borderRadius: "50%", objectFit: "contain" }}
             />
             <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-              <span style={{ color: ink }}>Beyond</span>{" "}
+              <span style={{ color: dark ? "#ffffff" : "#2563eb" }}>Beyond</span>{" "}
               <span style={{ color: "#2563eb" }}>ERP</span>
             </span>
           </div>

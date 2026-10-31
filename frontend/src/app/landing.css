@@ -84,11 +84,20 @@
           display: flex;
           align-items: center;
           gap: 10px;
-          color: #ffffff;
+          color: var(--landing-ink);
           font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
           font-size: 20px;
           font-weight: 800;
           letter-spacing: -0.02em;
+          transition: color 0.15s ease;
+        }
+
+        [data-theme="dark"] .nav-brand {
+          color: #ffffff;
+        }
+
+        [data-theme="light"] .nav-brand {
+          color: #2563eb;
         }
 
         .nav-links {

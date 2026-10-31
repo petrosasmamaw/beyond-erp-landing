@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { getSectorDefinition } from "@/features/erp/config";
 import { useApp } from "@/contexts/AppContext";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface StoredReg {
   companyName?: string;
@@ -24,6 +26,8 @@ interface StoredReg {
 export default function SubmittedPage() {
   const { toast } = useApp();
   const router = useRouter();
+  const { theme } = useTheme();
+  const dark = theme === "dark";
   const [reg, setReg] = useState<StoredReg | null>(null);
 
   useEffect(() => {
@@ -40,6 +44,13 @@ export default function SubmittedPage() {
 
   const sector = getSectorDefinition(reg?.sectorId ?? "");
 
+  const bg = dark ? "#080e19" : "linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%)";
+  const cardBg = dark ? "#0f1a2e" : "#ffffff";
+  const border = dark ? "#1a2d42" : "#e2e8f0";
+  const ink = dark ? "#e2e8f0" : "#0f172a";
+  const muted = dark ? "#8b9ab0" : "#64748b";
+  const summaryBg = dark ? "#0a1220" : "#f8fafc";
+
   return (
     <main
       className="submitted-main"
@@ -49,8 +60,8 @@ export default function SubmittedPage() {
         alignItems: "center",
         justifyContent: "center",
         padding: "32px 20px",
-        background: "linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%)",
-        color: "#0f172a",
+        background: bg,
+        color: ink,
       }}
     >
       <div
@@ -58,15 +69,20 @@ export default function SubmittedPage() {
         style={{
           width: "100%",
           maxWidth: 780,
-          background: "#ffffff",
+          background: cardBg,
           borderRadius: 24,
-          border: "1px solid #e2e8f0",
-          boxShadow: "0 20px 60px rgba(15, 23, 42, 0.08)",
+          border: `1px solid ${border}`,
+          boxShadow: dark ? "0 20px 60px rgba(0, 0, 0, 0.45)" : "0 20px 60px rgba(15, 23, 42, 0.08)",
           padding: "36px 34px",
           textAlign: "center",
           position: "relative",
         }}
       >
+        {/* Floating Theme Toggle in top-right corner of card */}
+        <div style={{ position: "absolute", top: 20, right: 24 }}>
+          <ThemeToggle />
+        </div>
+
         {/* Centered Brand Logo & Name */}
         <div
           style={{
@@ -99,7 +115,7 @@ export default function SubmittedPage() {
               letterSpacing: "-0.02em",
             }}
           >
-            <span style={{ color: "#0f172a" }}>Beyond</span>{" "}
+            <span style={{ color: dark ? "#ffffff" : "#2563eb" }}>Beyond</span>{" "}
             <span style={{ color: "#2563eb" }}>ERP</span>
           </div>
         </div>
@@ -142,7 +158,7 @@ export default function SubmittedPage() {
             margin: "0 0 10px",
             fontSize: "clamp(26px, 3vw, 36px)",
             fontWeight: 800,
-            color: "#0f172a",
+            color: dark ? "#ffffff" : "#0f172a",
             lineHeight: 1.15,
             letterSpacing: "-0.02em",
           }}
@@ -155,14 +171,14 @@ export default function SubmittedPage() {
           style={{
             margin: "0 auto 20px",
             fontSize: 15,
-            color: "#475569",
+            color: muted,
             lineHeight: 1.55,
             maxWidth: 540,
           }}
         >
           Your registration request and payment submission have been received successfully.
           <br />
-          <strong style={{ color: "#0f172a" }}>
+          <strong style={{ color: ink }}>
             Our company team will contact you soon and will send your workspace link and login credentials.
           </strong>
         </p>
@@ -171,15 +187,15 @@ export default function SubmittedPage() {
         <div
           style={{
             borderRadius: 12,
-            border: "1px solid #e2e8f0",
-            background: "#f8fafc",
+            border: `1px solid ${border}`,
+            background: summaryBg,
             padding: "14px 16px",
             textAlign: "left",
             marginBottom: 16,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b" }}>
+            <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: muted }}>
               Submission Summary
             </span>
             <span
@@ -202,25 +218,25 @@ export default function SubmittedPage() {
 
           <div className="submitted-summary-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, fontSize: 13 }}>
             <div>
-              <p style={{ margin: "0 0 1px", fontSize: 11, color: "#64748b" }}>Company</p>
-              <p style={{ margin: 0, fontWeight: 700, color: "#0f172a", overflowWrap: "anywhere" }}>
+              <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Company</p>
+              <p style={{ margin: 0, fontWeight: 700, color: ink, overflowWrap: "anywhere" }}>
                 {reg?.companyName || "Your Company"}
               </p>
             </div>
             <div>
-              <p style={{ margin: "0 0 1px", fontSize: 11, color: "#64748b" }}>Sector</p>
-              <p style={{ margin: 0, fontWeight: 700, color: "#0f172a" }}>
+              <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Sector</p>
+              <p style={{ margin: 0, fontWeight: 700, color: ink }}>
                 {sector.name || "Enterprise"}
               </p>
             </div>
             <div>
-              <p style={{ margin: "0 0 1px", fontSize: 11, color: "#64748b" }}>Contact Person</p>
-              <p style={{ margin: 0, fontWeight: 700, color: "#0f172a" }}>
+              <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Contact Person</p>
+              <p style={{ margin: 0, fontWeight: 700, color: ink }}>
                 {reg?.fullName || "Company Admin"}
               </p>
             </div>
             <div>
-              <p style={{ margin: "0 0 1px", fontSize: 11, color: "#64748b" }}>Payment Method</p>
+              <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Payment Method</p>
               <p style={{ margin: 0, fontWeight: 700, color: "#2563eb" }}>
                 {reg?.paymentMethod === "TELEBIRR" ? "Telebirr" : "CBE Bank Transfer"}
               </p>
@@ -234,7 +250,7 @@ export default function SubmittedPage() {
           style={{
             borderRadius: 12,
             border: "1px solid rgba(34, 158, 217, 0.35)",
-            background: "rgba(34, 158, 217, 0.06)",
+            background: dark ? "rgba(34, 158, 217, 0.08)" : "rgba(34, 158, 217, 0.06)",
             padding: "14px 16px",
             marginBottom: 18,
             display: "flex",
@@ -245,10 +261,10 @@ export default function SubmittedPage() {
           }}
         >
           <div>
-            <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
+            <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 700, color: ink }}>
               Fast-Track Activation on Telegram
             </p>
-            <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: 12, color: muted }}>
               Already sent your screenshot? Chat with our setup manager at <strong>@Nehemiah00</strong>
             </p>
           </div>
@@ -309,9 +325,9 @@ export default function SubmittedPage() {
             style={{
               height: 40,
               borderRadius: 10,
-              border: "1px solid #e2e8f0",
-              background: "#ffffff",
-              color: "#475569",
+              border: `1px solid ${border}`,
+              background: dark ? "#111827" : "#ffffff",
+              color: dark ? "#cbd5e1" : "#475569",
               fontSize: 13,
               fontWeight: 600,
               cursor: "pointer",
@@ -333,9 +349,9 @@ export default function SubmittedPage() {
           style={{
             marginTop: 20,
             paddingTop: 14,
-            borderTop: "1px solid #e2e8f0",
+            borderTop: `1px solid ${border}`,
             fontSize: 12,
-            color: "#64748b",
+            color: muted,
             display: "flex",
             flexDirection: "column",
             gap: 4,

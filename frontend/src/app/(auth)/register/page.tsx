@@ -5,11 +5,15 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 import { sectorDefinitions } from "@/features/erp/config";
 import { useApp } from "@/contexts/AppContext";
 import { Suspense, useState } from "react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useTheme } from "@/contexts/ThemeContext";
 
 function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast, showToast } = useApp();
+  const { theme } = useTheme();
+  const dark = theme === "dark";
 
   const [selectedId, setSelectedId] = useState(searchParams.get("sectorId") ?? "");
   const [error, setError] = useState("");
@@ -34,11 +38,14 @@ function RegisterContent() {
           <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => router.push("/")}>
             <img src="/logo.png" alt="Beyond ERP" width={28} height={28} style={{ borderRadius: "50%", objectFit: "contain" }} />
             <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-              <span style={{ color: "var(--ink)" }}>Beyond</span>{" "}
+              <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
               <span style={{ color: "#2563eb" }}>ERP</span>
             </span>
           </div>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)" }}>Step 1 of 3</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)" }}>Step 1 of 3</span>
+            <ThemeToggle />
+          </div>
         </div>
         <div className="sector-select-header">
           <p className="eyebrow">Choose your operating model</p>
