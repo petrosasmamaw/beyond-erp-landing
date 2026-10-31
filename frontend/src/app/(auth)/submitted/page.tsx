@@ -279,11 +279,11 @@ export default function SubmittedPage() {
               Fast-Track Activation on Telegram
             </p>
             <p style={{ margin: 0, fontSize: 12, color: muted }}>
-              Already sent your screenshot? Chat with our setup manager at <strong>@Nehemiah00</strong>
+              Already sent your screenshot? Chat with our setup manager at <strong>@beyond_et</strong>
             </p>
           </div>
           <a
-            href="https://t.me/Nehemiah00"
+            href="https://t.me/beyond_et"
             target="_blank"
             rel="noopener noreferrer"
             style={{

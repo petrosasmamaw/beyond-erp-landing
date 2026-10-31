@@ -68,14 +68,14 @@ function PaymentContent() {
   const cbeDetails = {
     bankName: "Commercial Bank of Ethiopia (CBE)",
     accountName: "Beyond Solution PLC",
-    accountNumber: "1000598712345",
+    accountNumber: "1000761869799",
     branch: "Addis Ababa Main Branch"
   };
 
   const telebirrDetails = {
     serviceName: "Telebirr (Ethio Telecom)",
-    accountName: "Beyond Solution / Nehemiah",
-    phoneNumber: "0911000001",
+    accountName: "Beyond Solution / Telebirr",
+    phoneNumber: "0928151599",
     shortCode: "*127# or Telebirr App"
   };
 
@@ -89,7 +89,7 @@ function PaymentContent() {
   };
 
   const handleTelegramClick = () => {
-    window.open("https://t.me/Nehemiah00", "_blank", "noopener,noreferrer");
+    window.open("https://t.me/beyond_et", "_blank", "noopener,noreferrer");
   };
 
   const handleDone = async () => {
@@ -116,7 +116,7 @@ function PaymentContent() {
         phone: draft.phone,
         notes: combinedNotes,
         paymentMethod: selectedMethod,
-        paymentReference: reference.trim() || "Sent via Telegram @Nehemiah00",
+        paymentReference: reference.trim() || "Sent via Telegram @beyond_et",
         isPaid: true
       });
 
@@ -127,7 +127,7 @@ function PaymentContent() {
           ...draft,
           sectorId,
           paymentMethod: selectedMethod,
-          paymentRef: reference || "Sent via Telegram @Nehemiah00"
+          paymentRef: reference || "Sent via Telegram @beyond_et"
         })
       );
 
@@ -159,15 +159,13 @@ function PaymentContent() {
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", background: bg }}>
-      {/* ================= LEFT BRAND PANEL (RESPONSIVE BLUE/WHITE WITH BLACK/BLUE TEXT) ================= */}
+      {/* ================= LEFT BRAND PANEL (ALWAYS LIGHT THEME) ================= */}
       <div
         style={{
           width: "42%",
           minHeight: "100vh",
-          background: dark
-            ? "linear-gradient(160deg, #0b1528 0%, #0d1a33 60%, #070c18 100%)"
-            : "linear-gradient(160deg, #ffffff 0%, #f8fafc 55%, #eff6ff 100%)",
-          borderRight: `1px solid ${border}`,
+          background: "linear-gradient(160deg, #ffffff 0%, #f8fafc 55%, #eff6ff 100%)",
+          borderRight: "1px solid #e2e8f0",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -179,8 +177,8 @@ function PaymentContent() {
         className="login-brand-panel"
       >
         {/* Atmospheric orbs */}
-        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: dark ? "radial-gradient(circle, rgba(96,165,250,0.15) 0%, transparent 70%)" : "radial-gradient(circle, rgba(191,219,254,0.35) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: dark ? "radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%)" : "radial-gradient(circle, rgba(219,234,254,0.4) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(191,219,254,0.35) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(219,234,254,0.4) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         {/* Left Brand Content — Logo and Brand at top of contents, starting from left */}
         <div style={{ position: "relative", zIndex: 2 }}>
@@ -224,26 +222,26 @@ function PaymentContent() {
               />
             </div>
             <span style={{ fontWeight: 800, fontSize: 24, letterSpacing: "-0.02em" }}>
-              <span style={{ color: dark ? "#ffffff" : "#0f172a", transition: "color 0.15s ease" }}>Beyond</span>{" "}
-              <span style={{ color: dark ? "#60a5fa" : "#2563eb" }}>ERP</span>
+              <span style={{ color: "#0f172a" }}>Beyond</span>{" "}
+              <span style={{ color: "#2563eb" }}>ERP</span>
             </span>
           </div>
 
-          <p style={{ margin: "0 0 18px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: dark ? "rgba(191,219,254,0.75)" : "#2563eb" }}>
+          <p style={{ margin: "0 0 18px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#2563eb" }}>
             Step 3 of 3 • Workspace Activation
           </p>
-          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: dark ? "#ffffff" : "#0f172a", fontWeight: 400, letterSpacing: "-0.01em" }}>
+          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "#0f172a", fontWeight: 400, letterSpacing: "-0.01em" }}>
             Activate your<br />company<br />
-            <span style={{ fontStyle: "italic", color: dark ? "#93c5fd" : "#2563eb" }}>workspace.</span>
+            <span style={{ fontStyle: "italic", color: "#2563eb" }}>workspace.</span>
           </h1>
           <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
             {([
               { icon: <Zap size={14} />, label: "Instant CBE & Telebirr direct transfer" },
-              { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@Nehemiah00)" },
+              { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@beyond_et)" },
               { icon: <ShieldCheck size={14} />, label: "Isolated company database provisioned" },
             ] as const).map(({ icon, label }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: dark ? "#cbd5e1" : "#334155", fontSize: 14 }}>
-                <span style={{ color: dark ? "#60a5fa" : "#2563eb", flexShrink: 0, display: "flex" }}>{icon}</span>
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "#334155", fontSize: 14 }}>
+                <span style={{ color: "#2563eb", flexShrink: 0, display: "flex" }}>{icon}</span>
                 <span>{label}</span>
               </div>
             ))}
@@ -251,7 +249,7 @@ function PaymentContent() {
         </div>
 
         {/* Footer */}
-        <p style={{ margin: 0, fontSize: 11, color: dark ? "rgba(148,163,184,0.6)" : "#64748b", position: "relative" }}>
+        <p style={{ margin: 0, fontSize: 11, color: "#64748b", position: "relative" }}>
           &copy; {new Date().getFullYear()} Beyond ERP Ethiopia • Addis Ababa
         </p>
       </div>
@@ -463,7 +461,7 @@ function PaymentContent() {
                     height={44}
                     style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
                     onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO7isY9He26by7PMZVtCHoL_M4LkGQcSUoQiB3OgAa-A&s=10";
+                      (e.currentTarget as HTMLImageElement).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAbYFlfBIHnyGZ0H67HqZctIsIvFrNe69qWDGsnysH5Q&s=10";
                     }}
                   />
                 </div>
@@ -757,7 +755,7 @@ function PaymentContent() {
                 }}
               >
                 <Send size={16} />
-                Submit Receipt on Telegram (@Nehemiah00)
+                Submit Receipt on Telegram (@beyond_et)
                 <ExternalLink size={14} style={{ opacity: 0.8 }} />
               </button>
             </div>
