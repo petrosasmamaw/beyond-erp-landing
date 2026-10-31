@@ -1323,6 +1323,17 @@
         }
 
         @media (max-width: 560px) {
+          .hero-actions {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+          }
+          .hero-actions .btn-primary,
+          .hero-actions .btn-link {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+          }
           .sectors-side,
           .sectors-rest {
             grid-template-columns: 1fr;
@@ -1337,6 +1348,11 @@
           }
           .footer-nav-links {
             grid-template-columns: 1fr;
+          }
+          .footer-bottom {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
           }
           .hero-proof {
             gap: 18px;

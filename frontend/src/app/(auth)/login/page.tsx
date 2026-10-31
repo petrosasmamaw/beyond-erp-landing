@@ -42,7 +42,7 @@ export default function LoginPage() {
   const surface = dark ? "#0f1a2e" : "#ffffff";
   const border = dark ? "#1a2d42" : "#e2e8f0";
   const ink = dark ? "#e2e8f0" : "#0f172a";
-  const muted = "#64748b";
+  const muted = dark ? "#8b9ab0" : "#64748b";
   const inputBg = dark ? "#0a1220" : "#f8fafc";
 
   return (
@@ -113,10 +113,12 @@ export default function LoginPage() {
         {/* Top row: mobile logo + theme toggle */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
           {/* Mobile-only brand */}
-          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <img src="/logo.png" alt="Beyond ERP" width={30} height={30} style={{ borderRadius: "50%", objectFit: "contain" }} />
-            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-              <span style={{ color: dark ? "#ffffff" : "#2563eb" }}>Beyond</span>{" "}
+          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => router.push("/")}>
+            <div style={{ width: 34, height: 34, borderRadius: "50%", overflow: "hidden", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <img src="/logo.png" alt="Beyond ERP" width={34} height={34} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }} />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
+              <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
               <span style={{ color: "#2563eb" }}>ERP</span>
             </span>
           </div>

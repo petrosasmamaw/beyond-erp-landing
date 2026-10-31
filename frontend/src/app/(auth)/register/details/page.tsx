@@ -78,7 +78,7 @@ function RegisterDetailsContent() {
   const surface = dark ? "#0f1a2e" : "#ffffff";
   const border = dark ? "#1a2d42" : "#e2e8f0";
   const ink = dark ? "#e2e8f0" : "#0f172a";
-  const muted = "#64748b";
+  const muted = dark ? "#8b9ab0" : "#64748b";
   const inputBg = dark ? "#0a1220" : "#f8fafc";
   const errorBorder = "#fda4af";
   const errorText = "#e11d48";

@@ -6,6 +6,7 @@ import { Loader2, Mail, ShieldCheck } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 function getStoredReg() {
   if (typeof window === "undefined") return null;
@@ -62,7 +63,10 @@ export default function VerifyPage() {
   };
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" style={{ position: "relative" }}>
+      <div style={{ position: "absolute", top: 20, right: 24, zIndex: 10 }}>
+        <ThemeToggle />
+      </div>
       <section className="phone-frame auth-frame">
         <div className="login-panel">
           <div className="login-brand">

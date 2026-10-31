@@ -372,7 +372,7 @@ export default function SubmittedPage() {
           }}
         >
           <p style={{ margin: 0 }}>
-            <strong>Support:</strong> +251 2815 1599 &bull; +251 3904 8523 &bull; beyondsolutionsupport@gmail.com
+            <strong>Support:</strong> +251 928 151 599 &bull; +251 911 000 001 &bull; beyondsolutionsupport@gmail.com
           </p>
           <p style={{ margin: 0 }}>
             Office: Addis Ababa, 22 Bata Complex 3rd Floor &bull; Powered by beyond.et

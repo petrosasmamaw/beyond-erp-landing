@@ -50,7 +50,16 @@ export default function LandingPage() {
       <div className="landing-card">
         {/* ============= NAV ============= */}
         <nav className="landing-nav">
-          <a className="nav-brand" href="#" style={{ textDecoration: "none" }}>
+          <a className="nav-brand" href="#" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 34, height: 34, borderRadius: "50%", overflow: "hidden", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <img
+                src="/logo.png"
+                alt="Beyond ERP"
+                width={34}
+                height={34}
+                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }}
+              />
+            </div>
             <span style={{ color: dark ? "#ffffff" : "#2563eb", fontWeight: 800, transition: "color 0.15s ease" }}>Beyond ERP</span>
           </a>
 
@@ -465,8 +474,8 @@ export default function LandingPage() {
                   style={{ borderRadius: "50%", flexShrink: 0, display: "block", objectFit: "contain" }}
                 />
                 <span className="footer-brand-name">
-                  <span style={{ color: "#ffffff", fontWeight: 800 }}>Beyond</span>{" "}
-                  <span style={{ color: "#3b82f6", fontWeight: 800 }}>ERP</span>
+                  <span style={{ color: dark ? "#ffffff" : "#0f172a", fontWeight: 800, transition: "color 0.15s ease" }}>Beyond</span>{" "}
+                  <span style={{ color: "#2563eb", fontWeight: 800 }}>ERP</span>
                 </span>
               </div>
               <p className="footer-tagline">
@@ -481,9 +490,9 @@ export default function LandingPage() {
               <span className="footer-contact-title">Contact &amp; Location</span>
               <div className="footer-contact-item">
                 <strong>Contact:</strong>
-                <a href="tel:+25128151599">+25128151599</a>
+                <a href="tel:+251928151599">+251 928 151 599</a>
                 <span>·</span>
-                <a href="tel:+25139048523">+25139048523</a>
+                <a href="tel:+251911000001">+251 911 000 001</a>
               </div>
               <div className="footer-contact-item">
                 <strong>Email:</strong>
