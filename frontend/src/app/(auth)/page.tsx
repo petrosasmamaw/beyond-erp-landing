@@ -510,16 +510,16 @@ export default function LandingPage() {
 
           <div className="footer-bottom">
             <div className="footer-meta">
-              <span>&copy; {new Date().getFullYear()} <span style={{ color: "#ffffff", fontWeight: 700 }}>Beyond</span> <span style={{ color: "#3b82f6", fontWeight: 700 }}>ERP</span>. All rights reserved.</span>
+              <span>&copy; {new Date().getFullYear()} <span style={{ color: dark ? "#ffffff" : "#2563eb", fontWeight: 700 }}>Beyond</span> <span style={{ color: "#3b82f6", fontWeight: 700 }}>ERP</span>. All rights reserved.</span>
               <span className="footer-dot">&middot;</span>
               <span>Amharic &middot; English &middot; Afan Oromo</span>
               <span className="footer-dot">&middot;</span>
               <span>Addis Ababa, Ethiopia</span>
             </div>
-            <a href="/sa" className="admin-link" aria-label="Open system admin">
-              Admin
-              <span className="sa-tag">SA</span>
-            </a>
+            <div className="footer-power-badge">
+              <Sparkles size={13} className="footer-power-icon" />
+              <span>Best ERP Provider in Ethiopia</span>
+            </div>
           </div>
         </footer>
       </div>

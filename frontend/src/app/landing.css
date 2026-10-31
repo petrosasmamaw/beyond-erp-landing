@@ -1214,26 +1214,32 @@
           opacity: 0.5;
         }
 
-        .admin-link {
+        .footer-power-badge {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 6px 12px;
-          border: 1px solid var(--landing-border);
+          padding: 7px 16px;
+          border: 1px solid rgba(37, 99, 235, 0.3);
           border-radius: 999px;
-          background: var(--landing-surface);
+          background: rgba(37, 99, 235, 0.1);
           color: var(--landing-ink);
-          text-decoration: none;
-          font-size: 12px;
+          font-size: 12.5px;
           font-weight: 700;
+          letter-spacing: -0.01em;
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+          user-select: none;
         }
 
-        .admin-link .sa-tag {
-          background: var(--landing-blue);
-          color: white;
-          border-radius: 999px;
-          padding: 2px 7px;
-          font-size: 10px;
+        .footer-power-icon {
+          color: var(--landing-blue);
+          flex-shrink: 0;
+        }
+
+        [data-theme="light"] .footer-power-badge {
+          background: #ffffff;
+          border: 1px solid rgba(37, 99, 235, 0.25);
+          color: #0f172a;
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
         }
 
         /* ===== RESPONSIVE ===== */
