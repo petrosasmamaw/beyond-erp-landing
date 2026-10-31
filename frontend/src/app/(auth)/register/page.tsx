@@ -35,18 +35,58 @@ function RegisterContent() {
             <ArrowLeft size={16} />
             Back
           </button>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => router.push("/")}>
-            <img src="/logo.png" alt="Beyond ERP" width={28} height={28} style={{ borderRadius: "50%", objectFit: "contain" }} />
-            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-              <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
-              <span style={{ color: "#2563eb" }}>ERP</span>
-            </span>
-          </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)" }}>Step 1 of 3</span>
             <ThemeToggle />
           </div>
         </div>
+
+        {/* Brand Header: Big clean circled logo (no border) + big brand name at top of contents, left-aligned */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            marginTop: 4,
+            marginBottom: 8,
+            cursor: "pointer",
+            width: "fit-content"
+          }}
+          onClick={() => router.push("/")}
+        >
+          <div
+            style={{
+              width: 46,
+              height: 46,
+              borderRadius: "50%",
+              overflow: "hidden",
+              border: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0
+            }}
+          >
+            <img
+              src="/logo.png"
+              alt="Beyond ERP"
+              width={46}
+              height={46}
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                objectFit: "cover",
+                display: "block"
+              }}
+            />
+          </div>
+          <span style={{ fontWeight: 800, fontSize: 24, letterSpacing: "-0.02em" }}>
+            <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
+            <span style={{ color: "#2563eb" }}>ERP</span>
+          </span>
+        </div>
+
         <div className="sector-select-header">
           <p className="eyebrow">Choose your operating model</p>
           <h1>Select the sector for your company</h1>

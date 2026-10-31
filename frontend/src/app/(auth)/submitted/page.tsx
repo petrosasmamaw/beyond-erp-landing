@@ -93,29 +93,43 @@ export default function SubmittedPage() {
             marginBottom: 18,
           }}
         >
-          <img
-            className="submitted-logo-icon"
-            src="/logo.png"
-            alt="Beyond ERP"
-            width={52}
-            height={52}
+          <div
             style={{
+              width: 54,
+              height: 54,
               borderRadius: "50%",
-              display: "block",
-              objectFit: "contain",
-              boxShadow: "0 6px 20px rgba(37, 99, 235, 0.18)",
-              border: "2px solid #2563eb",
+              overflow: "hidden",
+              border: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 16px rgba(37, 99, 235, 0.16)",
             }}
-          />
+          >
+            <img
+              className="submitted-logo-icon"
+              src="/logo.png"
+              alt="Beyond ERP"
+              width={54}
+              height={54}
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                display: "block",
+                objectFit: "cover",
+              }}
+            />
+          </div>
           <div
             style={{
               marginTop: 10,
               fontWeight: 800,
-              fontSize: 20,
+              fontSize: 22,
               letterSpacing: "-0.02em",
             }}
           >
-            <span style={{ color: dark ? "#ffffff" : "#2563eb" }}>Beyond</span>{" "}
+            <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
             <span style={{ color: "#2563eb" }}>ERP</span>
           </div>
         </div>

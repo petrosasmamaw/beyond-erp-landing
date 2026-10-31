@@ -69,8 +69,11 @@ export default function LoginPage() {
         <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
-          <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative", cursor: "pointer" }} onClick={() => router.push("/")}>
+          <div style={{ width: 44, height: 44, borderRadius: "50%", overflow: "hidden", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <img src="/logo.png" alt="Beyond ERP" width={44} height={44} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }} />
+          </div>
+          <span style={{ fontWeight: 800, fontSize: 22, letterSpacing: "-0.02em" }}>
             <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
             <span style={{ color: "#60a5fa" }}>ERP</span>
           </span>

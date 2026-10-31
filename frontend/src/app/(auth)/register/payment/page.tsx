@@ -159,17 +159,19 @@ function PaymentContent() {
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", background: bg }}>
-      {/* ================= LEFT BRAND PANEL (PURE WHITE WITH BLUE & BLACK TEXT) ================= */}
+      {/* ================= LEFT BRAND PANEL (RESPONSIVE BLUE/WHITE WITH BLACK/BLUE TEXT) ================= */}
       <div
         style={{
           width: "42%",
           minHeight: "100vh",
-          background: "linear-gradient(160deg, #ffffff 0%, #f8fafc 55%, #eff6ff 100%)",
-          borderRight: "1px solid #e2e8f0",
+          background: dark
+            ? "linear-gradient(160deg, #0b1528 0%, #0d1a33 60%, #070c18 100%)"
+            : "linear-gradient(160deg, #ffffff 0%, #f8fafc 55%, #eff6ff 100%)",
+          borderRight: `1px solid ${border}`,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "40px 48px",
+          padding: "44px 48px",
           position: "relative",
           overflow: "hidden",
           flexShrink: 0
@@ -177,27 +179,62 @@ function PaymentContent() {
         className="login-brand-panel"
       >
         {/* Atmospheric orbs */}
-        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(191,219,254,0.35) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(219,234,254,0.4) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: dark ? "radial-gradient(circle, rgba(96,165,250,0.15) 0%, transparent 70%)" : "radial-gradient(circle, rgba(191,219,254,0.35) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: dark ? "radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%)" : "radial-gradient(circle, rgba(219,234,254,0.4) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-        {/* Top Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(37,99,235,0.08)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(37,99,235,0.18)" }}>
-            <img src="/logo.png" alt="Beyond ERP" width={24} height={24} style={{ borderRadius: "50%", objectFit: "contain" }} />
+        {/* Left Brand Content — Logo and Brand at top of contents, starting from left */}
+        <div style={{ position: "relative", zIndex: 2 }}>
+          {/* Logo & Brand Name */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              marginBottom: 30,
+              cursor: "pointer",
+              width: "fit-content"
+            }}
+            onClick={() => router.push("/")}
+          >
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0
+              }}
+            >
+              <img
+                src="/logo.png"
+                alt="Beyond ERP"
+                width={48}
+                height={48}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  display: "block"
+                }}
+              />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: 24, letterSpacing: "-0.02em" }}>
+              <span style={{ color: dark ? "#ffffff" : "#0f172a", transition: "color 0.15s ease" }}>Beyond</span>{" "}
+              <span style={{ color: dark ? "#60a5fa" : "#2563eb" }}>ERP</span>
+            </span>
           </div>
-          <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-            <span style={{ color: "#0f172a" }}>Beyond</span> <span style={{ color: "#2563eb" }}>ERP</span>
-          </span>
-        </div>
 
-        {/* Hero copy */}
-        <div style={{ position: "relative" }}>
-          <p style={{ margin: "0 0 20px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#2563eb" }}>
+          <p style={{ margin: "0 0 18px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: dark ? "rgba(191,219,254,0.75)" : "#2563eb" }}>
             Step 3 of 3 • Workspace Activation
           </p>
-          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "#0f172a", fontWeight: 400, letterSpacing: "-0.01em" }}>
+          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: dark ? "#ffffff" : "#0f172a", fontWeight: 400, letterSpacing: "-0.01em" }}>
             Activate your<br />company<br />
-            <span style={{ fontStyle: "italic", color: "#2563eb" }}>workspace.</span>
+            <span style={{ fontStyle: "italic", color: dark ? "#93c5fd" : "#2563eb" }}>workspace.</span>
           </h1>
           <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
             {([
@@ -205,8 +242,8 @@ function PaymentContent() {
               { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@Nehemiah00)" },
               { icon: <ShieldCheck size={14} />, label: "Isolated company database provisioned" },
             ] as const).map(({ icon, label }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "#334155", fontSize: 14 }}>
-                <span style={{ color: "#2563eb", flexShrink: 0, display: "flex" }}>{icon}</span>
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: dark ? "#cbd5e1" : "#334155", fontSize: 14 }}>
+                <span style={{ color: dark ? "#60a5fa" : "#2563eb", flexShrink: 0, display: "flex" }}>{icon}</span>
                 <span>{label}</span>
               </div>
             ))}
@@ -214,7 +251,7 @@ function PaymentContent() {
         </div>
 
         {/* Footer */}
-        <p style={{ margin: 0, fontSize: 11, color: "#64748b", position: "relative" }}>
+        <p style={{ margin: 0, fontSize: 11, color: dark ? "rgba(148,163,184,0.6)" : "#64748b", position: "relative" }}>
           &copy; {new Date().getFullYear()} Beyond ERP Ethiopia • Addis Ababa
         </p>
       </div>
@@ -223,16 +260,18 @@ function PaymentContent() {
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         {/* Top bar with mobile logo & theme toggle */}
         <div className="reg-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
-          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <img
-              src="/logo.png"
-              alt="Beyond ERP"
-              width={32}
-              height={32}
-              style={{ borderRadius: "50%", objectFit: "contain" }}
-            />
-            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-              <span style={{ color: dark ? "#ffffff" : "#2563eb" }}>Beyond</span>{" "}
+          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => router.push("/")}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", overflow: "hidden", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <img
+                src="/logo.png"
+                alt="Beyond ERP"
+                width={36}
+                height={36}
+                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }}
+              />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
+              <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
               <span style={{ color: "#2563eb" }}>ERP</span>
             </span>
           </div>
@@ -346,18 +385,29 @@ function PaymentContent() {
               >
                 <div
                   style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 8,
-                    background: selectedMethod === "CBE" ? "#2563eb" : (dark ? "#1a2d42" : "#f1f5f9"),
-                    color: selectedMethod === "CBE" ? "#ffffff" : "#64748b",
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    border: "none",
+                    background: "#ffffff",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    flexShrink: 0
+                    flexShrink: 0,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
                   }}
                 >
-                  <Landmark size={20} />
+                  <img
+                    src="/cbe-logo.jpg"
+                    alt="Commercial Bank of Ethiopia (CBE)"
+                    width={44}
+                    height={44}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaaqYdrTfGtVcFbG4v6-X7a_bJbNSuIPQytPGc42OBCw&s=10";
+                    }}
+                  />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -393,18 +443,29 @@ function PaymentContent() {
               >
                 <div
                   style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 8,
-                    background: selectedMethod === "TELEBIRR" ? "#2563eb" : (dark ? "#1a2d42" : "#f1f5f9"),
-                    color: selectedMethod === "TELEBIRR" ? "#ffffff" : "#64748b",
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    border: "none",
+                    background: "#ffffff",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    flexShrink: 0
+                    flexShrink: 0,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
                   }}
                 >
-                  <Smartphone size={20} />
+                  <img
+                    src="/telebirr-logo.jpg"
+                    alt="Telebirr"
+                    width={44}
+                    height={44}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO7isY9He26by7PMZVtCHoL_M4LkGQcSUoQiB3OgAa-A&s=10";
+                    }}
+                  />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -435,13 +496,18 @@ function PaymentContent() {
               {selectedMethod === "CBE" ? (
                 <div>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                    <div>
-                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
-                        CBE Account Details
-                      </span>
-                      <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
-                        {cbeDetails.bankName}
-                      </h3>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", border: "none", flexShrink: 0, background: "#ffffff", boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>
+                        <img src="/cbe-logo.jpg" alt="CBE" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
+                          CBE Account Details
+                        </span>
+                        <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
+                          {cbeDetails.bankName}
+                        </h3>
+                      </div>
                     </div>
                     <span style={{ fontSize: 12, color: muted }}>{cbeDetails.branch}</span>
                   </div>
@@ -537,13 +603,18 @@ function PaymentContent() {
               ) : (
                 <div>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                    <div>
-                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
-                        Telebirr Transfer Details
-                      </span>
-                      <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
-                        {telebirrDetails.serviceName}
-                      </h3>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", border: "none", flexShrink: 0, background: "#ffffff", boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>
+                        <img src="/telebirr-logo.jpg" alt="Telebirr" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
+                          Telebirr Transfer Details
+                        </span>
+                        <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
+                          {telebirrDetails.serviceName}
+                        </h3>
+                      </div>
                     </div>
                     <span style={{ fontSize: 12, color: muted }}>{telebirrDetails.shortCode}</span>
                   </div>
@@ -755,20 +826,22 @@ function PaymentContent() {
                 type="button"
                 onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
                 style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: muted,
-                  fontSize: 13,
+                  height: 44,
+                  borderRadius: 10,
+                  border: `1.5px solid ${border}`,
+                  background: surface,
+                  color: ink,
+                  fontSize: 14,
                   fontWeight: 600,
-                  padding: "8px 0",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 6
+                  gap: 8,
+                  cursor: "pointer",
+                  transition: "all 0.15s"
                 }}
               >
-                <ArrowLeft size={14} />
+                <ArrowLeft size={16} />
                 Back to Company Details
               </button>
             </div>

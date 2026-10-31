@@ -159,17 +159,54 @@ function RegisterDetailsContent() {
         <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(96,165,250,0.2) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
-            <img src="/logo.png" alt="Beyond ERP" width={24} height={24} style={{ borderRadius: "50%", objectFit: "contain" }} />
+        {/* Left Brand Content — Logo and Brand at top of contents, starting from left */}
+        <div style={{ position: "relative", zIndex: 2 }}>
+          {/* Logo & Brand Name */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              marginBottom: 30,
+              cursor: "pointer",
+              width: "fit-content"
+            }}
+            onClick={() => router.push("/")}
+          >
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0
+              }}
+            >
+              <img
+                src="/logo.png"
+                alt="Beyond ERP"
+                width={48}
+                height={48}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  display: "block"
+                }}
+              />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: 24, letterSpacing: "-0.02em" }}>
+              <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
+              <span style={{ color: "#93c5fd" }}>ERP</span>
+            </span>
           </div>
-          <span style={{ fontWeight: 700, fontSize: 15, color: "white" }}>Beyond ERP</span>
-        </div>
 
-        {/* Hero copy */}
-        <div style={{ position: "relative" }}>
-          <p style={{ margin: "0 0 20px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.7)" }}>
+          <p style={{ margin: "0 0 18px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.75)" }}>
             Step 2 of 3 • Workspace onboarding
           </p>
           <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
@@ -197,16 +234,18 @@ function RegisterDetailsContent() {
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         <div className="reg-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
-          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <img
-              src="/logo.png"
-              alt="Beyond ERP"
-              width={32}
-              height={32}
-              style={{ borderRadius: "50%", objectFit: "contain" }}
-            />
-            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>
-              <span style={{ color: dark ? "#ffffff" : "#2563eb" }}>Beyond</span>{" "}
+          <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => router.push("/")}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", overflow: "hidden", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <img
+                src="/logo.png"
+                alt="Beyond ERP"
+                width={36}
+                height={36}
+                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }}
+              />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
+              <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
               <span style={{ color: "#2563eb" }}>ERP</span>
             </span>
           </div>
