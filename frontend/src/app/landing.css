@@ -48,7 +48,7 @@
   --landing-muted: #64748b;
   --landing-blue: #2563eb;
   --landing-blue-deep: #1e3a8a;
-  --hero-right-bg: #0d1422;
+  --hero-right-bg: #ffffff;
 }
 
 .landing-shell {
@@ -439,6 +439,110 @@
         .price-badge-sub {
           font-size: 10px;
           color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* ===== HERO RIGHT LIGHT MODE SUPPORT ===== */
+        [data-theme="light"] .hero-right {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 20px 50px rgba(37, 99, 235, 0.08), 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        [data-theme="light"] .hero-right::after {
+          background: radial-gradient(circle, rgba(191, 219, 254, 0.4) 0%, transparent 70%);
+        }
+
+        [data-theme="light"] .hero-feature-item {
+          color: #0f172a;
+          font-weight: 600;
+        }
+
+        [data-theme="light"] .hero-feature-item span {
+          color: #0f172a;
+        }
+
+        [data-theme="light"] .hero-feature-item svg,
+        [data-theme="light"] .hero-feature-item .feature-check-svg {
+          color: #2563eb;
+          stroke: #2563eb;
+        }
+
+        [data-theme="light"] .hero-badge-item {
+          color: #0f172a;
+          font-weight: 700;
+        }
+
+        [data-theme="light"] .hero-badge-item span {
+          color: #0f172a;
+        }
+
+        [data-theme="light"] .hero-badge-icon {
+          border: 1.5px solid rgba(37, 99, 235, 0.35);
+          color: #2563eb;
+          background: rgba(37, 99, 235, 0.08);
+        }
+
+        [data-theme="light"] .hero-badge-icon svg {
+          stroke: #2563eb;
+        }
+
+        [data-theme="light"] .ai-badge-icon .ai-text {
+          color: #2563eb;
+        }
+
+        [data-theme="light"] .hero-mockup-img {
+          filter: drop-shadow(0 20px 40px rgba(37, 99, 235, 0.16));
+        }
+
+        [data-theme="light"] .hero-price-badge {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(37, 99, 235, 0.22);
+          box-shadow: 0 10px 30px rgba(37, 99, 235, 0.12);
+        }
+
+        [data-theme="light"] .price-badge-icon {
+          color: #2563eb;
+        }
+
+        [data-theme="light"] .price-badge-label {
+          color: #2563eb;
+          font-weight: 700;
+        }
+
+        [data-theme="light"] .price-badge-amount {
+          color: #0f172a;
+          font-weight: 800;
+        }
+
+        [data-theme="light"] .price-badge-sub {
+          color: #64748b;
+          font-weight: 500;
+        }
+
+        [data-theme="light"] .bento-large {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 16px 45px rgba(37, 99, 235, 0.06);
+          color: #0f172a;
+        }
+
+        [data-theme="light"] .bento-large h3 {
+          color: #0f172a;
+        }
+
+        [data-theme="light"] .bento-large p {
+          color: #64748b;
+        }
+
+        [data-theme="light"] .bento-pill {
+          background: rgba(37, 99, 235, 0.08);
+          border: 1px solid rgba(37, 99, 235, 0.2);
+          color: #2563eb;
+        }
+
+        [data-theme="light"] .bento-pill svg {
+          color: #2563eb;
         }
 
         /* ===== SECTORS — EDITORIAL ===== */
