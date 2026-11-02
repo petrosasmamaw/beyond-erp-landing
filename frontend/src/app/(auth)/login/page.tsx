@@ -48,7 +48,7 @@ export default function LoginPage() {
   return (
     <main style={{ minHeight: "100vh", display: "flex", background: bg }}>
 
-      {/* Left brand panel — hidden on mobile */}
+      {/* Left brand panel — blue gradient identical to detail & payment pages */}
       <div
         style={{
           width: "42%",
@@ -68,21 +68,55 @@ export default function LoginPage() {
         <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(96,165,250,0.2) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative", cursor: "pointer" }} onClick={() => router.push("/")}>
-          <div style={{ width: 44, height: 44, borderRadius: "50%", overflow: "hidden", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <img src="/logo.png" alt="Beyond ERP" width={44} height={44} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }} />
+        {/* Left Brand Content — Logo and Brand at top of contents, starting from top left */}
+        <div style={{ position: "relative", zIndex: 2 }}>
+          {/* Logo & Brand Name */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              marginBottom: 30,
+              cursor: "pointer",
+              width: "fit-content",
+            }}
+            onClick={() => router.push("/")}
+          >
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <img
+                src="/logo.png"
+                alt="Beyond ERP"
+                width={48}
+                height={48}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: 24, letterSpacing: "-0.02em" }}>
+              <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
+              <span style={{ color: "#93c5fd" }}>ERP</span>
+            </span>
           </div>
-          <span style={{ fontWeight: 800, fontSize: 22, letterSpacing: "-0.02em" }}>
-            <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
-            <span style={{ color: "#60a5fa" }}>ERP</span>
-          </span>
-        </div>
 
-        {/* Hero copy */}
-        <div style={{ position: "relative" }}>
-          <p style={{ margin: "0 0 20px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.7)" }}>
-            Ethiopian Business Suite
+          <p style={{ margin: "0 0 18px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.75)" }}>
+            Welcome back • Workspace Access
           </p>
           <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
             The operating<br />system for<br />
@@ -95,7 +129,7 @@ export default function LoginPage() {
               { icon: <Languages size={14} />, label: "Amharic · English · Afan Oromo" },
             ] as const).map(({ icon, label }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.85)", fontSize: 14 }}>
-                <span style={{ color: "#93c5fd", flexShrink: 0 }}>{icon}</span>
+                <span style={{ color: "#93c5fd", flexShrink: 0, display: "flex" }}>{icon}</span>
                 <span>{label}</span>
               </div>
             ))}
@@ -111,11 +145,11 @@ export default function LoginPage() {
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
 
         {/* Top row: mobile logo + theme toggle */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
+        <div className="reg-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
           {/* Mobile-only brand */}
           <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => router.push("/")}>
-            <div style={{ width: 34, height: 34, borderRadius: "50%", overflow: "hidden", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <img src="/logo.png" alt="Beyond ERP" width={34} height={34} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }} />
+            <div style={{ width: 36, height: 36, borderRadius: "50%", overflow: "hidden", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <img src="/logo.png" alt="Beyond ERP" width={36} height={36} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }} />
             </div>
             <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
               <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
