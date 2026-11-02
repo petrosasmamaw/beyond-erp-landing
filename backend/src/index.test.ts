@@ -140,5 +140,41 @@ describe("Beyond ERP API", () => {
 
     const loginResponse = await request(app).post("/api/auth/login").send({ email, password: temporaryPassword }).expect(200);
     expect(loginResponse.body.user.companySectorId).toBe("healthcare");
+  }, 60_000);
+
+  it("enforces CORS: allows configured origins (8080 and 3000)", async () => {
+    // Test 8080 preflight OPTIONS
+    const preflight8080 = await request(app)
+      .options("/api/dashboard")
+      .set("Origin", "http://localhost:8080")
+      .set("Access-Control-Request-Method", "GET");
+
+    expect(preflight8080.headers["access-control-allow-origin"]).toBe("http://localhost:8080");
+    expect(preflight8080.headers["access-control-allow-credentials"]).toBe("true");
+
+    // Test 3000 preflight OPTIONS
+    const preflight3000 = await request(app)
+      .options("/api/dashboard")
+      .set("Origin", "http://localhost:3000")
+      .set("Access-Control-Request-Method", "GET");
+
+    expect(preflight3000.headers["access-control-allow-origin"]).toBe("http://localhost:3000");
+
+    // Test simple GET with allowed origin
+    const getRes = await request(app)
+      .get("/api/dashboard")
+      .set("Origin", "http://localhost:8080");
+
+    expect(getRes.headers["access-control-allow-origin"]).toBe("http://localhost:8080");
+  });
+
+  it("enforces CORS: blocks unauthorized origins with 403", async () => {
+    const response = await request(app)
+      .get("/api/dashboard")
+      .set("Origin", "http://malicious-website.com")
+      .expect(403);
+
+    expect(response.body.message).toContain("CORS blocked");
+    expect(response.headers["access-control-allow-origin"]).toBeUndefined();
   });
 });

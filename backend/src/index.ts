@@ -42,11 +42,37 @@ const resetOtpStore = new Map<string, { otp: string; expiresAt: number }>();
 export const app = express();
 const port = Number(process.env.API_PORT ?? 4000);
 
-const allowedOrigins = process.env.WEB_ORIGIN
-  ? process.env.WEB_ORIGIN.split(",").map((o) => o.trim())
-  : true;
+// Parse allowed origins from ALLOWED_ORIGINS or WEB_ORIGIN (comma-separated)
+const rawAllowedOrigins = process.env.ALLOWED_ORIGINS || process.env.WEB_ORIGIN || "";
+const configuredOrigins = rawAllowedOrigins
+  .split(",")
+  .map((origin) => origin.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+// Fallback to local dev ports (8080 & 3000) if no origins are configured in environment
+const allowedOrigins =
+  configuredOrigins.length > 0
+    ? configuredOrigins
+    : ["http://localhost:8080", "http://localhost:3000", "http://127.0.0.1:8080", "http://127.0.0.1:3000"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin header (e.g. mobile apps, curl, Postman, internal calls)
+      if (!origin) {
+        return callback(null, true);
+      }
+      const normalizedOrigin = origin.trim().replace(/\/+$/, "");
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS blocked: Origin ${origin} is not allowed`));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("tiny"));
 app.use(
@@ -1832,6 +1858,11 @@ app.get("/api/export/transactions.csv", async (_req, res, next) => {
 });
 
 app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  if (error instanceof Error && error.message.startsWith("CORS blocked")) {
+    res.status(403).json({ message: error.message });
+    return;
+  }
+
   if (error instanceof z.ZodError) {
     res.status(400).json({ message: "Validation failed", issues: error.flatten() });
     return;
