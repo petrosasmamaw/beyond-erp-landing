@@ -200,9 +200,8 @@ function RegisterDetailsContent() {
                 }}
               />
             </div>
-            <span style={{ fontWeight: 800, fontSize: 24, letterSpacing: "-0.02em" }}>
-              <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
-              <span style={{ color: "#93c5fd" }}>ERP</span>
+            <span style={{ fontWeight: 800, fontSize: 24, letterSpacing: "-0.02em", color: "#ffffff" }}>
+              Beyond ERP
             </span>
           </div>
 
