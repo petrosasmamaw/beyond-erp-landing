@@ -229,71 +229,52 @@ function PaymentContent() {
           <p style={{ margin: "0 0 14px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.75)" }}>
             Step 3 of 3 • Workspace Activation
           </p>
-          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(30px, 3.2vw, 48px)", lineHeight: 1.05, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
+          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
             Activate your<br />company<br />
             <span style={{ fontStyle: "italic", color: "#bfdbfe" }}>workspace.</span>
           </h1>
 
+          {/* 3 Brand Value Bullets */}
+          <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }}>
+            {([
+              { icon: <Zap size={14} />, label: "Instant CBE & Telebirr direct transfer" },
+              { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@beyond_et)" },
+              { icon: <ShieldCheck size={14} />, label: "Isolated company database provisioned" },
+            ] as const).map(({ icon, label }) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.9)", fontSize: 13.5 }}>
+                <span style={{ color: "#93c5fd", flexShrink: 0, display: "flex" }}>{icon}</span>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+
           {/* ================= REAL CHECKOUT SUMMARY CARD ================= */}
           <div
             style={{
-              margin: "24px auto",
+              marginTop: 24,
               width: "100%",
-              maxWidth: 440,
-              background: "rgba(255, 255, 255, 0.08)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1.5px solid rgba(255, 255, 255, 0.2)",
-              borderRadius: 18,
-              padding: "22px 24px",
-              boxShadow: "0 20px 45px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25)",
+              maxWidth: 420,
+              background: "transparent",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              borderRadius: 14,
+              padding: "16px 18px",
               color: "#ffffff",
               boxSizing: "border-box"
             }}
           >
             {/* Header row */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                <Receipt size={15} style={{ color: "#93c5fd" }} />
-                <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#ffffff" }}>
-                  Checkout Summary
-                </span>
-              </div>
-              <span
-                style={{
-                  fontSize: 10,
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  padding: "3px 9px",
-                  borderRadius: 20,
-                  background: "rgba(34, 197, 94, 0.22)",
-                  border: "1px solid rgba(74, 222, 128, 0.5)",
-                  color: "#86efac",
-                }}
-              >
-                Annual • 365 Days
+            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
+              <Receipt size={14} style={{ color: "#93c5fd" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#ffffff" }}>
+                Checkout Summary
               </span>
             </div>
 
-            {/* Plan item */}
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 16, fontWeight: 800, color: "#ffffff", lineHeight: 1.25 }}>
-                Beyond ERP Enterprise Suite
-              </div>
-              <div style={{ fontSize: 12, color: "rgba(219, 234, 254, 0.8)", marginTop: 3 }}>
-                Full system access • Offline-first sync • 3 local languages
-              </div>
-            </div>
-
-            {/* Dotted receipt divider */}
-            <div style={{ borderTop: "1px dashed rgba(255, 255, 255, 0.22)", margin: "14px 0" }} />
-
             {/* Price Breakdown Table */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 9, fontSize: 13 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
               {/* Subtotal */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Subtotal (365 days @ 100 ETB/day)</span>
+                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Subtotal</span>
                 <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
                   36,500.00 ETB
                 </span>
@@ -302,7 +283,7 @@ function PaymentContent() {
               {/* Discount */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Annual Discount</span>
+                  <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Discount</span>
                   <span style={{ fontSize: 10, fontWeight: 700, background: "rgba(34, 197, 94, 0.22)", color: "#86efac", padding: "1px 5px", borderRadius: 4 }}>
                     Promo
                   </span>
@@ -330,10 +311,10 @@ function PaymentContent() {
             </div>
 
             {/* Total Divider */}
-            <div style={{ borderTop: "1.5px solid rgba(255, 255, 255, 0.3)", margin: "14px 0 12px" }} />
+            <div style={{ borderTop: "1px dashed rgba(255, 255, 255, 0.25)", margin: "12px 0 10px" }} />
 
             {/* Total Payable Row */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#bfdbfe" }}>
                   Total Payable
@@ -343,43 +324,11 @@ function PaymentContent() {
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 26, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1 }}>
-                  41,000 <span style={{ fontSize: 14, fontWeight: 700, color: "#93c5fd" }}>ETB</span>
+                <div style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                  41,000 <span style={{ fontSize: 13, fontWeight: 700, color: "#93c5fd" }}>ETB</span>
                 </div>
               </div>
             </div>
-
-            {/* Trust badge */}
-            <div
-              style={{
-                marginTop: 14,
-                padding: "8px 12px",
-                borderRadius: 9,
-                background: "rgba(15, 23, 42, 0.35)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                fontSize: 11,
-                color: "rgba(219, 234, 254, 0.9)"
-              }}
-            >
-              <ShieldCheck size={14} style={{ color: "#86efac", flexShrink: 0 }} />
-              <span>Full 1-year license • Instant activation upon receipt upload</span>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {([
-              { icon: <Zap size={14} />, label: "Instant CBE & Telebirr direct transfer" },
-              { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@beyond_et)" },
-              { icon: <ShieldCheck size={14} />, label: "Isolated company database provisioned" },
-            ] as const).map(({ icon, label }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.85)", fontSize: 14 }}>
-                <span style={{ color: "#93c5fd", flexShrink: 0, display: "flex" }}>{icon}</span>
-                <span>{label}</span>
-              </div>
-            ))}
           </div>
         </div>
 
