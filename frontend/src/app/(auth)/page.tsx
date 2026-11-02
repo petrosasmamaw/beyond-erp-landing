@@ -123,8 +123,8 @@ export default function LandingPage() {
                 src="/hero-preview.webp"
                 alt="Beyond ERP Suite Tablet & Mobile Workflows"
                 className="hero-card-img"
-                width={912}
-                height={926}
+                width={1275}
+                height={1297}
                 loading="eager"
               />
             </div>

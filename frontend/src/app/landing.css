@@ -301,7 +301,7 @@
 
         .hero-card-container {
           width: 100%;
-          max-width: 530px;
+          max-width: 560px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -316,7 +316,7 @@
         .hero-card-img {
           width: 100%;
           height: auto;
-          max-width: 530px;
+          max-width: 560px;
           display: block;
           object-fit: contain;
           border-radius: 28px;
