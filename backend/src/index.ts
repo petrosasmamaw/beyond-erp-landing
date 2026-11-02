@@ -40,7 +40,7 @@ export const prisma = new PrismaClient();
 const setupOtpStore = new Map<string, { otp: string; expiresAt: number }>();
 const resetOtpStore = new Map<string, { otp: string; expiresAt: number }>();
 export const app = express();
-const port = Number(process.env.API_PORT ?? 4000);
+const port = Number(process.env.PORT || process.env.API_PORT || 4000);
 
 // Parse allowed origins from ALLOWED_ORIGINS or WEB_ORIGIN (comma-separated)
 const rawAllowedOrigins = process.env.ALLOWED_ORIGINS || process.env.WEB_ORIGIN || "";
@@ -1880,8 +1880,8 @@ app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
 if (process.env.NODE_ENV !== "test") {
   ensureSeeded()
     .then(() => {
-      app.listen(port, () => {
-        console.log(`Beyond ERP API listening on http://localhost:${port}`);
+      app.listen(port, "0.0.0.0", () => {
+        console.log(`Beyond ERP API listening on http://0.0.0.0:${port}`);
       });
     })
     .catch((error) => {
