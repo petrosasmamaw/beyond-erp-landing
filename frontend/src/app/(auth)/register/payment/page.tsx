@@ -75,7 +75,7 @@ function PaymentContent() {
   const telebirrDetails = {
     serviceName: "Telebirr (Ethio Telecom)",
     accountName: "Beyond Solution / Telebirr",
-    phoneNumber: "0939048523",
+    phoneNumber: "0928151599",
     shortCode: "*127# or Telebirr App"
   };
 
