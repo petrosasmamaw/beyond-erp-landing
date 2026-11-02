@@ -118,98 +118,15 @@ export default function LandingPage() {
           </div>
 
           <div className="hero-right">
-            {/* Top row: Checkmarks on the left, Badges on the right */}
-            <div className="hero-top-row">
-              <div className="hero-features-list">
-                <div className="hero-feature-item">
-                  <svg className="feature-check-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="m9 12 2 2 4-4" />
-                  </svg>
-                  <span>Launch in 3 day</span>
-                </div>
-                <div className="hero-feature-item">
-                  <svg className="feature-check-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="m9 12 2 2 4-4" />
-                  </svg>
-                  <span>Custom white label</span>
-                </div>
-                <div className="hero-feature-item">
-                  <svg className="feature-check-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="m9 12 2 2 4-4" />
-                  </svg>
-                  <span>Free training</span>
-                </div>
-                <div className="hero-feature-item">
-                  <svg className="feature-check-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="m9 12 2 2 4-4" />
-                  </svg>
-                  <span>24/7 all year support</span>
-                </div>
-              </div>
-
-              <div className="hero-badges-list">
-                <div className="hero-badge-item">
-                  <span className="hero-badge-icon">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="3" width="20" height="18" rx="3" />
-                      <path d="M6 15l3-7 3 7" />
-                      <path d="M7 13h4" />
-                      <path d="M15 9h4" />
-                      <path d="M17 9v6" />
-                    </svg>
-                  </span>
-                  <span>3 local language</span>
-                </div>
-                <div className="hero-badge-item">
-                  <span className="hero-badge-icon">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="3" width="20" height="18" rx="3" />
-                      <circle cx="8" cy="10" r="2.5" />
-                      <path d="M5 16c0-1.8 1.4-2.8 3-2.8s3 1 3 2.8" />
-                      <path d="M14 9h5" />
-                      <path d="M14 12h5" />
-                      <path d="M14 15h3" />
-                    </svg>
-                  </span>
-                  <span>Fayda Verification</span>
-                </div>
-                <div className="hero-badge-item">
-                  <span className="hero-badge-icon ai-badge-icon">
-                    <span className="ai-text">Ai</span>
-                  </span>
-                  <span>Ai Assistance</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Center: Tablet mockup with hands holding it */}
-            <div className="hero-mockup-wrapper">
+            <div className="hero-card-container">
               <img
-                src="/hero-mockup.png"
-                alt="Beyond ERP tablet interface showcasing sector workflows"
-                className="hero-mockup-img"
+                src="/hero-preview.webp"
+                alt="Beyond ERP Suite Tablet & Mobile Workflows"
+                className="hero-card-img"
+                width={912}
+                height={926}
+                loading="eager"
               />
-            </div>
-
-            {/* Bottom-right price badge */}
-            <div className="hero-price-badge">
-              <div className="price-badge-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="10" rx="2" />
-                  <path d="M7 7h10" />
-                  <path d="M6 13v7l2-1.5 2 1.5 2-1.5 2 1.5 2-1.5 2 1.5V13" />
-                  <path d="M9 16h6" />
-                </svg>
-              </div>
-              <div className="price-badge-body">
-                <span className="price-badge-label">Starting From</span>
-                <span className="price-badge-amount">100 birr/day</span>
-                <span className="price-badge-sub">billed annually</span>
-              </div>
             </div>
           </div>
         </section>

@@ -284,240 +284,52 @@
 
         .hero-right {
           position: relative;
-          background: var(--hero-right-bg);
-          border-top-left-radius: 44px;
-          border-bottom-left-radius: 44px;
-          padding: 38px 40px 32px;
           display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          overflow: hidden;
-          margin: 16px 0 16px 16px;
-          min-height: 560px;
+          align-items: center;
+          justify-content: center;
+          padding: 8px 0 8px 20px;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          min-height: auto;
+          overflow: visible;
         }
 
         .hero-right::after {
-          content: "";
-          position: absolute;
-          top: -100px;
-          right: -80px;
-          width: 320px;
-          height: 320px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(147, 197, 253, 0.22) 0%, transparent 70%);
-          pointer-events: none;
+          display: none;
         }
 
-        .hero-top-row {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 20px;
-        }
-
-        .hero-features-list {
-          display: flex;
-          flex-direction: column;
-          gap: 9px;
-        }
-
-        .hero-feature-item {
-          display: flex;
-          align-items: center;
-          gap: 9px;
-          color: rgba(255, 255, 255, 0.95);
-          font-size: 13.5px;
-          font-weight: 500;
-          letter-spacing: -0.01em;
-        }
-
-        .hero-feature-item svg {
-          color: rgba(255, 255, 255, 0.9);
-          flex-shrink: 0;
-        }
-
-        .hero-badges-list {
-          display: flex;
-          flex-direction: column;
-          gap: 9px;
-        }
-
-        .hero-badge-item {
-          display: flex;
-          align-items: center;
-          gap: 9px;
-          color: white;
-          font-size: 13.5px;
-          font-weight: 600;
-          letter-spacing: -0.01em;
-        }
-
-        .hero-badge-icon {
-          width: 26px;
-          height: 26px;
-          border-radius: 6px;
-          border: 1.5px solid rgba(255, 255, 255, 0.65);
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          background: rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(4px);
-          flex-shrink: 0;
-        }
-
-        .ai-text {
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: -0.02em;
-        }
-
-        .hero-mockup-wrapper {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-top: 6px;
-          margin-bottom: -16px;
-        }
-
-        .hero-mockup-img {
+        .hero-card-container {
           width: 100%;
           max-width: 530px;
-          height: auto;
-          display: block;
-          filter: drop-shadow(0 28px 45px rgba(0, 0, 0, 0.45));
-          user-select: none;
-        }
-
-        .hero-price-badge {
-          position: absolute;
-          bottom: 24px;
-          right: 28px;
-          z-index: 4;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          color: white;
-          padding: 8px 14px;
-          border-radius: 12px;
-          background: rgba(15, 23, 42, 0.4);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.14);
-        }
-
-        .price-badge-icon {
-          color: rgba(255, 255, 255, 0.95);
           display: flex;
           align-items: center;
           justify-content: center;
+          position: relative;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .price-badge-body {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.15;
+        .hero-card-container:hover {
+          transform: translateY(-4px);
         }
 
-        .price-badge-label {
-          font-size: 11px;
-          font-weight: 600;
-          color: rgba(255, 255, 255, 0.8);
-          letter-spacing: 0.01em;
+        .hero-card-img {
+          width: 100%;
+          height: auto;
+          max-width: 530px;
+          display: block;
+          object-fit: contain;
+          border-radius: 28px;
+          user-select: none;
+          transition: filter 0.25s ease;
         }
 
-        .price-badge-amount {
-          font-size: 16px;
-          font-weight: 800;
-          color: white;
-          letter-spacing: -0.02em;
+        [data-theme="dark"] .hero-card-img {
+          filter: drop-shadow(0 26px 54px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 24px rgba(37, 99, 235, 0.25));
         }
 
-        .price-badge-sub {
-          font-size: 10px;
-          color: rgba(255, 255, 255, 0.65);
-        }
-
-        /* ===== HERO RIGHT LIGHT MODE SUPPORT ===== */
-        [data-theme="light"] .hero-right {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          box-shadow: 0 20px 50px rgba(37, 99, 235, 0.08), 0 4px 12px rgba(15, 23, 42, 0.04);
-        }
-
-        [data-theme="light"] .hero-right::after {
-          background: radial-gradient(circle, rgba(191, 219, 254, 0.4) 0%, transparent 70%);
-        }
-
-        [data-theme="light"] .hero-feature-item {
-          color: #0f172a;
-          font-weight: 600;
-        }
-
-        [data-theme="light"] .hero-feature-item span {
-          color: #0f172a;
-        }
-
-        [data-theme="light"] .hero-feature-item svg,
-        [data-theme="light"] .hero-feature-item .feature-check-svg {
-          color: #2563eb;
-          stroke: #2563eb;
-        }
-
-        [data-theme="light"] .hero-badge-item {
-          color: #0f172a;
-          font-weight: 700;
-        }
-
-        [data-theme="light"] .hero-badge-item span {
-          color: #0f172a;
-        }
-
-        [data-theme="light"] .hero-badge-icon {
-          border: 1.5px solid rgba(37, 99, 235, 0.35);
-          color: #2563eb;
-          background: rgba(37, 99, 235, 0.08);
-        }
-
-        [data-theme="light"] .hero-badge-icon svg {
-          stroke: #2563eb;
-        }
-
-        [data-theme="light"] .ai-badge-icon .ai-text {
-          color: #2563eb;
-        }
-
-        [data-theme="light"] .hero-mockup-img {
-          filter: drop-shadow(0 20px 40px rgba(37, 99, 235, 0.16));
-        }
-
-        [data-theme="light"] .hero-price-badge {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(37, 99, 235, 0.22);
-          box-shadow: 0 10px 30px rgba(37, 99, 235, 0.12);
-        }
-
-        [data-theme="light"] .price-badge-icon {
-          color: #2563eb;
-        }
-
-        [data-theme="light"] .price-badge-label {
-          color: #2563eb;
-          font-weight: 700;
-        }
-
-        [data-theme="light"] .price-badge-amount {
-          color: #0f172a;
-          font-weight: 800;
-        }
-
-        [data-theme="light"] .price-badge-sub {
-          color: #64748b;
-          font-weight: 500;
+        [data-theme="light"] .hero-card-img {
+          filter: drop-shadow(0 24px 50px rgba(37, 99, 235, 0.2)) drop-shadow(0 4px 18px rgba(15, 23, 42, 0.08));
         }
 
         [data-theme="light"] .bento-large {
@@ -1291,22 +1103,17 @@
             padding: 30px 0 20px;
           }
           .hero-right {
-            margin: 0 0 22px;
-            border-radius: 26px;
+            margin: 10px 0 24px;
+            border-radius: 0;
             min-height: auto;
-            padding: 28px 20px 24px;
+            padding: 0;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
           }
-          .hero-top-row {
-            flex-direction: column;
-            gap: 16px;
-          }
-          .hero-mockup-img {
-            max-width: 100%;
-          }
-          .hero-price-badge {
-            position: static;
-            align-self: flex-end;
-            margin-top: 14px;
+          .hero-card-container {
+            max-width: 480px;
+            margin: 0 auto;
           }
           .sectors-band,
           .features-band {
@@ -1323,6 +1130,12 @@
         }
 
         @media (max-width: 560px) {
+          .hero-card-container {
+            max-width: 100%;
+          }
+          .hero-card-img {
+            border-radius: 20px;
+          }
           .hero-actions {
             flex-direction: column;
             align-items: stretch;
