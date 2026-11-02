@@ -12,6 +12,7 @@ import {
   HelpCircle,
   Landmark,
   Loader2,
+  Receipt,
   Send,
   ShieldAlert,
   ShieldCheck,
@@ -225,14 +226,150 @@ function PaymentContent() {
             </span>
           </div>
 
-          <p style={{ margin: "0 0 18px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.75)" }}>
+          <p style={{ margin: "0 0 14px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(191,219,254,0.75)" }}>
             Step 3 of 3 • Workspace Activation
           </p>
-          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(34px, 3.5vw, 54px)", lineHeight: 1.02, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
+          <h1 style={{ margin: 0, fontFamily: '"Instrument Serif", Georgia, serif', fontSize: "clamp(30px, 3.2vw, 48px)", lineHeight: 1.05, color: "white", fontWeight: 400, letterSpacing: "-0.01em" }}>
             Activate your<br />company<br />
             <span style={{ fontStyle: "italic", color: "#bfdbfe" }}>workspace.</span>
           </h1>
-          <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
+
+          {/* ================= REAL CHECKOUT SUMMARY CARD ================= */}
+          <div
+            style={{
+              margin: "24px auto",
+              width: "100%",
+              maxWidth: 440,
+              background: "rgba(255, 255, 255, 0.08)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1.5px solid rgba(255, 255, 255, 0.2)",
+              borderRadius: 18,
+              padding: "22px 24px",
+              boxShadow: "0 20px 45px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25)",
+              color: "#ffffff",
+              boxSizing: "border-box"
+            }}
+          >
+            {/* Header row */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <Receipt size={15} style={{ color: "#93c5fd" }} />
+                <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#ffffff" }}>
+                  Checkout Summary
+                </span>
+              </div>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  padding: "3px 9px",
+                  borderRadius: 20,
+                  background: "rgba(34, 197, 94, 0.22)",
+                  border: "1px solid rgba(74, 222, 128, 0.5)",
+                  color: "#86efac",
+                }}
+              >
+                Annual • 365 Days
+              </span>
+            </div>
+
+            {/* Plan item */}
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#ffffff", lineHeight: 1.25 }}>
+                Beyond ERP Enterprise Suite
+              </div>
+              <div style={{ fontSize: 12, color: "rgba(219, 234, 254, 0.8)", marginTop: 3 }}>
+                Full system access • Offline-first sync • 3 local languages
+              </div>
+            </div>
+
+            {/* Dotted receipt divider */}
+            <div style={{ borderTop: "1px dashed rgba(255, 255, 255, 0.22)", margin: "14px 0" }} />
+
+            {/* Price Breakdown Table */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 9, fontSize: 13 }}>
+              {/* Subtotal */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Subtotal (365 days @ 100 ETB/day)</span>
+                <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
+                  36,500.00 ETB
+                </span>
+              </div>
+
+              {/* Discount */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Annual Discount</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, background: "rgba(34, 197, 94, 0.22)", color: "#86efac", padding: "1px 5px", borderRadius: 4 }}>
+                    Promo
+                  </span>
+                </div>
+                <span style={{ fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>
+                  - 848.00 ETB
+                </span>
+              </div>
+
+              {/* Net Taxable Amount */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: "rgba(219, 234, 254, 0.75)", fontSize: 12 }}>Net Taxable Base</span>
+                <span style={{ fontWeight: 600, color: "rgba(219, 234, 254, 0.9)", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
+                  35,652.00 ETB
+                </span>
+              </div>
+
+              {/* VAT 15% */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>VAT (15%)</span>
+                <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
+                  + 5,348.00 ETB
+                </span>
+              </div>
+            </div>
+
+            {/* Total Divider */}
+            <div style={{ borderTop: "1.5px solid rgba(255, 255, 255, 0.3)", margin: "14px 0 12px" }} />
+
+            {/* Total Payable Row */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#bfdbfe" }}>
+                  Total Payable
+                </div>
+                <div style={{ fontSize: 11, color: "rgba(219, 234, 254, 0.7)", marginTop: 2 }}>
+                  Official VAT invoice provided
+                </div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 26, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                  41,000 <span style={{ fontSize: 14, fontWeight: 700, color: "#93c5fd" }}>ETB</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust badge */}
+            <div
+              style={{
+                marginTop: 14,
+                padding: "8px 12px",
+                borderRadius: 9,
+                background: "rgba(15, 23, 42, 0.35)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 11,
+                color: "rgba(219, 234, 254, 0.9)"
+              }}
+            >
+              <ShieldCheck size={14} style={{ color: "#86efac", flexShrink: 0 }} />
+              <span>Full 1-year license • Instant activation upon receipt upload</span>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {([
               { icon: <Zap size={14} />, label: "Instant CBE & Telebirr direct transfer" },
               { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@beyond_et)" },
@@ -355,6 +492,53 @@ function PaymentContent() {
                 }}
               >
                 Edit Details
+              </button>
+            </div>
+
+            {/* Amount Due Banner */}
+            <div
+              style={{
+                marginBottom: 16,
+                padding: "14px 18px",
+                borderRadius: 12,
+                background: dark ? "rgba(37,99,235,0.12)" : "#eff6ff",
+                border: "1.5px solid rgba(37,99,235,0.28)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                flexWrap: "wrap"
+              }}
+            >
+              <div>
+                <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  Amount to Transfer
+                </p>
+                <p style={{ margin: 0, fontSize: 20, fontWeight: 900, color: ink, letterSpacing: "-0.01em" }}>
+                  41,000 ETB <span style={{ fontSize: 12, fontWeight: 600, color: muted }}>(Annual 365 Days • 15% VAT Included)</span>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy("41000", "Amount 41,000 ETB")}
+                style={{
+                  height: 32,
+                  padding: "0 12px",
+                  borderRadius: 7,
+                  border: "1px solid #2563eb",
+                  background: copied === "Amount 41,000 ETB" ? "#16a34a" : "transparent",
+                  color: copied === "Amount 41,000 ETB" ? "#ffffff" : "#2563eb",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  transition: "all 0.15s"
+                }}
+              >
+                {copied === "Amount 41,000 ETB" ? <Check size={13} /> : <Copy size={13} />}
+                {copied === "Amount 41,000 ETB" ? "Copied" : "Copy 41,000"}
               </button>
             </div>
 

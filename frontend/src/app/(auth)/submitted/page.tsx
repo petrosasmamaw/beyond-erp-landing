@@ -127,10 +127,11 @@ export default function SubmittedPage() {
               fontWeight: 800,
               fontSize: 22,
               letterSpacing: "-0.02em",
+              color: dark ? "#ffffff" : "#2563eb",
+              transition: "color 0.15s ease",
             }}
           >
-            <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
-            <span style={{ color: "#2563eb" }}>ERP</span>
+            Beyond ERP
           </div>
         </div>
 
