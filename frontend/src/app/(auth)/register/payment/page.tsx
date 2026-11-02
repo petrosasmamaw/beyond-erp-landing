@@ -282,12 +282,7 @@ function PaymentContent() {
 
               {/* Discount */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Discount</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, background: "rgba(34, 197, 94, 0.22)", color: "#86efac", padding: "1px 5px", borderRadius: 4 }}>
-                    Promo
-                  </span>
-                </div>
+                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Discount</span>
                 <span style={{ fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>
                   - 848.00 ETB
                 </span>
