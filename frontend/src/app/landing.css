@@ -3,6 +3,14 @@
    Eliminates FOUC (Flash of Unstyled Content) by statically bundling CSS
    ========================================================================== */
 
+@font-face {
+  font-family: "Balderasu";
+  src: url("/fonts/balderasu.ttf") format("truetype");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --landing-page-bg: #070b14;
   --landing-card-bg: #0d1422;
@@ -193,17 +201,26 @@
 
         .hero-title {
           margin: 0;
-          font-family: "Instrument Serif", Georgia, serif;
-          font-weight: 400;
-          font-size: clamp(44px, 5.4vw, 72px);
-          line-height: 1.02;
-          letter-spacing: -0.02em;
-          color: var(--landing-ink);
+          font-family: "Balderasu", "Noto Sans Ethiopic", system-ui, -apple-system, sans-serif;
+          font-weight: 700;
+          font-size: clamp(38px, 4.4vw, 62px);
+          line-height: 1.16;
+          letter-spacing: 0.01em;
+          color: #1d4ed8;
+          transition: color 0.2s ease;
+        }
+
+        [data-theme="dark"] .hero-title {
+          color: #60a5fa;
+        }
+
+        [data-theme="light"] .hero-title {
+          color: #1d4ed8;
         }
 
         .hero-title em {
-          font-style: italic;
-          color: var(--landing-blue);
+          font-style: normal;
+          color: inherit;
         }
 
         .hero-copy {

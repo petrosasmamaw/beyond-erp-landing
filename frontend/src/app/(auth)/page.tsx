@@ -86,9 +86,9 @@ export default function LandingPage() {
           <div className="hero-left">
             <div className="hero-eyebrow">ENTERPRISE OPERATING SYSTEM</div>
             <h1 className="hero-title">
-              Empower Your<br />
-              Business with<br />
-              <em>Modern</em> Solutions
+              ከዛሬ ጀምሮ ፣<br />
+              ንግድዎን በቀላሉ<br />
+              ያስተዳድሩ
             </h1>
             <p className="hero-copy">
               The unified ERP &amp; CRM platform for modern businesses. Automated tax filing, compliance-ready ledgers, seamless payments, and offline-first workflows.
