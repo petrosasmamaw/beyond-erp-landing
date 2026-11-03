@@ -5,6 +5,7 @@
   "type": "module",
   "main": "dist/src/index.js",
   "scripts": {
+    "predev": "node ../scripts/free-ports.js",
     "dev": "tsx watch src/index.ts",
     "build": "prisma generate && tsc -p tsconfig.json",
     "start": "node dist/src/index.js",

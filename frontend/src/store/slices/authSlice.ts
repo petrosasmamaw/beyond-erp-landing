@@ -59,3 +59,4 @@ export const authSlice = createSlice({
 
 export const { loginAsDemo, login, switchRole, logout } = authSlice.actions;
 export default authSlice.reducer;
+

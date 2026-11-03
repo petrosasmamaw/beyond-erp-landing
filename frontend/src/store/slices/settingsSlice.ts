@@ -25,3 +25,4 @@ export const settingsSlice = createSlice({
 
 export const { updateSettings, resetSettingsToDefault } = settingsSlice.actions;
 export default settingsSlice.reducer;
+

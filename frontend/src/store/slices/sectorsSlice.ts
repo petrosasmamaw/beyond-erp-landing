@@ -77,3 +77,4 @@ export const {
 } = sectorsSlice.actions;
 
 export default sectorsSlice.reducer;
+

@@ -135,3 +135,4 @@ export const INITIAL_SECTOR_RECORDS: SectorRecord[] = [
   { id: "sr1", sectorId: "healthcare", recordType: "Patient", title: "Aster Mengistu (MRN-9021)", ownerName: "Dr. Abebe Bekele", status: "ACTIVE", value: 4500, metadata: { triage: "OPD Normal", bloodGroup: "O+" }, createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
   { id: "sr2", sectorId: "healthcare", recordType: "Patient", title: "Kassahun Desta (MRN-9022)", ownerName: "Dr. Abebe Bekele", status: "ACTIVE", value: 12000, metadata: { triage: "Surgical Observation", bloodGroup: "A+" }, createdAt: new Date(Date.now() - 1 * 86400000).toISOString() },
 ];
+

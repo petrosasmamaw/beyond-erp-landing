@@ -4,7 +4,9 @@
   "private": true,
   "description": "Beyond ERP - Enterprise Resource Planning System",
   "scripts": {
-    "dev": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "clean:ports": "node scripts/free-ports.js",
+    "predev": "node scripts/free-ports.js",
+    "dev": "node scripts/free-ports.js && concurrently -k -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "start": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"npm run start --prefix backend\" \"npm run start --prefix frontend\"",
     "dev:backend": "npm run dev --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend",

@@ -49,3 +49,4 @@ export function getEthiopianHoliday(date = new Date()): string | null {
 export function validateEthiopianPhone(phone: string): boolean {
   return /^(\+251|0)?[97]\d{8}$/.test(phone.replace(/[\s\-]/g, ""));
 }
+
