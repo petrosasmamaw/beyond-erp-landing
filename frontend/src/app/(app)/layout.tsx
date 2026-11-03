@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Download, FileText, Loader2, LogOut, RefreshCcw } from "lucide-react";
+import { ChevronDown, Download, FileText, Loader2, LogOut, RefreshCcw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout as reduxLogout } from "@/store/slices/authSlice";
+import { openModal } from "@/store/slices/uiSlice";
 import { getSectorDefinition } from "@/features/erp/config";
 import { getInitials, getTimeOfDay } from "@/lib/format";
 import { readOperationQueue, readQueue } from "@/features/erp/offline";
@@ -24,6 +25,7 @@ import { WorkItemModal } from "@/components/modals/WorkItemModal";
 import { SectorRecordModal } from "@/components/modals/SectorRecordModal";
 import { DomainWorkflowModal } from "@/components/modals/DomainWorkflowModal";
 import { FailedOpsModal } from "@/components/modals/FailedOpsModal";
+import { SectorSelectModal } from "@/components/modals/SectorSelectModal";
 
 const SIDEBAR_KEY = "beyond_sidebar_collapsed";
 
@@ -97,9 +99,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const reduxSectorId = useAppSelector((state) => state.sectors.activeSectorId);
+  const reduxCompanyName = useAppSelector(
+    (state) => state.auth.user?.companyName ?? state.settings.settings?.companyName
+  );
+
   const language = settings?.language ?? "English";
-  const companyName = user.companyName ?? settings?.companyName ?? "Beyond ERP";
-  const companySector = getSectorDefinition(user.companySectorId ?? settings?.companySectorId ?? "");
+  const companyName = reduxCompanyName ?? user.companyName ?? settings?.companyName ?? "Beyond ERP";
+  const companySector = getSectorDefinition(reduxSectorId ?? user.companySectorId ?? settings?.companySectorId ?? "");
 
   return (
     <main className="app-shell">
@@ -125,9 +132,46 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div style={{ fontSize: 11, color: "var(--muted)", fontWeight: 600, lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 {getTimeOfDay()} · {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" })}
               </div>
-              <strong style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", lineHeight: 1.25, display: "block", marginTop: 2 }}>
-                {companyName}
-              </strong>
+              <button
+                type="button"
+                onClick={() => dispatch(openModal({ type: "sector-select" }))}
+                title="Click to switch Ethiopian industry sector workspace"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 7,
+                  marginTop: 3,
+                  padding: "4px 10px 4px 8px",
+                  borderRadius: 8,
+                  background: "rgba(37, 99, 235, 0.12)",
+                  border: "1px solid rgba(37, 99, 235, 0.28)",
+                  color: "var(--ink, #ffffff)",
+                  cursor: "pointer",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  transition: "all 0.15s ease",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(37, 99, 235, 0.22)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(37, 99, 235, 0.12)")}
+              >
+                <span
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 5,
+                    background: companySector?.color ? `${companySector.color}25` : "rgba(37, 99, 235, 0.2)",
+                    color: companySector?.color || "#3b82f6",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 11,
+                  }}
+                >
+                  <i className={companySector?.icon || "fa-solid fa-building"} />
+                </span>
+                <span>{companyName}</span>
+                <ChevronDown size={14} style={{ color: "var(--muted, #94a3b8)", marginLeft: 2 }} />
+              </button>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -239,6 +283,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <SectorRecordModal />
       <DomainWorkflowModal />
       <FailedOpsModal />
+      <SectorSelectModal />
     </main>
   );
 }

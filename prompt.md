@@ -1,93 +1,168 @@
-# Master Specification & Prompt: Building an In-Memory Redux Toolkit Demo of Beyond ERP
+# Master Specification & Prompt: Building an In-Memory Redux Toolkit Multi-Sector Demo of Beyond ERP
 
 > **Instructions for the Code Agent**:
-> You are tasked with integrating an **interactive, fully functional, 100% client-side DEMO of Beyond ERP** into an existing web application.
+> You are tasked with integrating an **interactive, fully functional, 100% client-side MULTI-SECTOR DEMO of Beyond ERP** into an existing web application.
 > 
 > **CRITICAL ARCHITECTURAL CONSTRAINTS**:
-> 1. **ZERO BACKEND / ZERO API / ZERO DATABASE**: The demo must NOT require any backend server, Express API, Prisma, PostgreSQL, or external network requests.
-> 2. **STATE DRIVEN BY REDUX TOOLKIT**: All business logic, CRUD operations, transactions, staff, invoicing, approvals, permissions, and settings must be managed exclusively in **Redux Toolkit (`@reduxjs/toolkit` + `react-redux`)**.
+> 1. **ZERO BACKEND / ZERO API / ZERO DATABASE**: The demo must NOT require any backend server, Express API, Prisma, PostgreSQL, Supabase, or external network requests.
+> 2. **STATE DRIVEN EXCLUSIVELY BY REDUX TOOLKIT**: All business logic, CRUD operations, transactions, staff, invoicing, approvals, permissions, settings, and sector data must be managed exclusively in **Redux Toolkit (`@reduxjs/toolkit` + `react-redux`)**.
 > 3. **DISAPPEAR ON PAGE RELOAD (TRANSIENT IN-MEMORY STATE)**: When the user refreshes or reloads the browser (`F5` or Cmd+R), **all modified state must cleanly reset / disappear** back to the initial pristine demo state (or back to the login screen). Do NOT persist transactional edits to `localStorage` or `IndexedDB`.
-> 4. **LOGIN PAGE "TRY DEMO" INTEGRATION**: On the target website's login page, directly next to or beneath the login inputs, provide a prominent, high-converting **"⚡ Try Live Demo"** button. Clicking this button immediately logs the user into the complete demo ERP as an `OWNER` without asking for credentials.
-> 5. **100% IDENTICAL UI & UX**: The visual design, layouts, dark/light themes, typography, Ethiopian localization, icons, 8 core views, and 11 modals must be virtually indistinguishable from the flagship Beyond ERP production system.
+> 4. **INTERACTIVE SECTOR SELECTION ON "TRY DEMO"**:
+>    - On the target website's login page, right next to or beneath the login inputs, provide a prominent, high-converting **"⚡ Try Live Demo"** button.
+>    - Clicking "Try Live Demo" presents the user with an **Interactive Sector Selector (Modal or Overlay)** featuring all **12 authentic Ethiopian Sectors** (Retail & Trade, Healthcare, Agriculture, Construction, Manufacturing, Education, Hospitality, Transport/Logistics, SACCO & Microfinance, Real Estate, NGO & Development, Government Services).
+>    - Clicking any sector card automatically provisions a dedicated, realistic company workspace tailored specifically to that sector and routes directly to `/dashboard`.
+> 5. **DYNAMIC IN-APP SECTOR SWITCHING**:
+>    - Inside the demo ERP workspace, the Topbar and Sidebar include a persistent **Sector Switcher Pill / Dropdown** (e.g., `[ 🏥 Healthcare: Selam Hospital ▾ ]`).
+>    - The user can switch to ANY of the 12 sectors on the fly at any time. Switching dynamically adapts the company name, TIN, sidebar sub-modules, sector KPIs, domain records, and task boards instantly without page reload.
+> 6. **100% IDENTICAL UI & UX**: The visual design, layouts, dark/light themes, typography, Ethiopian localization, icons, 8 core views, and 12 interactive modals must be virtually indistinguishable from the flagship Beyond ERP production system.
 
 ---
 
 ## Table of Contents
 1. [Target Experience & User Journey](#1-target-experience--user-journey)
-2. [Login Page "Try Demo" Integration](#2-login-page-try-demo-integration)
-3. [TypeScript Entity & Model Definitions](#3-typescript-entity--model-definitions)
-4. [Redux Toolkit Store Architecture & Slices](#4-redux-toolkit-store-architecture--slices)
-5. [Complete Initial Demo Seed Dataset](#5-complete-initial-demo-seed-dataset)
-6. [Ethiopian Localization & Regulatory Business Rules](#6-ethiopian-localization--regulatory-business-rules)
-7. [Visual Design System & Styling (Tailwind / CSS)](#7-visual-design-system--styling-tailwind--css)
-8. [ERP Shell Layout, Sidebar & Topbar](#8-erp-shell-layout-sidebar--topbar)
-9. [Detailed Specifications for the 8 Core Views](#9-detailed-specifications-for-the-8-core-views)
-10. [Detailed Specifications for the 11 Interactive Modals](#10-detailed-specifications-for-the-11-interactive-modals)
-11. [Agent Step-by-Step Implementation Guide](#11-agent-step-by-step-implementation-guide)
+2. [Login Page "Try Demo" & 12-Sector Selection Launcher](#2-login-page-try-demo--12-sector-selection-launcher)
+3. [The 12 Ethiopian Sectors Blueprint](#3-the-12-ethiopian-sectors-blueprint)
+4. [TypeScript Entity & Model Definitions](#4-typescript-entity--model-definitions)
+5. [Redux Toolkit Store Architecture & Slices](#5-redux-toolkit-store-architecture--slices)
+6. [Complete Seed Dataset for All 12 Sectors](#6-complete-seed-dataset-for-all-12-sectors)
+7. [Ethiopian Localization & Regulatory Business Rules](#7-ethiopian-localization--regulatory-business-rules)
+8. [Visual Design System & Styling (Tailwind / CSS)](#8-visual-design-system--styling-tailwind--css)
+9. [ERP Shell Layout, Dynamic Sidebar & Topbar](#9-erp-shell-layout-dynamic-sidebar--topbar)
+10. [Detailed Specifications for the 8 Core Views](#10-detailed-specifications-for-the-8-core-views)
+11. [Detailed Specifications for the 12 Interactive Modals](#11-detailed-specifications-for-the-12-interactive-modals)
+12. [Agent Step-by-Step Implementation Guide](#12-agent-step-by-step-implementation-guide)
 
 ---
 
 ## 1. Target Experience & User Journey
 
-1. **Discovery on Login**: A visitor navigates to the website's `/login` page. Right next to the email/password fields or below the submit button, they see an eye-catching action: **"⚡ Explore Live Demo (Instant Access)"**.
-2. **One-Click Instant Access**: Clicking "Try Demo" triggers a Redux action `loginAsDemo()` which initializes the in-memory Redux state and redirects the user to `/dashboard` (or `/demo/dashboard`).
-3. **Full Interactive ERP Workspace**:
-   - The user sees a live dashboard with realistic Ethiopian company figures (ETB 264,000 revenue, 15% VAT calculations, 12-month bar chart, quick actions).
-   - The user can add, edit, or delete transactions; add staff; approve expense requests; issue VAT invoices; run payroll; explore 12 Ethiopian sector workflows; switch roles; and toggle themes.
-   - Every action updates the Redux store instantly with realistic toast notifications.
-4. **Transient Reset**: If the user reloads the page, all additions/deletions vanish and return to the pristine initial demo state, exactly satisfying the requirement that the demo is ephemeral and disappears on reload.
+1. **Discovery on Login**: A visitor navigates to the website's `/login` page. Right next to the email/password fields or below the submit button, they see an eye-catching action: **"⚡ Try Live Demo (Instant Access)"**.
+2. **Interactive Sector Selection**:
+   - Clicking "Try Live Demo" opens a clean, responsive **Sector Selection Modal** displaying all **12 Ethiopian business sectors**.
+   - Each sector card displays its distinct icon, brand color, official Ethiopian enterprise name (e.g., *Merkato Wholesale*, *Selam Hospital*, *Hawassa Garments*, *Rift Valley Farms*), description, and key module pills.
+   - The user selects their sector of interest (or clicks "Quick Start" for default Retail).
+3. **Provisioning In-Memory Workspace**:
+   - Redux dispatches `loginAsDemo({ sectorId })`.
+   - The in-memory state is seeded with that sector's company profile, staff, transactions, invoices, work items, and sector-specific domain records.
+   - The router pushes to `/dashboard`.
+4. **Seamless Sector Switching Inside the App**:
+   - While exploring, the user clicks the Sector Switcher in the topbar or sidebar.
+   - A dropdown or drawer lets them switch from Healthcare to Agriculture or Construction with a single click. The sidebar updates its modules, the company header changes, and the records table adapts seamlessly.
+5. **Transient Ephemeral Reset**:
+   - If the user reloads the browser (`F5` or Cmd+R), all in-memory changes disappear and the app cleanly returns to the initial state, satisfying the requirement that the demo leaves no persistent traces in storage.
 
 ---
 
-## 2. Login Page "Try Demo" Integration
+## 2. Login Page "Try Demo" & 12-Sector Selection Launcher
 
 In the existing login page component (e.g. `src/app/(auth)/login/page.tsx` or similar):
 
 ### UI Placement
-Place the Demo trigger directly in the right form card:
-- Provide a secondary hero button or split action container:
-  ```tsx
-  {/* Primary Sign In Button */}
-  <button type="submit" className="btn-primary">
-    Sign in
-  </button>
+Place the Demo trigger directly in the login form container:
+```tsx
+{/* Primary Sign In Button */}
+<button type="submit" className="btn-primary">
+  Sign in
+</button>
 
-  {/* Instant Demo Divider */}
-  <div className="flex items-center gap-3 my-4">
-    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-    <span className="text-xs uppercase font-bold text-slate-400">Or Experience Instantly</span>
-    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+{/* Instant Demo Divider */}
+<div className="flex items-center gap-3 my-4">
+  <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+  <span className="text-xs uppercase font-bold text-slate-400">Or Experience Instantly</span>
+  <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+</div>
+
+{/* TRY DEMO BUTTON (Opens Sector Modal) */}
+<button
+  type="button"
+  onClick={() => dispatch(openModal({ type: "sector-select" }))}
+  className="w-full h-11 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
+>
+  <span className="text-base">⚡</span>
+  <span>Try Interactive Demo — Choose Sector</span>
+</button>
+```
+
+### The Sector Selector Modal (`SectorSelectModal.tsx`)
+When opened, renders a 12-card grid (searchable by keyword):
+```tsx
+<Modal title="Choose Your Industry Sector Demo" isOpen={isOpen} onClose={closeModal} maxWidth="max-w-4xl">
+  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+    Select an Ethiopian business sector to explore its pre-configured modules, tax rules, and workflows:
+  </p>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[70vh] overflow-y-auto pr-1">
+    {SECTORS_CATALOG.map((sec) => (
+      <button
+        key={sec.id}
+        onClick={() => {
+          dispatch(loginAsDemo({ sectorId: sec.id, companyName: sec.defaultCompanyName }));
+          dispatch(closeModal());
+          router.push("/dashboard");
+        }}
+        className="flex flex-col text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 bg-slate-50 dark:bg-slate-900/60 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-all group"
+      >
+        <div className="flex items-center gap-3 mb-2">
+          <div
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-sm"
+            style={{ background: `${sec.color}18`, color: sec.color }}
+          >
+            <i className={sec.icon} />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+              {sec.name}
+            </h4>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              {sec.defaultCompanyName}
+            </span>
+          </div>
+        </div>
+        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-2.5">
+          {sec.description}
+        </p>
+        <div className="flex flex-wrap gap-1 mt-auto">
+          {sec.keyModules.slice(0, 3).map((mod) => (
+            <span key={mod} className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+              {mod}
+            </span>
+          ))}
+          {sec.keyModules.length > 3 && (
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800 text-slate-400">
+              +{sec.keyModules.length - 3}
+            </span>
+          )}
+        </div>
+      </button>
+    ))}
   </div>
-
-  {/* TRY DEMO BUTTON */}
-  <button
-    type="button"
-    onClick={handleTryDemo}
-    className="w-full h-11 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
-  >
-    <span className="text-base">⚡</span>
-    <span>Try Interactive Demo (No Sign-up)</span>
-  </button>
-  ```
-
-### Optional Quick Sector Dropdown / Preset Selector
-Allow the user to test different Ethiopian sector workspaces with 1 click:
-- `Selam Medical Center` (Healthcare · Hospital & Clinic)
-- `Merkato Wholesale PLC` (Retail & Trade · Merchandise & POS)
-- `Rift Valley Agro Farm` (Agriculture · Crops & Livestock)
-- `Ethio Freight Logistics` (Transport · Fleet & Freight)
-
-### Redux Dispatch on Click
-```ts
-const handleTryDemo = (sectorId: string = "healthcare") => {
-  dispatch(loginAsDemo({ sectorId }));
-  router.push("/dashboard");
-};
+</Modal>
 ```
 
 ---
 
-## 3. TypeScript Entity & Model Definitions
+## 3. The 12 Ethiopian Sectors Blueprint
+
+Every sector in Beyond ERP has its own dedicated Ethiopian identity, specific modules, and custom domain entities:
+
+| Sector ID | Sector Name | Default Company Name | Color | Key Operational Modules | Custom Domain Records |
+|---|---|---|---|---|---|
+| `retail-trading` | **Retail & Trading** | Merkato Wholesale & Retail PLC | `#f59e0b` | POS Checkout, Inventory, SKU Products, Customers, Suppliers, Sales Reports | Products (SKU, Price, Stock), Barcode Tags |
+| `manufacturing` | **Manufacturing & Processing** | Hawassa Industrial Garments & Textile PLC | `#3b82f6` | BOM Costing, Production Orders, Quality Assurance, Machinery, Shifts, Finished Goods | Production Batches, Machine Maintenance, QA Inspections |
+| `agriculture` | **Agriculture & Farming** | Rift Valley Coffee & Horticulture Farms PLC | `#10b981` | Crop Cycles, Livestock Events, Input Distribution, Harvest Yields, Warehouses, Cooperatives | Crop Blocks (Hectares, Yield), Livestock Tags, Fertilizer Inflow |
+| `construction` | **Construction & Contracting** | Abyssinia Civil Engineering & Contracting PLC | `#ea580c` | Project Budgets, Daily Site Reports, Subcontractors, Plant Machinery, Safety Log, Client Billing | Project Sites (Bole Tower), Heavy Equipment Hours, BOQ Items |
+| `healthcare` | **Healthcare & Specialized Clinics** | Selam General Hospital & Specialized Clinic | `#dc2626` | Patients EMR, Queue & OPD, Appointments, Inpatient & Beds, Pharmacy, Prescriptions, Lab & Radiology, Billing & Claims, EHMIS | Patient MRN Charts, Triage OPD Queue, Prescription Slips, Lab Orders |
+| `education` | **Education & Schools** | Horizon International Academy | `#8b5cf6` | Students Directory, Attendance, Grade Books, Timetable, Tuition Fees, National Exams | Student Enrollments, Semester Fee Records, Class Rosters |
+| `hospitality` | **Hotel & Hospitality** | Kuriftu Lakeside Resort & Conference Center | `#7c3aed` | Rooms & Rates, Bookings Folio, Restaurant / F&B, Housekeeping, Guests, Event Banquets | Room Units (Suites, Deluxe), Guest Folios, Event Hall Bookings |
+| `transport-logistics` | **Transport & Logistics** | Ethio-Djibouti Corridor Logistics & Freight PLC | `#b45309` | Fleet Prime Movers, Cargo Waybills, Highway Routes, Drivers Roster, Fuel Logs, Vehicle Maintenance | Fleet Trucks (Plate Numbers), Waybill Consignments, Fuel Vouchers |
+| `finance-banking` | **Microfinance & SACCOs** | Oromia Savings & Credit Cooperative (SACCO) | `#0284c7` | General Ledger, Member Savings, Microloan Schedules, Approvals, Reconciliations, Audit Cases | Member Passbooks, Loan Portfolio (Principal, Interest, Term) |
+| `real-estate` | **Real Estate & Property** | Noah Commercial & Residential Real Estate PLC | `#059669` | Properties Portfolio, Tenants Directory, Leases, Rent Roll, Maintenance Work Orders, Viewings | Property Units (Plazas, Apartments), Active Lease Agreements |
+| `ngo-development` | **NGO & Development Programs** | Hope for Children & Community Development Ethiopia | `#e11d48` | Donors & Funding, Grant Allocations, Beneficiaries, Procurement, Field Monitoring, Impact M&E | Grant Agreements, Community Outreach Rosters, Aid Distribution |
+| `government-services` | **Government Services** | Addis Ababa Sub-City Citizen & Public Services | `#64748b` | Permits & Licenses, Citizens Registry, Service Cases, Revenue Receipts, Document Vault, Service Counters | Business Trade Licenses, Municipal Permits, Counter Queue Tickets |
+
+---
+
+## 4. TypeScript Entity & Model Definitions
 
 Create `src/types/erp.ts`:
 
@@ -140,7 +215,7 @@ export interface Employee {
   fullName: string;
   position: string;
   department: string;
-  phone: string;         // Validated against Ethiopian format (+251 9... / 09...)
+  phone: string;         // +251 9...
   email?: string | null;
   salary: number;        // ETB
   status: EmployeeStatus;
@@ -205,7 +280,7 @@ export interface PayrollRun {
   period: string; // 'YYYY-MM'
   status: PayrollStatus;
   grossPay: number;
-  deductions: number; // 7.5% pension / tax estimate
+  deductions: number; // 7.5% pension
   netPay: number;
   items: {
     employeeId?: string;
@@ -231,13 +306,28 @@ export interface SectorWorkItem {
 export interface SectorRecord {
   id: string;
   sectorId: string;
-  recordType: string; // 'Product', 'Vehicle', 'Patient', 'Booking'
+  recordType: string; // 'Product', 'Vehicle', 'Patient', 'Booking', 'Crop', 'Project'
   title: string;
   ownerName?: string | null;
   status: "ACTIVE" | "PENDING" | "CLOSED";
   value?: number | null;
   metadata?: Record<string, unknown> | null;
   createdAt: string;
+}
+
+export interface SectorMeta {
+  id: string;
+  name: string;
+  shortName: string;
+  defaultCompanyName: string;
+  defaultTin: string;
+  icon: string;
+  color: string;
+  lightColor: string;
+  textColor: string;
+  description: string;
+  keyModules: string[];
+  navItems: { key: string; label: string; icon: string }[];
 }
 
 export interface Settings {
@@ -259,14 +349,9 @@ export interface Settings {
 
 ---
 
-## 4. Redux Toolkit Store Architecture & Slices
+## 5. Redux Toolkit Store Architecture & Slices
 
-Install packages in the target project:
-```bash
-npm install @reduxjs/toolkit react-redux lucide-react
-```
-
-### Store Root Configuration (`src/store/index.ts`)
+### Store Configuration (`src/store/index.ts`)
 ```ts
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
@@ -294,156 +379,385 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 ```
 
-### Slice Details
+### Slice Specifications
 
 #### 1. `authSlice.ts`
 - **State**: `user: User | null`, `isAuthenticated: boolean`, `isDemo: boolean`.
 - **Reducers**:
-  - `loginAsDemo(state, action: PayloadAction<{ sectorId?: string; companyName?: string }>)`: Sets pre-populated demo user (`role: "OWNER"`, permissions: all, sector set to payload).
-  - `switchRole(state, action: PayloadAction<UserRole>)`: Allows changing role on-the-fly to test RBAC (e.g. test as Staff or Viewer).
+  - `loginAsDemo(state, action: PayloadAction<{ sectorId: string; companyName?: string }>)`:
+    Initializes user with `role: "OWNER"`, permissions: all, `companySectorId` set to payload, and `companyName` set to the sector's default enterprise name.
+  - `switchRole(state, action: PayloadAction<UserRole>)`: Changes role between `OWNER`, `ADMIN`, `MANAGER`, `STAFF`, `VIEWER` on the fly.
   - `logout(state)`: Clears user, sets `isAuthenticated = false`.
 
-#### 2. `transactionsSlice.ts`
+#### 2. `sectorsSlice.ts` (Core of Multi-Sector Logic)
+- **State**:
+  - `activeSectorId: string`: Current selected sector (e.g. `'healthcare'`).
+  - `catalog: SectorMeta[]`: Full metadata array for all 12 sectors.
+  - `recordsBySector: Record<string, SectorRecord[]>`: Seed records indexed by sector ID.
+  - `workItemsBySector: Record<string, SectorWorkItem[]>`: Tasks indexed by sector ID.
+- **Reducers**:
+  - `switchSector(state, action: PayloadAction<string>)`: Changes `activeSectorId`.
+  - `addSectorRecord(state, action: PayloadAction<Omit<SectorRecord, "id" | "createdAt">>)`: Appends record to current sector.
+  - `deleteSectorRecord(state, action: PayloadAction<{ sectorId: string; id: string }>)`.
+  - `addWorkItem(state, action: PayloadAction<Omit<SectorWorkItem, "id" | "createdAt">>)`.
+  - `updateWorkItemStatus(state, action: PayloadAction<{ sectorId: string; id: string; status: WorkItemStatus }>)`.
+
+#### 3. `settingsSlice.ts`
+- **State**: `settings: Settings`.
+- **Extra Reducers**:
+  - Listening to `auth/loginAsDemo` and `sectors/switchSector`: Automatically synchronizes `settings.companySectorId` and `settings.companyName` with the chosen sector's default enterprise profile.
+  - `updateSettings(state, action: PayloadAction<Partial<Settings>>)`.
+  - `resetDemoSettings(state)`.
+
+#### 4. `transactionsSlice.ts`
 - **State**: `items: Transaction[]`, `search: string`, `filterType: "ALL" | "INCOME" | "EXPENSE"`, `filterSector: string`, `filterCategory: string`, `page: number`, `limit: number = 10`.
 - **Reducers**:
-  - `addTransaction(state, action: PayloadAction<Omit<Transaction, "id" | "createdAt" | "synced">>)`: Prepends a new transaction, auto-calculates 15% VAT if applicable, sets `synced: true`.
-  - `editTransaction(state, action: PayloadAction<Transaction>)`: Replaces existing item by id.
-  - `deleteTransaction(state, action: PayloadAction<string>)`: Removes item by id.
+  - `addTransaction`: Prepend transaction with auto 15% VAT.
+  - `editTransaction`: Replace item by ID.
+  - `deleteTransaction`: Filter out item.
   - `setSearch`, `setFilterType`, `setFilterSector`, `setPage`.
 
-#### 3. `employeesSlice.ts`
+#### 5. `employeesSlice.ts`
 - **State**: `items: Employee[]`, `search: string`, `filterDepartment: string`, `filterStatus: string`, `page: number`, `limit: number = 8`.
-- **Reducers**:
-  - `addEmployee(state, action: PayloadAction<Omit<Employee, "id" | "createdAt">>)`: Adds staff with generated id.
-  - `editEmployee(state, action: PayloadAction<Employee>)`: Updates staff details.
-  - `deleteEmployee(state, action: PayloadAction<string>)`: Removes staff.
-  - `toggleStatus(state, action: PayloadAction<string>)`: Flips `ACTIVE` <-> `INACTIVE`.
+- **Reducers**: `addEmployee`, `editEmployee`, `deleteEmployee`, `toggleStatus`, `setSearch`, `setFilterDepartment`.
 
-#### 4. `financeSlice.ts`
+#### 6. `financeSlice.ts`
 - **State**: `invoices: Invoice[]`, `receipts: Receipt[]`, `expenseApprovals: ExpenseApproval[]`, `chartOfAccounts: ChartAccount[]`, `payrollRuns: PayrollRun[]`.
-- **Reducers**:
-  - `createInvoice(state, action: PayloadAction<{ customerName: string; customerPhone?: string; items: InvoiceItem[]; sectorId?: string }>)`:
-    Calculates subtotal = sum(q * p), vatAmount = subtotal * 0.15, total = subtotal + vatAmount, generates `INV-2026-XXX`, status `SENT`.
-  - `updateInvoiceStatus(state, action: PayloadAction<{ id: string; status: InvoiceStatus }>)`.
-  - `createReceipt(state, action: PayloadAction<{ payerName: string; amount: number; paymentMethod: string }>)`.
-  - `createExpenseApproval(state, action: PayloadAction<{ title: string; amount: number; category: string; notes?: string }>)`: Generates approval with status `REQUESTED`.
-  - `handleApprovalAction(state, action: PayloadAction<{ id: string; action: "approve" | "reject" | "pay" }>)`: Transitions approval to `APPROVED`, `REJECTED`, or `PAID`.
-  - `createPayrollRun(state, action: PayloadAction<{ period: string; employees: Employee[] }>)`: Computes gross, 7.5% deduction, net pay, sets status `APPROVED`.
-
-#### 5. `sectorsSlice.ts`
-- **State**: `activeSectorId: string`, `sectors: Sector[]`, `workItems: SectorWorkItem[]`, `records: SectorRecord[]`.
-- **Reducers**:
-  - `setActiveSector(state, action: PayloadAction<string>)`: Changes current sector context (e.g. from retail to healthcare).
-  - `addWorkItem(state, action: PayloadAction<Omit<SectorWorkItem, "id" | "createdAt">>)`.
-  - `updateWorkItemStatus(state, action: PayloadAction<{ id: string; status: WorkItemStatus }>)`.
-  - `addSectorRecord(state, action: PayloadAction<Omit<SectorRecord, "id" | "createdAt">>)`.
-
-#### 6. `settingsSlice.ts`
-- **State**: `settings: Settings` initialized to Ethiopian defaults (`currency: "ETB"`, `taxRate: 15`, `language: "English"`, `telebirrEnabled: true`, `cbeEnabled: true`).
-- **Reducers**:
-  - `updateSettings(state, action: PayloadAction<Partial<Settings>>)`.
-  - `resetSettingsToDefault(state)`: Restores original demo setup.
+- **Reducers**: `createInvoice`, `updateInvoiceStatus`, `createReceipt`, `createExpenseApproval`, `handleApprovalAction`, `createPayrollRun`.
 
 #### 7. `uiSlice.ts`
-- **State**: `sidebarCollapsed: boolean = false`, `activeModal: string | null = null`, `modalData: any = null`, `toastMessage: string | null = null`, `theme: "dark" | "light" = "dark"`, `pendingSyncCount: number = 0`.
-- **Reducers**:
-  - `toggleSidebar(state)`, `setTheme(state, action: PayloadAction<"dark" | "light">)`.
-  - `openModal(state, action: PayloadAction<{ type: string; data?: any }>)`.
-  - `closeModal(state)`.
-  - `showToast(state, action: PayloadAction<string>)`.
-  - `hideToast(state)`.
-  - `simulateSync(state)`: Sets pending sync to 0 and shows toast "All operations synced to ledger".
+- **State**: `sidebarCollapsed: boolean`, `activeModal: string | null`, `modalData: any`, `toastMessage: string | null`, `theme: "dark" | "light"`.
+- **Reducers**: `toggleSidebar`, `setTheme`, `openModal`, `closeModal`, `showToast`, `hideToast`, `simulateSync`.
 
 ---
 
-## 5. Complete Initial Demo Seed Dataset
+## 6. Complete Seed Dataset for All 12 Sectors
 
-Embed these seed constants directly in `src/store/initialData.ts`:
+Place this complete catalog and seed dataset in `src/store/initialData.ts`:
 
-### User Seed
+### Catalog Definition for the 12 Sectors
 ```ts
-export const INITIAL_USER: User = {
-  id: "demo-user-1",
-  fullName: "Yohannes Getachew",
-  email: "yohannes@beyonderp.demo",
-  phone: "+251 91 123 4567",
-  companyName: "Selam Medical & Trading PLC",
-  companyTinNumber: "0012345678",
-  companySectorId: "healthcare",
-  role: "OWNER",
-  permissions: ["View", "Transactions", "Employees", "Finance", "Reports", "Users", "Settings"],
-  effectivePermissions: ["View", "Transactions", "Employees", "Finance", "Reports", "Users", "Settings"],
-  status: "ACTIVE",
-  lastLoginAt: new Date().toISOString(),
-  createdAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+export const SECTORS_CATALOG: SectorMeta[] = [
+  {
+    id: "retail-trading",
+    name: "Retail & Trading",
+    shortName: "Retail",
+    defaultCompanyName: "Merkato Wholesale & Supermarket PLC",
+    defaultTin: "0012345678",
+    icon: "fa-solid fa-store",
+    color: "#f59e0b",
+    lightColor: "#fffbeb",
+    textColor: "#b45309",
+    description: "POS checkout, barcode inventory, suppliers, and VAT invoices for Ethiopian merchants and wholesalers.",
+    keyModules: ["POS Checkout", "Inventory", "Products", "Customers", "Suppliers", "Sales Reports"],
+    navItems: [
+      { key: "pos", label: "POS Checkout", icon: "fa-solid fa-cash-register" },
+      { key: "inventory", label: "Inventory", icon: "fa-solid fa-boxes-stacked" },
+      { key: "products", label: "Products", icon: "fa-solid fa-tags" },
+      { key: "customers", label: "Customers", icon: "fa-solid fa-users" },
+      { key: "suppliers", label: "Suppliers", icon: "fa-solid fa-truck-field" },
+      { key: "sales-reports", label: "Sales Reports", icon: "fa-solid fa-chart-line" }
+    ]
+  },
+  {
+    id: "manufacturing",
+    name: "Manufacturing & Processing",
+    shortName: "Manufacturing",
+    defaultCompanyName: "Hawassa Industrial Garments & Textile PLC",
+    defaultTin: "0023456789",
+    icon: "fa-solid fa-industry",
+    color: "#3b82f6",
+    lightColor: "#eff6ff",
+    textColor: "#1d4ed8",
+    description: "Bill of materials (BOM), production batch tracking, machinery maintenance, quality control, and shift management.",
+    keyModules: ["BOM Costing", "Production Orders", "Quality Results", "Machinery", "Shifts", "Finished Goods"],
+    navItems: [
+      { key: "bom", label: "BOM Costing", icon: "fa-solid fa-diagram-project" },
+      { key: "production", label: "Production Orders", icon: "fa-solid fa-clipboard-list" },
+      { key: "quality", label: "Quality Results", icon: "fa-solid fa-clipboard-check" },
+      { key: "machinery", label: "Machinery", icon: "fa-solid fa-gears" },
+      { key: "shifts", label: "Shifts", icon: "fa-solid fa-clock" },
+      { key: "finished-goods", label: "Finished Goods", icon: "fa-solid fa-box" }
+    ]
+  },
+  {
+    id: "agriculture",
+    name: "Agriculture & Farming",
+    shortName: "Agriculture",
+    defaultCompanyName: "Rift Valley Coffee & Horticulture Farms PLC",
+    defaultTin: "0034567890",
+    icon: "fa-solid fa-seedling",
+    color: "#10b981",
+    lightColor: "#f0fdf4",
+    textColor: "#047857",
+    description: "Crop cycles, harvest yields, livestock tracking, warehouse storage, cooperative distribution, and weather logs.",
+    keyModules: ["Crop Cycles", "Livestock Events", "Input Distribution", "Harvest Yields", "Warehouses", "Cooperatives"],
+    navItems: [
+      { key: "crop-cycles", label: "Crop Cycles", icon: "fa-solid fa-seedling" },
+      { key: "livestock", label: "Livestock Events", icon: "fa-solid fa-leaf" },
+      { key: "inputs", label: "Input Distribution", icon: "fa-solid fa-sack-dollar" },
+      { key: "harvest", label: "Harvest Yields", icon: "fa-solid fa-wheat-awn" },
+      { key: "warehouses", label: "Warehouses", icon: "fa-solid fa-warehouse" },
+      { key: "cooperatives", label: "Cooperatives", icon: "fa-solid fa-people-group" }
+    ]
+  },
+  {
+    id: "construction",
+    name: "Construction & Contracting",
+    shortName: "Construction",
+    defaultCompanyName: "Abyssinia Civil Engineering & Contracting PLC",
+    defaultTin: "0045678901",
+    icon: "fa-solid fa-trowel-bricks",
+    color: "#ea580c",
+    lightColor: "#fff7ed",
+    textColor: "#c2410c",
+    description: "Project budget tracking, daily site progress reports, plant machinery hours, subcontractor contracts, and safety audits.",
+    keyModules: ["Project Budgets", "Site Reports", "Subcontractors", "Equipment", "Safety Log", "Client Billing"],
+    navItems: [
+      { key: "projects", label: "Project Budgets", icon: "fa-solid fa-chart-gantt" },
+      { key: "site-reports", label: "Site Reports", icon: "fa-solid fa-clipboard-list" },
+      { key: "subcontractors", label: "Subcontractors", icon: "fa-solid fa-file-contract" },
+      { key: "equipment", label: "Equipment", icon: "fa-solid fa-hammer" },
+      { key: "safety", label: "Safety Log", icon: "fa-solid fa-shield-halved" },
+      { key: "client-billing", label: "Client Billing", icon: "fa-solid fa-file-invoice-dollar" }
+    ]
+  },
+  {
+    id: "healthcare",
+    name: "Healthcare & Specialized Clinics",
+    shortName: "Healthcare",
+    defaultCompanyName: "Selam General Hospital & Specialized Clinic",
+    defaultTin: "0056789012",
+    icon: "fa-solid fa-heart-pulse",
+    color: "#dc2626",
+    lightColor: "#fef2f2",
+    textColor: "#b91c1c",
+    description: "Electronic Medical Records (EMR), OPD queues, inpatient beds, pharmacy dispensary, laboratory orders, and EHMIS reporting.",
+    keyModules: ["Patients EMR", "Queue & OPD", "Appointments", "IPD & Beds", "Pharmacy", "Prescriptions", "Lab & Radiology", "Billing & Claims", "EHMIS Reports"],
+    navItems: [
+      { key: "patients", label: "Patients", icon: "fa-solid fa-user-doctor" },
+      { key: "queue", label: "Queue & OPD", icon: "fa-solid fa-people-line" },
+      { key: "appointments", label: "Appointments", icon: "fa-solid fa-calendar-check" },
+      { key: "inpatient", label: "IPD & Beds", icon: "fa-solid fa-bed-pulse" },
+      { key: "pharmacy", label: "Pharmacy", icon: "fa-solid fa-pills" },
+      { key: "prescriptions", label: "Prescriptions", icon: "fa-solid fa-prescription" },
+      { key: "lab", label: "Lab & Radiology", icon: "fa-solid fa-vial-virus" },
+      { key: "billing", label: "Billing & Claims", icon: "fa-solid fa-receipt" }
+    ]
+  },
+  {
+    id: "education",
+    name: "Education & Schools",
+    shortName: "Education",
+    defaultCompanyName: "Horizon International Academy",
+    defaultTin: "0067890123",
+    icon: "fa-solid fa-graduation-cap",
+    color: "#8b5cf6",
+    lightColor: "#f5f3ff",
+    textColor: "#6d28d9",
+    description: "Student enrollments, attendance rosters, term grade books, class schedules, tuition payment tracking, and national exams.",
+    keyModules: ["Students", "Attendance", "Grade Books", "Timetable", "Fees", "Exams"],
+    navItems: [
+      { key: "students", label: "Students", icon: "fa-solid fa-user-graduate" },
+      { key: "attendance", label: "Attendance", icon: "fa-solid fa-clipboard-user" },
+      { key: "grades", label: "Grade Books", icon: "fa-solid fa-clipboard-check" },
+      { key: "timetable", label: "Timetable", icon: "fa-solid fa-calendar-days" },
+      { key: "fees", label: "Fees", icon: "fa-solid fa-money-check" },
+      { key: "exams", label: "Exams", icon: "fa-solid fa-certificate" }
+    ]
+  },
+  {
+    id: "hospitality",
+    name: "Hotel & Hospitality",
+    shortName: "Hospitality",
+    defaultCompanyName: "Kuriftu Lakeside Resort & Conference Center",
+    defaultTin: "0078901234",
+    icon: "fa-solid fa-hotel",
+    color: "#7c3aed",
+    lightColor: "#ede9fe",
+    textColor: "#6d28d9",
+    description: "Room booking engine, guest folios, restaurant point of sale, housekeeping status, banquet events, and concierge services.",
+    keyModules: ["Rooms", "Bookings", "Restaurant F&B", "Housekeeping", "Guests", "Events"],
+    navItems: [
+      { key: "rooms", label: "Rooms", icon: "fa-solid fa-door-open" },
+      { key: "bookings", label: "Bookings", icon: "fa-solid fa-calendar-check" },
+      { key: "restaurant", label: "Restaurant", icon: "fa-solid fa-utensils" },
+      { key: "housekeeping", label: "Housekeeping", icon: "fa-solid fa-broom" },
+      { key: "guests", label: "Guests", icon: "fa-solid fa-users" },
+      { key: "events", label: "Events", icon: "fa-solid fa-champagne-glasses" }
+    ]
+  },
+  {
+    id: "transport-logistics",
+    name: "Transport & Logistics",
+    shortName: "Logistics",
+    defaultCompanyName: "Ethio-Djibouti Corridor Logistics & Freight PLC",
+    defaultTin: "0089012345",
+    icon: "fa-solid fa-truck-moving",
+    color: "#b45309",
+    lightColor: "#fef3c7",
+    textColor: "#92400e",
+    description: "Fleet prime mover management, cargo waybills, highway trip manifests, driver rosters, fuel consumption, and vehicle maintenance.",
+    keyModules: ["Fleet", "Waybills", "Routes", "Drivers", "Fuel Logs", "Maintenance"],
+    navItems: [
+      { key: "fleet", label: "Fleet", icon: "fa-solid fa-truck" },
+      { key: "waybills", label: "Waybills", icon: "fa-solid fa-clipboard-list" },
+      { key: "routes", label: "Routes", icon: "fa-solid fa-route" },
+      { key: "drivers", label: "Drivers", icon: "fa-solid fa-user-tie" },
+      { key: "fuel", label: "Fuel Logs", icon: "fa-solid fa-gas-pump" },
+      { key: "maintenance", label: "Maintenance", icon: "fa-solid fa-wrench" }
+    ]
+  },
+  {
+    id: "finance-banking",
+    name: "Microfinance & SACCOs",
+    shortName: "Finance",
+    defaultCompanyName: "Oromia Savings & Credit Cooperative (SACCO)",
+    defaultTin: "0090123456",
+    icon: "fa-solid fa-building-columns",
+    color: "#0284c7",
+    lightColor: "#f0f9ff",
+    textColor: "#0369a1",
+    description: "General ledger, member savings passbooks, microloan disbursement schedules, approval workflows, and NBE compliance audits.",
+    keyModules: ["General Ledger", "Loan Schedules", "Reconciliations", "Approvals", "Payroll", "Audit Cases"],
+    navItems: [
+      { key: "ledger", label: "General Ledger", icon: "fa-solid fa-book" },
+      { key: "loans", label: "Loan Schedules", icon: "fa-solid fa-hand-holding-dollar" },
+      { key: "reconciliations", label: "Reconciliations", icon: "fa-solid fa-right-left" },
+      { key: "approvals", label: "Approvals", icon: "fa-solid fa-circle-check" },
+      { key: "payroll", label: "Payroll", icon: "fa-solid fa-money-check-dollar" },
+      { key: "audit", label: "Audit Cases", icon: "fa-solid fa-shield-halved" }
+    ]
+  },
+  {
+    id: "real-estate",
+    name: "Real Estate & Property",
+    shortName: "Real Estate",
+    defaultCompanyName: "Noah Commercial & Residential Real Estate PLC",
+    defaultTin: "0001234567",
+    icon: "fa-solid fa-city",
+    color: "#059669",
+    lightColor: "#ecfdf5",
+    textColor: "#047857",
+    description: "Properties portfolio, tenant lease agreements, monthly rent collection schedules, maintenance tickets, and prospective viewings.",
+    keyModules: ["Properties", "Tenants", "Leases", "Rent Schedules", "Maintenance", "Viewings"],
+    navItems: [
+      { key: "properties", label: "Properties", icon: "fa-solid fa-building" },
+      { key: "tenants", label: "Tenants", icon: "fa-solid fa-users" },
+      { key: "leases", label: "Leases", icon: "fa-solid fa-file-signature" },
+      { key: "rent", label: "Rent Schedules", icon: "fa-solid fa-key" },
+      { key: "maintenance", label: "Maintenance", icon: "fa-solid fa-screwdriver-wrench" },
+      { key: "viewings", label: "Viewings", icon: "fa-solid fa-calendar-check" }
+    ]
+  },
+  {
+    id: "ngo-development",
+    name: "NGO & Development Programs",
+    shortName: "NGO",
+    defaultCompanyName: "Hope for Children & Community Development Ethiopia",
+    defaultTin: "0011223344",
+    icon: "fa-solid fa-hand-holding-heart",
+    color: "#e11d48",
+    lightColor: "#fff1f2",
+    textColor: "#be123c",
+    description: "Donor relationship tracking, grant funding allocations, community beneficiaries, donor-compliant procurement, and M&E reports.",
+    keyModules: ["Donors", "Grants", "Beneficiaries", "Procurement", "Field Monitoring", "Impact"],
+    navItems: [
+      { key: "donors", label: "Donors", icon: "fa-solid fa-hand-holding-heart" },
+      { key: "grants", label: "Grants", icon: "fa-solid fa-file-circle-check" },
+      { key: "beneficiaries", label: "Beneficiaries", icon: "fa-solid fa-users" },
+      { key: "procurement", label: "Procurement", icon: "fa-solid fa-cart-shopping" },
+      { key: "monitoring", label: "Field Monitoring", icon: "fa-solid fa-location-dot" },
+      { key: "impact", label: "Impact", icon: "fa-solid fa-chart-pie" }
+    ]
+  },
+  {
+    id: "government-services",
+    name: "Government Services",
+    shortName: "Government",
+    defaultCompanyName: "Addis Ababa Sub-City Public Services & Citizen Bureau",
+    defaultTin: "0022334455",
+    icon: "fa-solid fa-landmark-dome",
+    color: "#64748b",
+    lightColor: "#f8fafc",
+    textColor: "#334155",
+    description: "Municipal trade permits, citizen registry, service case workflows, official government revenue receipts, and counter queues.",
+    keyModules: ["Permits", "Citizens", "Service Cases", "Revenue", "Documents", "Counters"],
+    navItems: [
+      { key: "permits", label: "Permits", icon: "fa-solid fa-file-contract" },
+      { key: "citizens", label: "Citizens", icon: "fa-solid fa-users" },
+      { key: "cases", label: "Service Cases", icon: "fa-solid fa-list-check" },
+      { key: "revenue", label: "Revenue", icon: "fa-solid fa-coins" },
+      { key: "documents", label: "Documents", icon: "fa-solid fa-folder-open" },
+      { key: "counters", label: "Counters", icon: "fa-solid fa-building-user" }
+    ]
+  }
+];
+```
+
+### Initial Domain Records for All 12 Sectors
+Seed at least 2 realistic records per sector in `recordsBySector`:
+```ts
+export const INITIAL_SECTOR_RECORDS: Record<string, SectorRecord[]> = {
+  "retail-trading": [
+    { id: "sr-ret-1", sectorId: "retail-trading", recordType: "Product", title: "Samsung Galaxy A15 (128GB)", ownerName: "Abebe Bekele", status: "ACTIVE", value: 12500, metadata: { sku: "SAM-A15", stock: 45, reorder: 10 }, createdAt: new Date().toISOString() },
+    { id: "sr-ret-2", sectorId: "retail-trading", recordType: "Product", title: "Magna Pure Cooking Oil (5L)", ownerName: null, status: "ACTIVE", value: 850, metadata: { sku: "OIL-5L", stock: 120, reorder: 25 }, createdAt: new Date().toISOString() }
+  ],
+  "manufacturing": [
+    { id: "sr-mfg-1", sectorId: "manufacturing", recordType: "Production Order", title: "Batch 482: 5,000 Cotton Polo Shirts", ownerName: "Engineer Kidane", status: "ACTIVE", value: 250000, metadata: { line: "Textile Unit 2", progress: "65%" }, createdAt: new Date().toISOString() },
+    { id: "sr-mfg-2", sectorId: "manufacturing", recordType: "Machinery Asset", title: "Juki Industrial Sewing Machine Bank #4", ownerName: "Maintenance Team", status: "ACTIVE", value: 85000, metadata: { hours: 1420, nextService: "2026-12-01" }, createdAt: new Date().toISOString() }
+  ],
+  "agriculture": [
+    { id: "sr-agr-1", sectorId: "agriculture", recordType: "Crop Harvest", title: "Block A - Grade 1 Washed Yirgacheffe Coffee", ownerName: "Farmer Desta", status: "ACTIVE", value: 480000, metadata: { hectares: 24, yieldQuintals: 160 }, createdAt: new Date().toISOString() },
+    { id: "sr-agr-2", sectorId: "agriculture", recordType: "Livestock", title: "Friesian Dairy Herd - 48 Milking Cows", ownerName: "Dr. Almaz", status: "ACTIVE", value: 720000, metadata: { dailyYieldLiters: 960, vaccinated: true }, createdAt: new Date().toISOString() }
+  ],
+  "construction": [
+    { id: "sr-cns-1", sectorId: "construction", recordType: "Project Site", title: "Bole Commercial Center Phase 2 (G+12)", ownerName: "Resident Eng. Dawit", status: "ACTIVE", value: 14500000, metadata: { completion: "42%", boqItems: 148 }, createdAt: new Date().toISOString() },
+    { id: "sr-cns-2", sectorId: "construction", recordType: "Heavy Equipment", title: "CAT 320D Hydraulic Excavator", ownerName: "Equipment Mgr", status: "ACTIVE", value: 4800000, metadata: { fuelRate: "18L/hr", site: "Bole Site" }, createdAt: new Date().toISOString() }
+  ],
+  "healthcare": [
+    { id: "sr-hc-1", sectorId: "healthcare", recordType: "Patient EMR", title: "MRN-00124: Abebe Girma (Hypertension Follow-up)", ownerName: "Dr. Tigist Alemu", status: "ACTIVE", value: 850, metadata: { age: 45, bloodGroup: "A+", triage: "Green" }, createdAt: new Date().toISOString() },
+    { id: "sr-hc-2", sectorId: "healthcare", recordType: "Pharmacy Batch", title: "Amoxicillin 500mg Caps (Batch AMX-2026)", ownerName: "Chief Pharmacist", status: "ACTIVE", value: 34000, metadata: { stockUnits: 1200, expDate: "2027-08-30" }, createdAt: new Date().toISOString() }
+  ],
+  "education": [
+    { id: "sr-edu-1", sectorId: "education", recordType: "Student", title: "STU-2026-084: Meron Hailu (Grade 11 Natural)", ownerName: "Homeroom Teacher", status: "ACTIVE", value: 8500, metadata: { gpa: 3.82, feeStatus: "PAID" }, createdAt: new Date().toISOString() },
+    { id: "sr-edu-2", sectorId: "education", recordType: "Academic Timetable", title: "Semester 2 Science & Math Master Schedule", ownerName: "Dean of Studies", status: "ACTIVE", value: null, metadata: { classes: 18, labSessions: 6 }, createdAt: new Date().toISOString() }
+  ],
+  "hospitality": [
+    { id: "sr-hosp-1", sectorId: "hospitality", recordType: "Room Reservation", title: "Suite 302: Ambassador Delegations (4 Nights)", ownerName: "Front Desk Mgr", status: "ACTIVE", value: 28000, metadata: { checkIn: "Today", guests: 2, mealPlan: "Full Board" }, createdAt: new Date().toISOString() },
+    { id: "sr-hosp-2", sectorId: "hospitality", recordType: "Banquet Event", title: "UN Economic Forum Annual Gala Dinner", ownerName: "Events Coordinator", status: "ACTIVE", value: 165000, metadata: { guests: 250, hall: "Grand Ballroom" }, createdAt: new Date().toISOString() }
+  ],
+  "transport-logistics": [
+    { id: "sr-trn-1", sectorId: "transport-logistics", recordType: "Fleet Vehicle", title: "Volvo FH16 Prime Mover (Plate AA-3-48192)", ownerName: "Fleet Lead Dawit", status: "ACTIVE", value: 5200000, metadata: { route: "Addis - Djibouti", status: "In Transit" }, createdAt: new Date().toISOString() },
+    { id: "sr-trn-2", sectorId: "transport-logistics", recordType: "Waybill", title: "WB-2026-8812: 40ft Container Medical Equipment", ownerName: "Customs Agent", status: "ACTIVE", value: 95000, metadata: { customsStatus: "Cleared Mojo Dry Port" }, createdAt: new Date().toISOString() }
+  ],
+  "finance-banking": [
+    { id: "sr-fin-1", sectorId: "finance-banking", recordType: "Microloan", title: "LN-9821: Bole Women Weavers Cooperative Loan", ownerName: "Credit Officer Lemma", status: "ACTIVE", value: 150000, metadata: { rate: "9%", tenor: "18 Months", status: "Current" }, createdAt: new Date().toISOString() },
+    { id: "sr-fin-2", sectorId: "finance-banking", recordType: "Member Savings", title: "Member #4820: Tigist Haile Savings Account", ownerName: "Teller 1", status: "ACTIVE", value: 42500, metadata: { dividendAccrued: 2400 }, createdAt: new Date().toISOString() }
+  ],
+  "real-estate": [
+    { id: "sr-re-1", sectorId: "real-estate", recordType: "Property Lease", title: "Noah Plaza Suite 402 - Commercial Tech Office", ownerName: "Property Mgr", status: "ACTIVE", value: 38000, metadata: { sqm: 140, tenant: "EthioCloud Technologies" }, createdAt: new Date().toISOString() },
+    { id: "sr-re-2", sectorId: "real-estate", recordType: "Maintenance Ticket", title: "HVAC Central Chiller Annual Overhaul", ownerName: "Facilities Team", status: "PENDING", value: 18500, metadata: { priority: "High", building: "Bole Tower" }, createdAt: new Date().toISOString() }
+  ],
+  "ngo-development": [
+    { id: "sr-ngo-1", sectorId: "ngo-development", recordType: "Grant Allocation", title: "USAID Clean Water Project Hawassa Phase 3", ownerName: "Grant Director Biruk", status: "ACTIVE", value: 1850000, metadata: { disbursed: "60%", targetHouseholds: 3500 }, createdAt: new Date().toISOString() },
+    { id: "sr-ngo-2", sectorId: "ngo-development", recordType: "Community Aid", title: "Distribution: 800 School Nutrition Packs", ownerName: "Field Officer", status: "ACTIVE", value: 120000, metadata: { location: "Sidama Region" }, createdAt: new Date().toISOString() }
+  ],
+  "government-services": [
+    { id: "sr-gov-1", sectorId: "government-services", recordType: "Trade License", title: "TL-2026-9941: Commercial Import/Export Renewal", ownerName: "Permit Desk Officer", status: "ACTIVE", value: 4500, metadata: { applicant: "Abyssinia Trading", validUntil: "2027-09-10" }, createdAt: new Date().toISOString() },
+    { id: "sr-gov-2", sectorId: "government-services", recordType: "Service Case", title: "CASE-481: Title Deed Verification Request", ownerName: "Land Administration", status: "ACTIVE", value: 1200, metadata: { queueNo: "B-24", slaHours: 48 }, createdAt: new Date().toISOString() }
+  ]
 };
 ```
 
-### Transactions Seed (12 Realistic Transactions)
-```ts
-export const INITIAL_TRANSACTIONS: Transaction[] = [
-  { id: "t1", type: "INCOME", amount: 85000, description: "Bulk pharmaceuticals distribution", category: "Sales", sectorId: "healthcare", paymentMethod: "Telebirr", vatAmount: 11087, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 1 * 86400000).toISOString() },
-  { id: "t2", type: "INCOME", amount: 42500, description: "Specialized clinical consultation", category: "Services", sectorId: "healthcare", paymentMethod: "CBE Transfer", vatAmount: 5543, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 2 * 86400000).toISOString() },
-  { id: "t3", type: "EXPENSE", amount: 18000, description: "Addis clinic facility rent", category: "Rent", sectorId: null, paymentMethod: "Cash", vatAmount: 0, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 3 * 86400000).toISOString() },
-  { id: "t4", type: "INCOME", amount: 33000, description: "Medical courier logistics dispatch", category: "Logistics", sectorId: "transport-logistics", paymentMethod: "Telebirr", vatAmount: 4304, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 4 * 86400000).toISOString() },
-  { id: "t5", type: "EXPENSE", amount: 9500, description: "Ambulance fuel & generator service", category: "Transport", sectorId: "transport-logistics", paymentMethod: "Cash", vatAmount: 0, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 5 * 86400000).toISOString() },
-  { id: "t6", type: "EXPENSE", amount: 55000, description: "Laboratory test kits & reagents", category: "Inventory", sectorId: "healthcare", paymentMethod: "CBE Transfer", vatAmount: 7174, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 6 * 86400000).toISOString() },
-  { id: "t7", type: "INCOME", amount: 21000, description: "Outpatient pharmacy dispensing", category: "Sales", sectorId: "healthcare", paymentMethod: "Cash", vatAmount: 2739, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 7 * 86400000).toISOString() },
-  { id: "t8", type: "EXPENSE", amount: 12000, description: "Staff on-call allowances", category: "Payroll", sectorId: null, paymentMethod: "CBE Transfer", vatAmount: 0, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 8 * 86400000).toISOString() },
-  { id: "t9", type: "INCOME", amount: 67500, description: "Corporate wellness retainer", category: "Hospitality", sectorId: "hospitality", paymentMethod: "Telebirr", vatAmount: 8804, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 9 * 86400000).toISOString() },
-  { id: "t10", type: "EXPENSE", amount: 7800, description: "Addis Ababa municipal utilities", category: "Utilities", sectorId: null, paymentMethod: "Cash", vatAmount: 0, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 10 * 86400000).toISOString() },
-  { id: "t11", type: "INCOME", amount: 15000, description: "CME Medical training course fees", category: "Education", sectorId: "education", paymentMethod: "CBE Transfer", vatAmount: 1957, status: "PENDING", synced: false, occurredAt: new Date().toISOString() },
-  { id: "t12", type: "EXPENSE", amount: 4500, description: "Administrative printing & stationery", category: "Office", sectorId: null, paymentMethod: "Cash", vatAmount: 0, status: "COMPLETED", synced: true, occurredAt: new Date(Date.now() - 11 * 86400000).toISOString() },
-];
-```
-
-### Employees Seed (6 Staff Members)
-```ts
-export const INITIAL_EMPLOYEES: Employee[] = [
-  { id: "e1", fullName: "Dr. Abebe Bekele", position: "Chief Medical Officer", department: "Clinical", phone: "+251911000001", email: "abebe@selam.et", salary: 38000, status: "ACTIVE", hiredDate: "2024-01-15" },
-  { id: "e2", fullName: "Tigist Haile", position: "Senior Accountant", department: "Finance", phone: "+251911000002", email: "tigist@selam.et", salary: 22000, status: "ACTIVE", hiredDate: "2024-03-01" },
-  { id: "e3", fullName: "Dawit Mekonnen", position: "Lead Dispatcher / Fleet", department: "Logistics", phone: "+251911000003", email: "dawit@selam.et", salary: 14000, status: "ACTIVE", hiredDate: "2024-06-10" },
-  { id: "e4", fullName: "Hanan Mohammed", position: "Front Desk & Triage", department: "Admin", phone: "+251911000004", email: "hanan@selam.et", salary: 12000, status: "ACTIVE", hiredDate: "2024-08-20" },
-  { id: "e5", fullName: "Solomon Girma", position: "Systems & Network Lead", department: "Tech", phone: "+251911000005", email: "solomon@selam.et", salary: 28000, status: "ACTIVE", hiredDate: "2024-11-05" },
-  { id: "e6", fullName: "Mekdes Tadesse", position: "Pharmacy Dispenser", department: "Pharmacy", phone: "+251911000006", email: null, salary: 11500, status: "INACTIVE", hiredDate: "2023-12-01" },
-];
-```
-
-### Invoices & Finance Seed
-```ts
-export const INITIAL_INVOICES: Invoice[] = [
-  {
-    id: "inv1", invoiceNumber: "INV-2026-001", customerName: "Bole Diagnostics Center", customerPhone: "+251911222333", sectorId: "healthcare",
-    items: [{ description: "Clinical laboratory diagnostic panels", quantity: 15, unitPrice: 3200 }],
-    subtotal: 48000, vatAmount: 7200, total: 55200, status: "PAID", issuedAt: new Date(Date.now() - 10 * 86400000).toISOString(), dueDate: new Date(Date.now() + 10 * 86400000).toISOString()
-  },
-  {
-    id: "inv2", invoiceNumber: "INV-2026-002", customerName: "Addis Commercial Logistics", customerPhone: "+251911444555", sectorId: "transport-logistics",
-    items: [{ description: "Monthly emergency medical standby fleet", quantity: 1, unitPrice: 35000 }],
-    subtotal: 35000, vatAmount: 5250, total: 40250, status: "SENT", issuedAt: new Date(Date.now() - 4 * 86400000).toISOString(), dueDate: new Date(Date.now() + 15 * 86400000).toISOString()
-  },
-  {
-    id: "inv3", invoiceNumber: "INV-2026-003", customerName: "Hilton Addis Wellness Club", customerPhone: "+251911666777", sectorId: "hospitality",
-    items: [{ description: "Quarterly first aid replenishment", quantity: 4, unitPrice: 4500 }],
-    subtotal: 18000, vatAmount: 2700, total: 20700, status: "DRAFT", issuedAt: new Date().toISOString()
-  }
-];
-
-export const INITIAL_APPROVALS: ExpenseApproval[] = [
-  { id: "ea1", title: "Digital Ultrasound Calibration Kit", amount: 24500, category: "Equipment", sectorId: "healthcare", requestedById: "e1", status: "REQUESTED", notes: "Annual precision calibration certified by EFDA", requestedAt: new Date(Date.now() - 2 * 86400000).toISOString() },
-  { id: "ea2", title: "Backup Generator Diesel Delivery", amount: 16000, category: "Utilities", sectorId: null, requestedById: "e3", approvedById: "demo-user-1", status: "APPROVED", notes: "400 Liters for surgical theater standby", requestedAt: new Date(Date.now() - 5 * 86400000).toISOString() },
-  { id: "ea3", title: "Electronic Health Records Tablet Mounts", amount: 8200, category: "Tech", sectorId: "healthcare", requestedById: "e5", approvedById: "demo-user-1", status: "PAID", notes: "Mounted in Triage Room 1-3", requestedAt: new Date(Date.now() - 14 * 86400000).toISOString() },
-];
-```
-
 ---
 
-## 6. Ethiopian Localization & Regulatory Business Rules
+## 7. Ethiopian Localization & Regulatory Business Rules
 
 Place these utilities in `src/utils/ethiopian.ts`:
 
-### 1. Currency & Tabular Numbers
-- Format: `ETB 85,000` (no decimals for whole Birr, comma-delimited).
+### 1. Currency & Tabular Formatting
+- Format: `ETB 85,000` (comma-delimited whole Birr).
 ```ts
 export function formatCurrency(amount: number): string {
   return `ETB ${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(Math.round(amount || 0))}`;
@@ -451,10 +765,10 @@ export function formatCurrency(amount: number): string {
 ```
 
 ### 2. Automatic 15% VAT & 2% Withholding
-- When recording an invoice or transaction with VAT enabled:
+- When recording an invoice or transaction:
   $$\text{VAT Amount} = \text{Subtotal} \times 0.15$$
   $$\text{Total} = \text{Subtotal} + \text{VAT Amount}$$
-  $$\text{Withholding (if applicable)} = \text{Subtotal} \times 0.02$$
+  $$\text{Withholding (if B2B)} = \text{Subtotal} \times 0.02$$
 
 ### 3. Live Ethiopian Calendar Converter
 Convert any Gregorian `Date` object into the authentic Ethiopian Calendar (`Meskerem` through `Pagume`):
@@ -511,7 +825,7 @@ export function validateEthiopianPhone(phone: string): boolean {
 
 ---
 
-## 7. Visual Design System & Styling (Tailwind / CSS)
+## 8. Visual Design System & Styling (Tailwind / CSS)
 
 ### Color Tokens
 Match the exact Beyond ERP enterprise palette:
@@ -537,16 +851,10 @@ Match the exact Beyond ERP enterprise palette:
   - Revenue Green: `#10b981` (Background: `#071812` / `#f0fdf4`)
   - Expense Red: `#f43f5e` (Background: `#1c0a10` / `#fff1f2`)
   - Pending Amber: `#f59e0b` (Background: `#150f02` / `#fffbeb`)
-  - Tech / SACCO Purple: `#7c3aed`
-
-### Typography
-- Primary UI: `Inter`, system font stack.
-- Display / Logo / Brand Headings: `"Instrument Serif", Georgia, serif`.
-- Data tables & metrics: `font-mono` or `font-feature-settings: 'tnum'`.
 
 ---
 
-## 8. ERP Shell Layout, Sidebar & Topbar
+## 9. ERP Shell Layout, Dynamic Sidebar & Topbar
 
 Construct `src/components/erp/AppLayout.tsx`:
 
@@ -554,25 +862,41 @@ Construct `src/components/erp/AppLayout.tsx`:
 - **Width**: `234px` when expanded, `60px` when collapsed (toggle button with `ChevronLeft` / `ChevronRight`).
 - **Brand Header**: 32px blue icon tile with logo, "Beyond ERP", active sector badge.
 - **Universal Top**:
-  1. `Dashboard` (`fa-chart-pie` / `<LayoutDashboard size={18} />`) -> `/dashboard`
-  2. `Transactions` (`fa-money-bill-transfer` / `<Receipt size={18} />`) -> `/transactions`
-  3. `Employees` (`fa-users` / `<Users size={18} />`) -> `/employees`
-- **Sector Modules Accordion**:
-  - Shows specialized workflows for active sector (e.g. Healthcare: `Patients`, `Queue OPD`, `Pharmacy`, `Lab`, `Billing`, `EHMIS`).
-  - Or quick jump to `/sectors` to change active sector.
+  1. `Dashboard` (`<LayoutDashboard size={18} />`) -> `/dashboard`
+  2. `Transactions` (`<Receipt size={18} />`) -> `/transactions`
+  3. `Employees` (`<Users size={18} />`) -> `/employees`
+- **Dynamic Sector Modules Accordion**:
+  - Automatically loads the `navItems` belonging to the current `activeSectorId`.
+  - For Healthcare: `Patients`, `Queue & OPD`, `Appointments`, `IPD & Beds`, `Pharmacy`, `Prescriptions`, `Lab`, `Billing`.
+  - For Retail: `POS Checkout`, `Inventory`, `Products`, `Customers`, `Suppliers`, `Sales Reports`.
+  - For Agriculture: `Crop Cycles`, `Livestock`, `Input Distribution`, `Harvest Yields`, `Warehouses`.
+  - For Construction: `Project Budgets`, `Site Reports`, `Subcontractors`, `Equipment`, `Safety`.
+  - Includes a direct button: `[ Switch Sector ]` which opens the 12-Sector Selector.
 - **Universal Bottom**:
-  4. `Finance` (`fa-file-invoice-dollar` / `<CircleDollarSign size={18} />`) -> `/finance`
-  5. `Reports` (`fa-chart-column` / `<BarChart3 size={18} />`) -> `/reports`
-  6. `Admin` (`fa-shield-halved` / `<ShieldCheck size={18} />`) -> `/admin`
-  7. `Settings` (`fa-gear` / `<Settings size={18} />`) -> `/settings`
+  4. `Finance` (`<CircleDollarSign size={18} />`) -> `/finance`
+  5. `Reports` (`<BarChart3 size={18} />`) -> `/reports`
+  6. `Admin` (`<ShieldCheck size={18} />`) -> `/admin`
+  7. `Settings` (`<Settings size={18} />`) -> `/settings`
 
-### 2. Top Header Bar
-- **Left**: Time-of-day greeting (e.g. `Morning · Tue, 03 Nov`) + Bold Company Name (`Selam Medical & Trading PLC`).
+### 2. Top Header Bar with Sector Switcher
+- **Left**:
+  - Time-of-day greeting (e.g. `Morning · Tue, 03 Nov`).
+  - **Dynamic Sector Switcher Pill**:
+    ```tsx
+    <button
+      onClick={() => dispatch(openModal({ type: "sector-select" }))}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-sm border border-blue-500/20 transition-all"
+    >
+      <i className={activeSector.icon} />
+      <span>{settings.companyName}</span>
+      <ChevronDown size={14} className="opacity-60" />
+    </button>
+    ```
 - **Right Action Strip**:
-  - **Connection Chip**: `<span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">DEMO MODE · IN-MEMORY</span>`
-  - **Theme Toggle**: `<Sun />` / `<Moon />` icon button.
+  - **Connection Chip**: `<span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">DEMO · IN-MEMORY</span>`
+  - **Theme Toggle**: `<Sun />` / `<Moon />` button.
   - **Sync Pending Button**: Rotating sync icon; clicking simulates instant cloud reconciliation with a toast.
-  - **User Profile Pill**: 32px gradient avatar with user initials (`YG`), First Name, and role badge (`owner`).
+  - **User Profile Pill**: 32px gradient avatar with initials (`YG`), First Name, and role badge (`owner`).
   - **Sign Out Button**: Dispatches `logout()`, routes back to login.
 
 ### 3. Ethiopian Calendar Strip
@@ -582,210 +906,145 @@ Directly underneath the header:
 - Subtext: `· VAT 15% · ETB · NBE Compliant`
 - If today is a holiday, show celebratory pill: `🎉 Timkat (Epiphany)`
 
-### 4. Toast Notification System
-Fixed floating pill at bottom-right or top-center (`z-50`), animating in whenever an action is performed:
-*"Transaction added"*, *"Invoice INV-2026-004 created"*, *"Employee status toggled"*. Auto-dismisses in 2.5s.
-
 ---
 
-## 9. Detailed Specifications for the 8 Core Views
+## 10. Detailed Specifications for the 8 Core Views
 
 ### View 1: Dashboard (`/dashboard`)
-1. **Welcome Eyebrow**: *"Good Morning, Yohannes. Here is your Ethiopian enterprise summary today."*
+1. **Welcome Eyebrow**: *"Welcome to your {activeSector.name} workspace. Powered by Beyond ERP."*
 2. **4 KPI Stat Cards**:
    - **Revenue**: `ETB 264,000` (+12% vs last month)
    - **Expenses**: `ETB 106,800` (+3%)
    - **Net Profit**: `ETB 157,200` (+8%)
-   - **Pending Sync**: `1` (Amber warning badge)
+   - **Sector Operational Units**: `48` active items (e.g. 48 Patients, 48 SKUs, or 48 Freight trips)
 3. **Primary Action Strip**:
    - `[+ Add Transaction]` -> Opens `TransactionModal`.
    - `[📱 telebirr Instant Pay]` -> Opens `TelebirrModal`.
-   - `[📋 Issue VAT Invoice]` -> Navigates to `/finance`.
-4. **12-Month Revenue Chart**:
-   - Clean SVG or CSS bar chart rendering 12 monthly bars (Jan–Dec).
-   - Tooltip or active bar showing current peak month.
-5. **Sector Revenue Breakdown**:
-   - Progress bar indicators: Retail & Trade (48%), Healthcare (26%), Logistics (12%), Other (14%).
-6. **Recent Transactions Table**:
-   - 5 latest transactions with type icon, description, category, date, and colored amount (+ETB / -ETB).
+   - `[🔄 Switch Sector]` -> Opens `SectorSelectModal`.
+4. **12-Month Revenue Chart**: SVG / CSS bar chart rendering 12 monthly bars (Jan–Dec).
+5. **Sector Revenue Breakdown**: Progress bars comparing all active sector divisions.
+6. **Recent Transactions Table**: 5 latest transactions with type, description, and colored amount.
 
 ---
 
 ### View 2: Transactions (`/transactions`)
 1. **Summary KPIs**: Total Income, Total Expenses, Net Margin, Record Count.
-2. **Filter & Search Bar**:
-   - Type Tabs: `[ All ]`, `[ Income ]`, `[ Expense ]`.
-   - Live Search Input: Filters by description or category.
-   - Dropdown Filters: Sector selection, Payment Method (Telebirr, Cash, CBE, Bank).
-3. **Data Table**:
-   - Columns: `Date`, `Description & Category`, `Sector`, `Payment Method`, `Amount (ETB)`, `15% VAT`, `Status`, `Actions`.
-   - Badges: `Telebirr` (cyan), `Cash` (amber), `CBE Transfer` (purple).
-4. **Row Actions**:
-   - Edit (opens modal pre-filled).
-   - Delete (dispatches Redux delete, shows toast).
-   - Barcode Quick View.
-5. **Pagination Controls**: `Previous`, `Next`, Page numbers.
+2. **Filter & Search Bar**: Type tabs (`[ All ]`, `[ Income ]`, `[ Expense ]`), live search, sector selector, payment method selector (`Telebirr`, `Cash`, `CBE Transfer`).
+3. **Data Table**: Columns: `Date`, `Description`, `Sector Tag`, `Payment Method`, `Amount (ETB)`, `15% VAT`, `Status`, `Actions`.
+4. **Row Actions**: Edit, Delete, Barcode lookup.
 
 ---
 
 ### View 3: Employees (`/employees`)
-1. **Staff Metrics**: Total Staff (6), Active (5), On Leave / Inactive (1), Monthly Payroll (`ETB 125,500`).
+1. **Staff Metrics**: Total Staff, Active, On Leave, Monthly Payroll (ETB).
 2. **Header Action**: `[+ Add Employee]` button.
-3. **Filters**: Department filter (Clinical, Finance, Logistics, Admin, Tech), Status filter.
-4. **Staff Table**:
-   - Avatar with initials and deterministic dynamic color.
-   - Full Name & Email.
-   - Position & Department.
-   - Phone (+251 formatted).
-   - Monthly Salary (formatted in ETB).
-   - Status toggle pill (Click to toggle `ACTIVE` / `INACTIVE`).
-   - Edit / Delete actions.
+3. **Filters**: Department filter, Status filter, search input.
+4. **Staff Table**: Avatar with initials, Full Name, Position, Department, Phone (+251 format), Salary (ETB), Status toggle pill (`ACTIVE` / `INACTIVE`).
 
 ---
 
 ### View 4: Finance & Accounting (`/finance`)
 Divided into 4 sub-tabs:
-1. **Sub-Tab 1: Invoices**:
-   - List of B2B invoices with customer name, phone, item summary, 15% VAT, total, and status badge (`PAID`, `SENT`, `DRAFT`, `OVERDUE`).
-   - `[+ Issue Invoice]` button opens a drawer/modal allowing multi-item entry. Automatically calculates 15% VAT.
-2. **Sub-Tab 2: Expense Approvals**:
-   - List of internal purchase requisitions (e.g. Ultrasound calibration, generator fuel).
-   - Interactive buttons: `[Approve]`, `[Reject]`, `[Mark Paid]`. Clicking dispatches instant Redux status updates.
-3. **Sub-Tab 3: Payroll Runs**:
-   - Historical payroll runs.
-   - `[⚡ Run Monthly Payroll]` button: Automatically generates a payroll batch from all active employees in `employeesSlice`, computing standard 7.5% pension deductions and net payments.
-4. **Sub-Tab 4: Chart of Accounts & P&L**:
-   - Interactive general ledger accounts (`1000 Cash & Bank`, `1200 Receivables`, `2000 Accounts Payable`, `4000 Revenue`).
-   - Summary display of Net Cash Flow and Balance Sheet.
+1. **Invoices**: Issue B2B invoices with line items and automatic 15% VAT calculation.
+2. **Expense Approvals**: Managerial requisitions pipeline (`[Approve]`, `[Reject]`, `[Mark Paid]`).
+3. **Payroll Runs**: `[⚡ Run Monthly Payroll]` button computes gross, 7.5% pension deductions, and net payments for all active staff in the current sector.
+4. **Chart of Accounts & P&L**: General ledger accounts (`Cash & Bank`, `Receivables`, `Payables`, `Revenue`) with real-time balance sheet.
 
 ---
 
 ### View 5: Tax & Business Reports (`/reports`)
-1. **Official Ethiopian Tax Report Card**:
-   - Designed to look like a legal ERCA/NBE filing schedule.
-   - Includes: Company Name, TIN `0012345678`, Ethiopian Date `03 Tikimt 2019 E.C.`.
-   - Taxable Revenue: `ETB 264,000`
-   - VAT (15%): `ETB 39,600`
-   - Withholding Tax (2%): `ETB 5,280`
-   - Total Net Liability.
-2. **Actions**:
-   - `[Download CSV]`: Simulates/triggers clean CSV file generation.
-   - `[Print Report]`: Triggers standard `window.print()` (with clean `@media print` styling hiding the sidebar).
+1. **Official Ethiopian Tax Statement**:
+   - Legal ERCA/NBE filing schedule format.
+   - Company Name, TIN, Ethiopian Date (`03 Tikimt 2019 E.C.`).
+   - Taxable Revenue (`ETB 264,000`), 15% VAT (`ETB 39,600`), 2% Withholding (`ETB 5,280`), Net Tax Due.
+2. **Actions**: `[Download CSV]`, `[Print Report]` (triggers clean browser print).
 
 ---
 
-### View 6: Sectors & Workflows (`/sectors`)
-1. **12 Sector Grid**:
-   - Retail & Trading, Healthcare, Agriculture, Construction, Manufacturing, Education, Hospitality, Transport, Finance/Banking, Real Estate, NGO, Government Services.
-2. **Sector Detail & Work Items Kanban**:
-   - Clicking any sector opens its dedicated workspace.
-   - Task Board with columns: `TODO`, `IN PROGRESS`, `DONE`.
-   - Users can add tasks or drag/click to change status.
-3. **Domain Records Table**:
-   - For Healthcare: Patients list, Diagnoses, MRN numbers.
-   - For Retail: Products inventory, stock quantities, barcode SKUs.
-   - For Logistics: Fleet vehicles, plate numbers, status.
+### View 6: Sectors & Domain Workflows (`/sectors`)
+1. **Sector Overview**: Displays all 12 sectors with active indicator on the currently selected sector.
+2. **Active Sector Domain Records**:
+   - Renders the domain records for the current sector (e.g. Products for Retail, Patients for Healthcare, Crops for Agriculture, Vehicles for Logistics).
+   - Button to `[+ Add Domain Record]`.
+3. **Work Items Kanban Board**:
+   - Task columns: `TODO`, `IN PROGRESS`, `DONE`.
+   - Users can drag or click to progress tasks.
 
 ---
 
 ### View 7: Admin & Permissions (`/admin`)
 1. **Role-Based Access Control (RBAC) Switcher**:
-   - Allows the tester to switch their active demo role between: `OWNER`, `ADMIN`, `MANAGER`, `STAFF`, `VIEWER`.
-   - Explains how permissions restrict financial approvals and employee salary visibility.
-2. **User Management Table**:
-   - Lists operators with role badges, email, status (`ACTIVE` / `DISABLED`).
-   - Button to `[Add User]` or toggle status.
-3. **Audit Log Timeline**:
-   - Live stream of recent system security events (e.g. `INVOICE_CREATED`, `LOGIN_SUCCESS`, `TRANSACTION_EXPORT`).
+   - Quick role switcher buttons: `[OWNER]`, `[ADMIN]`, `[MANAGER]`, `[STAFF]`, `[VIEWER]`.
+   - Real-time permission matrix demonstrating access restrictions.
+2. **User Management Table**: Operators list with role badges and status toggles.
+3. **Audit Log Timeline**: Live chronological stream of system events.
 
 ---
 
 ### View 8: Settings (`/settings`)
-1. **Company Profile**:
-   - Company Name input (`Selam Medical & Trading PLC`).
-   - Taxpayer Identification Number (TIN: 10 digits).
-   - Business Type: `PLC`, `Sole Proprietorship`, `Share Company`.
-2. **Language Selector**:
-   - `English`, `Amharic (አማርኛ)`, `Afaan Oromo`, `Tigrinya (ትግርኛ)`.
-3. **Ethiopian Integrations Switchboard**:
-   - Toggle switch for `telebirr Enterprise` (Direct merchant mobile clearing).
-   - Toggle switch for `CBE / Awash Bank` (Bank settlement).
-   - Toggle switch for `eHMIS Integration` (Ministry of Health).
-4. **Danger Zone / Demo Cache Reset**:
-   - `[Reset Demo State]` button: Resets the Redux store back to the factory demo seed with a confirmation toast.
+1. **Company Profile**: Company Name, 10-digit TIN, Business Type (`PLC`, `Sole Proprietorship`).
+2. **Language Switcher**: `English`, `Amharic (አማርኛ)`, `Afaan Oromo`, `Tigrinya (ትግርኛ)`.
+3. **Payment Rails Switchboard**: Toggles for `telebirr Enterprise`, `CBE / Awash Bank`, `eHMIS`.
+4. **Danger Zone**: `[Reset Demo State]` button restoring initial seed data.
 
 ---
 
-## 10. Detailed Specifications for the 11 Interactive Modals
+## 11. Detailed Specifications for the 12 Interactive Modals
 
-All modals must be controlled via Redux `uiSlice.activeModal`:
+All modals are managed through Redux `uiSlice.activeModal`:
 
-1. **`TransactionModal`**:
-   - Inputs: Type toggle (`INCOME` / `EXPENSE`), Amount (ETB), 15% VAT toggle, Description, Category, Payment Method (`Telebirr`, `Cash`, `CBE Transfer`, `Bank`), Date.
-2. **`EmployeeModal`**:
-   - Inputs: Full Name, Position, Department, Phone (`+251 9...`), Email, Monthly Salary (ETB), Hire Date.
-3. **`AdminModal`**:
-   - Inputs: Add new admin/staff to sector, feature permissions checklist.
-4. **`ManagerModal`**:
-   - Assign sector manager and delegate domain features.
-5. **`TelebirrModal`**:
-   - Fast payment window: Customer/Vendor Phone (`09...`), Amount (ETB), Purpose, auto 15% VAT. Submitting creates a completed transaction instantly.
-6. **`BarcodeModal`**:
-   - Visual SVG/CSS barcode generator + lookup simulation for SKU verification.
-7. **`ConfirmModal`**:
-   - Reusable dialog for deletion or reset confirmation (`Are you sure you want to delete...?`).
-8. **`WorkItemModal`**:
-   - Add/edit sector task: Title, Priority (`Low`, `Medium`, `High`, `Urgent`), Status, Due Date.
-9. **`SectorRecordModal`**:
-   - Add domain record (e.g. Patient, Product SKU, Vehicle Plate Number).
-10. **`DomainWorkflowModal`**:
-    - Quick action form tailored to specific sector workflows.
-11. **`FailedOpsModal`**:
-    - Queue viewer showing offline items with `Retry` and `Clear` buttons.
+1. **`SectorSelectModal`**: The 12-sector visual grid launcher with search and 1-click provisioning.
+2. **`TransactionModal`**: Record income/expense with 15% VAT, sector selection, payment method (`Telebirr`, `CBE`, `Cash`).
+3. **`EmployeeModal`**: Staff registration with full name, department, phone (+251 validation), and salary.
+4. **`AdminModal`**: Sector admin assignment with granular feature checklists.
+5. **`ManagerModal`**: Sector manager delegation.
+6. **`TelebirrModal`**: Fast telebirr payment window with phone number, amount in ETB, and purpose.
+7. **`BarcodeModal`**: Barcode scanner & SKU generator simulation.
+8. **`ConfirmModal`**: Reusable confirmation dialog for deletions or resets.
+9. **`WorkItemModal`**: Add or edit sector tasks (title, priority, status, due date).
+10. **`SectorRecordModal`**: Add sector-specific domain records (Product SKU, Patient MRN, Vehicle Plate, Crop Block).
+11. **`DomainWorkflowModal`**: Quick action form for sector-specific operational routines.
+12. **`FailedOpsModal`**: Offline queue inspector with Retry and Clear actions.
 
 ---
 
-## 11. Agent Step-by-Step Implementation Guide
+## 12. Agent Step-by-Step Implementation Guide
 
-When you (the code agent) implement this demo, follow these exact phases:
+Follow these exact steps to implement this demo:
 
-### Phase 1: Dependencies & Setup
-1. Verify `@reduxjs/toolkit` and `react-redux` are installed.
-2. Install `lucide-react` (or ensure SVG icon equivalents are available).
+### Step 1: Install Dependencies
+```bash
+npm install @reduxjs/toolkit react-redux lucide-react
+```
 
-### Phase 2: Create Redux Store & Slices
-1. Create `src/types/erp.ts` from Section 3.
-2. Create `src/store/initialData.ts` containing the complete initial seeds from Section 5.
-3. Create all 7 slices in `src/store/slices/`:
-   - `authSlice.ts`
-   - `transactionsSlice.ts`
-   - `employeesSlice.ts`
-   - `financeSlice.ts`
-   - `sectorsSlice.ts`
-   - `settingsSlice.ts`
-   - `uiSlice.ts`
-4. Assemble `src/store/index.ts` and wrap the app or demo route in `<Provider store={store}>`.
-5. **Crucial**: Ensure NO `redux-persist` or `localStorage.setItem` for data state so reload resets cleanly.
+### Step 2: Create Redux Slices & Store
+1. Put the TypeScript models in `src/types/erp.ts`.
+2. Put the 12-sector catalog and seed datasets in `src/store/initialData.ts`.
+3. Implement the 7 Redux slices in `src/store/slices/`:
+   - `authSlice.ts`, `sectorsSlice.ts`, `transactionsSlice.ts`, `employeesSlice.ts`, `financeSlice.ts`, `settingsSlice.ts`, `uiSlice.ts`.
+4. Assemble `src/store/index.ts` and wrap your demo route or app root in `<Provider store={store}>`.
+5. **IMPORTANT**: Do NOT add any `localStorage` synchronization for transactional data so reload cleanly resets the demo.
 
-### Phase 3: Add "Try Demo" to Login Page
-1. Locate the existing login page component.
-2. Insert the "Try Live Demo" button directly beside/beneath the inputs as specified in Section 2.
-3. Wire the button to dispatch `loginAsDemo()` and navigate to the ERP workspace.
+### Step 3: Implement Login Page "Try Demo" & Sector Selector Modal
+1. Add the "Try Live Demo" button to your login screen.
+2. Mount `SectorSelectModal` so clicking opens the 12-sector grid.
+3. Wire sector selection to dispatch `loginAsDemo({ sectorId })` and navigate to `/dashboard`.
 
-### Phase 4: Build Layout Shell & Utilities
-1. Create `src/utils/ethiopian.ts` with calendar, holiday, and currency helpers.
-2. Create `src/components/erp/Sidebar.tsx` and `src/components/erp/Topbar.tsx`.
-3. Create `src/components/erp/AppLayout.tsx` handling responsive grid, modal rendering, and toast banner.
+### Step 4: Build Layout Shell & Utilities
+1. Create `src/utils/ethiopian.ts` (calendar, holidays, currency, phone validation).
+2. Create `src/components/erp/Sidebar.tsx` (dynamic modules accordion based on `activeSectorId`).
+3. Create `src/components/erp/Topbar.tsx` (with the persistent Sector Switcher pill).
+4. Create `src/components/erp/AppLayout.tsx` (topbar, calendar strip, sidebar, modal container, toast).
 
-### Phase 5: Implement Views & Modals
-1. Build `DashboardView`, `TransactionsView`, `EmployeesView`, `FinanceView`, `ReportsView`, `SectorsView`, `AdminView`, `SettingsView`.
-2. Connect all forms and buttons to dispatch Redux actions directly (`addTransaction`, `addEmployee`, etc.).
-3. Implement the 11 modals inside `src/components/erp/modals/`.
+### Step 5: Implement the 8 Views & 12 Modals
+1. Create the 8 views in `src/components/erp/views/`:
+   - `DashboardView`, `TransactionsView`, `EmployeesView`, `FinanceView`, `ReportsView`, `SectorsView`, `AdminView`, `SettingsView`.
+2. Connect all forms and action buttons directly to Redux dispatches.
+3. Build the 12 modals in `src/components/erp/modals/`.
 
-### Phase 6: Verification Checklist
-- [ ] Visit `/login` -> Click **"⚡ Try Live Demo"** -> Instantly lands on `/dashboard`.
-- [ ] Add a transaction -> Balance updates, chart reflects change, transaction appears in table.
-- [ ] Add an employee -> Employee count increases, payroll summary updates.
-- [ ] Create an invoice -> 15% VAT auto-calculates, total reflects correctly.
-- [ ] Hit browser Refresh (`F5`) -> App reloads cleanly back to pristine initial demo state without lingering edits.
-
+### Step 6: Verification Checklist
+- [ ] On `/login`: Click **"⚡ Try Live Demo"** -> `SectorSelectModal` opens with all 12 Ethiopian sectors.
+- [ ] Click **"Agriculture"** -> Workspace launches as *Rift Valley Coffee & Horticulture Farms PLC*, sidebar shows Crop Cycles & Harvest modules.
+- [ ] Click the **Sector Switcher** in the topbar -> Select **"Healthcare"** -> App immediately adapts to *Selam General Hospital*, sidebar updates to Patients & Pharmacy.
+- [ ] Add a transaction or employee -> Balance and tables update instantly in Redux.
+- [ ] Refresh the page (`F5`) -> Everything disappears and cleanly resets to the initial demo state.

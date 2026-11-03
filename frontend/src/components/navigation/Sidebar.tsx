@@ -7,6 +7,8 @@ import { t, type LangKey, type SectorDefinition } from "@/features/erp/config";
 import { getSectorConfig } from "@/features/sectors";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAppDispatch } from "@/store/hooks";
+import { openModal } from "@/store/slices/uiSlice";
 
 const UNIVERSAL_TOP: { path: string; labelKey: LangKey; icon: string }[] = [
   { path: "/dashboard", labelKey: "home", icon: "fa-solid fa-chart-pie" },
@@ -38,6 +40,7 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const dark = theme === "dark";
   const sectorConfig = getSectorConfig(sector.id);
@@ -199,8 +202,7 @@ export function Sidebar({
             />
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 700, lineHeight: 1.2 }}>
-                <span style={{ color: "#ffffff" }}>Beyond</span>{" "}
-                <span style={{ color: "#3b82f6" }}>ERP</span>
+                <span style={{ color: "#ffffff" }}>Beyond ERP</span>
               </div>
               <div style={{ fontSize: 11, color: muted, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: 134 }}>
                 {companyName}
@@ -241,37 +243,69 @@ export function Sidebar({
         }}
       >
         {collapsed ? (
-          <div
-            title={sector.shortName}
+          <button
+            type="button"
+            onClick={() => dispatch(openModal({ type: "sector-select" }))}
+            title={`Switch Sector (Current: ${sector.shortName})`}
             style={{
-              width: 30, height: 30, borderRadius: 7,
-              background: `${sector.color}22`, color: sector.color,
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14,
+              width: 32,
+              height: 32,
+              borderRadius: 7,
+              border: "none",
+              cursor: "pointer",
+              background: `${sector.color}22`,
+              color: sector.color,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 14,
             }}
           >
             <i className={sector.icon} />
-          </div>
+          </button>
         ) : (
-          <div
+          <button
+            type="button"
+            onClick={() => dispatch(openModal({ type: "sector-select" }))}
+            title="Click to switch industry sector workspace"
             style={{
-              display: "flex", alignItems: "center", gap: 9, width: "100%",
-              padding: "7px 9px", borderRadius: 8, background: surface, border: `1px solid ${border}`,
+              display: "flex",
+              alignItems: "center",
+              gap: 9,
+              width: "100%",
+              padding: "7px 9px",
+              borderRadius: 8,
+              background: surface,
+              border: `1px solid ${border}`,
+              cursor: "pointer",
+              textAlign: "left",
+              transition: "all 0.15s ease",
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = sector.color)}
+            onMouseLeave={(e) => (e.currentTarget.style.borderColor = border)}
           >
             <div
               style={{
-                width: 28, height: 28, borderRadius: 6, flexShrink: 0,
-                background: `${sector.color}22`, color: sector.color,
-                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13,
+                width: 28,
+                height: 28,
+                borderRadius: 6,
+                flexShrink: 0,
+                background: `${sector.color}22`,
+                color: sector.color,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 13,
               }}
             >
               <i className={sector.icon} />
             </div>
-            <div>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 9.5, color: muted, textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 700 }}>Sector</div>
-              <div style={{ fontSize: 12, color: text, fontWeight: 600 }}>{sector.shortName}</div>
+              <div style={{ fontSize: 12, color: text, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sector.shortName}</div>
             </div>
-          </div>
+            <span style={{ fontSize: 10, color: muted, padding: "2px 5px", borderRadius: 4, background: "rgba(255,255,255,0.06)" }}>Switch ▾</span>
+          </button>
         )}
       </div>
 

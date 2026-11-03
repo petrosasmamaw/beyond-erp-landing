@@ -146,6 +146,21 @@ export interface SectorRecord {
   createdAt: string;
 }
 
+export interface SectorMeta {
+  id: string;
+  name: string;
+  shortName: string;
+  defaultCompanyName: string;
+  defaultTin: string;
+  icon: string;
+  color: string;
+  lightColor: string;
+  textColor: string;
+  description: string;
+  keyModules: string[];
+  navItems: { key: string; label: string; icon: string }[];
+}
+
 export interface Settings {
   companyName: string;
   tinNumber: string;

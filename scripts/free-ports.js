@@ -74,3 +74,4 @@ function freePorts() {
 
 freePorts();
 console.log(`[Port Manager] Ports checked (${PORTS.join(", ")}). Ready to start dev servers.`);
+

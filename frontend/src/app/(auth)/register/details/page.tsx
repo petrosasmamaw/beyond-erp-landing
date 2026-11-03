@@ -244,8 +244,7 @@ function RegisterDetailsContent() {
               />
             </div>
             <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
-              <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
-              <span style={{ color: "#2563eb" }}>ERP</span>
+              <span style={{ color: dark ? "#ffffff" : "#0f172a", transition: "color 0.15s ease" }}>Beyond ERP</span>
             </span>
           </div>
           <ThemeToggle />

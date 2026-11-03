@@ -6,6 +6,7 @@ import type { Dashboard } from "@/lib/types";
 import { emptyDashboard, getSectorDefinition } from "@/features/erp/config";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
+import { useAppSelector } from "@/store/hooks";
 import { DashboardView } from "@/features/erp/views/dashboard";
 
 export default function DashboardPage() {
@@ -30,7 +31,8 @@ export default function DashboardPage() {
 
   const revenueChart = dashboard.revenueChart.length ? dashboard.revenueChart : emptyDashboard.revenueChart;
   const maxChart = Math.max(...revenueChart, 1);
-  const companySector = getSectorDefinition(user?.companySectorId ?? settings?.companySectorId ?? "");
+  const reduxSectorId = useAppSelector((state) => state.sectors.activeSectorId);
+  const companySector = getSectorDefinition(reduxSectorId ?? user?.companySectorId ?? settings?.companySectorId ?? "");
 
   return (
     <div className="screen-wrapper">

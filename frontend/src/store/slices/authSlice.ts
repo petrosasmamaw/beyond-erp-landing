@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { User, UserRole } from "@/types/erp";
-import { INITIAL_USER } from "../initialData";
+import { INITIAL_USER, SECTORS_CATALOG } from "../initialData";
+import { switchSector } from "./sectorsSlice";
 
 export interface AuthState {
   user: User | null;
@@ -18,13 +19,23 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loginAsDemo: (state, action: PayloadAction<{ sectorId?: string; companyName?: string } | undefined>) => {
-      const sectorId = action?.payload?.sectorId ?? "healthcare";
-      const companyName = action?.payload?.companyName ?? (sectorId === "retail-trading" ? "Merkato Wholesale PLC" : "Selam Medical & Trading PLC");
+    loginAsDemo: (
+      state,
+      action: PayloadAction<{ sectorId?: string; companyName?: string } | undefined>
+    ) => {
+      const sectorId = action?.payload?.sectorId ?? "retail-trading";
+      const sectorMeta = SECTORS_CATALOG.find((s) => s.id === sectorId);
+      const companyName =
+        action?.payload?.companyName ??
+        sectorMeta?.defaultCompanyName ??
+        "Merkato Wholesale & Supermarket PLC";
+      const companyTinNumber = sectorMeta?.defaultTin ?? "0012345678";
+
       state.user = {
         ...INITIAL_USER,
         companySectorId: sectorId,
         companyName,
+        companyTinNumber,
         role: "OWNER",
         status: "ACTIVE",
         lastLoginAt: new Date().toISOString(),
@@ -43,9 +54,22 @@ export const authSlice = createSlice({
         if (action.payload === "STAFF" || action.payload === "VIEWER") {
           state.user.effectivePermissions = ["View", "Transactions"];
         } else if (action.payload === "MANAGER") {
-          state.user.effectivePermissions = ["View", "Transactions", "Employees", "Reports"];
+          state.user.effectivePermissions = [
+            "View",
+            "Transactions",
+            "Employees",
+            "Reports",
+          ];
         } else {
-          state.user.effectivePermissions = ["View", "Transactions", "Employees", "Finance", "Reports", "Users", "Settings"];
+          state.user.effectivePermissions = [
+            "View",
+            "Transactions",
+            "Employees",
+            "Finance",
+            "Reports",
+            "Users",
+            "Settings",
+          ];
         }
       }
     },
@@ -55,8 +79,19 @@ export const authSlice = createSlice({
       state.isDemo = false;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(switchSector, (state, action) => {
+      if (state.user) {
+        const sectorMeta = SECTORS_CATALOG.find((s) => s.id === action.payload);
+        if (sectorMeta) {
+          state.user.companySectorId = sectorMeta.id;
+          state.user.companyName = sectorMeta.defaultCompanyName;
+          state.user.companyTinNumber = sectorMeta.defaultTin;
+        }
+      }
+    });
+  },
 });
 
 export const { loginAsDemo, login, switchRole, logout } = authSlice.actions;
 export default authSlice.reducer;
-

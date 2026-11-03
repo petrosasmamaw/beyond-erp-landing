@@ -10,7 +10,9 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAppDispatch } from "@/store/hooks";
 import { loginAsDemo } from "@/store/slices/authSlice";
+import { openModal } from "@/store/slices/uiSlice";
 import { INITIAL_USER } from "@/store/initialData";
+import { SectorSelectModal } from "@/components/modals/SectorSelectModal";
 
 export default function LoginPage() {
   const { user, login } = useAuth();
@@ -170,8 +172,7 @@ export default function LoginPage() {
               <img src="/logo.png" alt="Beyond ERP" width={36} height={36} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }} />
             </div>
             <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-0.02em" }}>
-              <span style={{ color: dark ? "#ffffff" : "#2563eb", transition: "color 0.15s ease" }}>Beyond</span>{" "}
-              <span style={{ color: "#2563eb" }}>ERP</span>
+              <span style={{ color: dark ? "#ffffff" : "#0f172a", transition: "color 0.15s ease" }}>Beyond ERP</span>
             </span>
           </div>
           <ThemeToggle />
@@ -271,7 +272,7 @@ export default function LoginPage() {
               {/* TRY DEMO BUTTON */}
               <button
                 type="button"
-                onClick={() => handleTryDemo("healthcare")}
+                onClick={() => dispatch(openModal({ type: "sector-select" }))}
                 style={{
                   width: "100%",
                   height: 44,
@@ -291,7 +292,7 @@ export default function LoginPage() {
                 }}
               >
                 <span style={{ fontSize: 16 }}>⚡</span>
-                <span>Try Interactive Demo (No Sign-up)</span>
+                <span>Try Interactive Demo — Choose Sector</span>
               </button>
             </form>
 
@@ -337,6 +338,7 @@ export default function LoginPage() {
       </div>
 
       {toast ? <div className="toast">{toast}</div> : null}
+      <SectorSelectModal />
     </main>
   );
 }

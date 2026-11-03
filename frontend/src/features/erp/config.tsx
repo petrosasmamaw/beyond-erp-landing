@@ -318,6 +318,23 @@ export const sectorDefinitions: SectorDefinition[] = [
     ]
   },
   {
+    id: "government-services",
+    shortName: "Government",
+    name: "Government Services",
+    description: "Municipal trade permits, citizen registry, service case workflows, official revenue receipts, and counters.",
+    icon: "fa-solid fa-landmark-dome",
+    color: "#64748b",
+    tint: "#f8fafc",
+    features: [
+      { title: "Permits", description: "Trade licenses, building permits, renewals, and inspections.", icon: "fa-solid fa-file-contract", color: "#64748b" },
+      { title: "Citizens", description: "Citizen profile registry, national ID records, and verifications.", icon: "fa-solid fa-users", color: "#2563eb" },
+      { title: "Service Cases", description: "Service request tracking, approvals, and SLA escalations.", icon: "fa-solid fa-list-check", color: "#10b981" },
+      { title: "Revenue", description: "Government revenue receipts, municipal fees, and audits.", icon: "fa-solid fa-coins", color: "#f59e0b" },
+      { title: "Documents", description: "Official stamps, deeds, archive vault, and digital seals.", icon: "fa-solid fa-folder-open", color: "#8b5cf6" },
+      { title: "Counters", description: "Queue management, teller counters, and citizen tokens.", icon: "fa-solid fa-building-user", color: "#06b6d4" }
+    ]
+  },
+  {
     id: "request-custom",
     shortName: "Custom",
     name: "Request Custom",
@@ -344,8 +361,8 @@ export function getSectorDefinition(sectorId?: string | null) {
     finance: "finance-banking",
     realestate: "real-estate",
     ngo: "ngo-development",
-    government: "request-custom",
-    "government-services": "request-custom",
+    government: "government-services",
+    "government-services": "government-services",
     custom: "request-custom",
     "request-custom": "request-custom",
     "health-sector": "healthcare",

@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Inter_Tight } from "next/font/google";
 import { StoreProvider } from "@/store/StoreProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AppProvider } from "@/contexts/AppContext";
@@ -7,12 +6,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import "./globals.css";
 import "./landing.css";
 
-const interTight = Inter_Tight({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-sans",
-  display: "swap",
-});
+const fontSansClass = "font-sans";
 
 export const metadata: Metadata = {
   title: "Beyond ERP System",
@@ -30,7 +24,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={interTight.variable} suppressHydrationWarning>
+    <html lang="en" className={fontSansClass} suppressHydrationWarning>
       <head>
         {/* Preload primary Amharic display font */}
         <link
