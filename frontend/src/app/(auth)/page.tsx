@@ -408,6 +408,8 @@ export default function LandingPage() {
               <div className="footer-contact-item">
                 <strong>Contact:</strong>
                 <a href="tel:+251939048523">+251 939 048 523</a>
+                <span style={{ opacity: 0.4 }}>/</span>
+                <a href="tel:+251928151599">+251 928 151 599</a>
               </div>
               <div className="footer-contact-item">
                 <strong>Email:</strong>
