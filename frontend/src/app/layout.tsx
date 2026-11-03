@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter_Tight } from "next/font/google";
+import { StoreProvider } from "@/store/StoreProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AppProvider } from "@/contexts/AppContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -49,13 +50,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <ThemeProvider>
-          <AuthProvider>
-            <AppProvider>
-              {children}
-            </AppProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <StoreProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <AppProvider>
+                {children}
+              </AppProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </StoreProvider>
       </body>
     </html>
   );

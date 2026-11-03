@@ -1,3 +1,8 @@
+import { store } from "@/store";
+import { addTransaction, editTransaction, deleteTransaction } from "@/store/slices/transactionsSlice";
+import { addEmployee, editEmployee, deleteEmployee } from "@/store/slices/employeesSlice";
+import { createInvoice, createExpenseApproval, handleApprovalAction, createPayrollRun } from "@/store/slices/financeSlice";
+import { updateSettings } from "@/store/slices/settingsSlice";
 import type {
   AuthResponse,
   ChartAccount,
@@ -455,39 +460,86 @@ export async function mockFetch<T>(path: string, init?: RequestInit): Promise<T>
   }
 
   // Dashboard
-  if (path.includes("/api/dashboard")) return MOCK_DASHBOARD as T;
+  if (path.includes("/api/dashboard")) {
+    const txs = (store.getState().transactions.items as unknown as Transaction[]) || mockTransactions;
+    const revenue = txs.filter((t) => t.type === "INCOME").reduce((s, t) => s + (t.amount || 0), 0);
+    const expenses = txs.filter((t) => t.type === "EXPENSE").reduce((s, t) => s + (t.amount || 0), 0);
+    const netProfit = revenue - expenses;
+    const pendingSync = txs.filter((t) => !t.synced).length;
+    const vat = Math.round(revenue * 0.15);
+    const withholding = Math.round(revenue * 0.02);
+
+    return {
+      stats: {
+        revenue,
+        expenses,
+        netProfit,
+        pendingSync,
+      },
+      taxSummary: {
+        taxableRevenue: revenue,
+        vat,
+        withholding,
+        totalTaxLiability: vat + withholding,
+      },
+      revenueChart: [38000, 52000, 47000, 61000, 55000, 68000, 71000, 64000, 82000, 75000, 88000, Math.max(revenue, 93000)],
+      sectorBreakdown: [
+        { sector: "Retail & Trade", amount: Math.round(revenue * 0.48), percentage: 48 },
+        { sector: "Hotel & Hospitality", amount: Math.round(revenue * 0.26), percentage: 26 },
+        { sector: "Logistics", amount: Math.round(revenue * 0.12), percentage: 12 },
+        { sector: "Healthcare", amount: Math.round(revenue * 0.08), percentage: 8 },
+        { sector: "Other", amount: Math.round(revenue * 0.06), percentage: 6 }
+      ],
+      recentTransactions: txs.slice(0, 5)
+    } as T;
+  }
 
   // Settings
   if (path.includes("/api/settings")) {
     if (method === "PATCH") {
+      store.dispatch(updateSettings(body));
       mockSettings = { ...mockSettings, ...body };
       if (body?.companySectorId) setMockProfile(body.companySectorId, body.companyName);
     }
-    return { ...mockSettings, companySectorId: getMockSectorId(), companyName: getMockCompanyName() } as T;
+    const stg = store.getState().settings.settings;
+    return { ...mockSettings, ...stg, companySectorId: stg.companySectorId ?? getMockSectorId(), companyName: stg.companyName ?? getMockCompanyName() } as T;
   }
 
   // Transactions
   if (path.includes("/api/transactions") && !path.includes("/api/transactions/")) {
     if (method === "POST") {
-      const t = { ...body, id: uid(), synced: false, createdAt: new Date().toISOString() } as Transaction;
-      mockTransactions = [t, ...mockTransactions];
-      return t as T;
+      const vatAmount = body?.vatAmount !== undefined ? body.vatAmount : Math.round((body?.amount || 0) * 0.15);
+      const tInput = { ...body, vatAmount };
+      store.dispatch(addTransaction(tInput));
+      const created = store.getState().transactions.items[0] as unknown as Transaction;
+      mockTransactions = [created, ...mockTransactions];
+      return created as T;
     }
+    const txs = (store.getState().transactions.items as unknown as Transaction[]) || mockTransactions;
     const typeFilter = new URL(`http://x${path}`).searchParams.get("type") ?? "ALL";
-    const filtered = typeFilter === "ALL" ? mockTransactions : mockTransactions.filter((t) => t.type === typeFilter);
+    const filtered = typeFilter === "ALL" ? txs : txs.filter((t) => t.type === typeFilter);
     if (path.includes("page=") || path.includes("limit=")) return paginate(filtered) as T;
     return filtered as T;
   }
   if (path.match(/\/api\/transactions\/[^/]+$/)) {
     const id = path.split("/").pop()!;
     if (method === "PATCH") {
-      mockTransactions = mockTransactions.map((t) => t.id === id ? { ...t, ...body } : t);
-      return mockTransactions.find((t) => t.id === id) as T;
+      const existing = store.getState().transactions.items.find((t) => t.id === id);
+      if (existing) {
+        store.dispatch(editTransaction({ ...existing, ...body }));
+      }
+      mockTransactions = mockTransactions.map((t) => (t.id === id ? { ...t, ...body } : t));
+      return (store.getState().transactions.items.find((t) => t.id === id) as unknown as Transaction) as T;
     }
-    if (method === "DELETE") { mockTransactions = mockTransactions.filter((t) => t.id !== id); return undefined as T; }
+    if (method === "DELETE") {
+      store.dispatch(deleteTransaction(id));
+      mockTransactions = mockTransactions.filter((t) => t.id !== id);
+      return undefined as T;
+    }
   }
   if (path.includes("/api/sync/transactions")) {
     const synced = (body.items as Transaction[]).map((item) => ({ ...item, id: uid(), synced: true, createdAt: new Date().toISOString() } as Transaction));
+    synced.forEach((item) => store.dispatch(addTransaction(item)));
     mockTransactions = [...synced, ...mockTransactions];
     return { count: synced.length, transactions: synced } as T;
   }
@@ -496,20 +548,30 @@ export async function mockFetch<T>(path: string, init?: RequestInit): Promise<T>
   // Employees
   if (path.includes("/api/employees") && !path.includes("/api/employees/")) {
     if (method === "POST") {
-      const e = { ...body, id: uid(), createdAt: new Date().toISOString() };
-      mockEmployees = [e, ...mockEmployees];
-      return e as T;
+      store.dispatch(addEmployee(body));
+      const created = store.getState().employees.items[0] as unknown as Employee;
+      mockEmployees = [created, ...mockEmployees];
+      return created as T;
     }
-    if (path.includes("page=") || path.includes("limit=")) return paginate(mockEmployees) as T;
-    return mockEmployees as T;
+    const emps = (store.getState().employees.items as unknown as Employee[]) || mockEmployees;
+    if (path.includes("page=") || path.includes("limit=")) return paginate(emps) as T;
+    return emps as T;
   }
   if (path.match(/\/api\/employees\/[^/]+$/)) {
     const id = path.split("/").pop()!;
     if (method === "PATCH") {
-      mockEmployees = mockEmployees.map((e) => e.id === id ? { ...e, ...body } : e);
-      return mockEmployees.find((e) => e.id === id) as T;
+      const existing = store.getState().employees.items.find((e) => e.id === id);
+      if (existing) {
+        store.dispatch(editEmployee({ ...existing, ...body }));
+      }
+      mockEmployees = mockEmployees.map((e) => (e.id === id ? { ...e, ...body } : e));
+      return (store.getState().employees.items.find((e) => e.id === id) as unknown as Employee) as T;
     }
-    if (method === "DELETE") { mockEmployees = mockEmployees.filter((e) => e.id !== id); return undefined as T; }
+    if (method === "DELETE") {
+      store.dispatch(deleteEmployee(id));
+      mockEmployees = mockEmployees.filter((e) => e.id !== id);
+      return undefined as T;
+    }
   }
 
   // Sectors
@@ -550,13 +612,13 @@ export async function mockFetch<T>(path: string, init?: RequestInit): Promise<T>
   // Invoices
   if (path.includes("/api/invoices") && !path.includes("/api/invoices/")) {
     if (method === "POST") {
-      const inv = { id: uid(), invoiceNumber: `INV-${Date.now()}`, ...body, subtotal: body.items.reduce((s: number, i: { quantity: number; unitPrice: number }) => s + i.quantity * i.unitPrice, 0), vatAmount: 0, total: 0, issuedAt: new Date().toISOString() };
-      inv.vatAmount = Math.round(inv.subtotal * 0.15);
-      inv.total = inv.subtotal + inv.vatAmount;
+      store.dispatch(createInvoice(body));
+      const inv = store.getState().finance.invoices[0] as unknown as Invoice;
       mockInvoices = [inv, ...mockInvoices];
       return inv as T;
     }
-    return paginate(mockInvoices) as T;
+    const invs = (store.getState().finance.invoices as unknown as Invoice[]) || mockInvoices;
+    return paginate(invs) as T;
   }
 
   // Receipts
@@ -566,35 +628,39 @@ export async function mockFetch<T>(path: string, init?: RequestInit): Promise<T>
       mockReceipts = [rec, ...mockReceipts];
       return rec as T;
     }
-    return paginate(mockReceipts) as T;
+    const recs = (store.getState().finance.receipts as unknown as Receipt[]) || mockReceipts;
+    return paginate(recs) as T;
   }
 
   // Expense approvals
   if (path.includes("/api/expense-approvals") && !path.match(/\/api\/expense-approvals\/[^/]+\/actions/)) {
     if (method === "POST") {
-      const ea = { id: uid(), ...body, requestedById: MOCK_USER.id, approvedById: null, status: "REQUESTED", requestedAt: new Date().toISOString() };
+      store.dispatch(createExpenseApproval(body));
+      const ea = store.getState().finance.expenseApprovals[0] as unknown as ExpenseApproval;
       mockApprovals = [ea, ...mockApprovals];
       return ea as T;
     }
-    return paginate(mockApprovals) as T;
+    const apps = (store.getState().finance.expenseApprovals as unknown as ExpenseApproval[]) || mockApprovals;
+    return paginate(apps) as T;
   }
   if (path.match(/\/api\/expense-approvals\/[^/]+\/actions\/(approve|reject|pay)/)) {
     const [, id, , action] = path.split("/").slice(2);
+    store.dispatch(handleApprovalAction({ id, action: action as "approve" | "reject" | "pay" }));
     const statusMap: Record<string, string> = { approve: "APPROVED", reject: "REJECTED", pay: "PAID" };
     mockApprovals = mockApprovals.map((a) => a.id === id ? { ...a, status: (statusMap[action] ?? a.status) as import("./types").ApprovalStatus, approvedById: MOCK_USER.id } : a);
-    return mockApprovals.find((a) => a.id === id) as T;
+    return (store.getState().finance.expenseApprovals.find((a) => a.id === id) as unknown as ExpenseApproval) as T;
   }
 
   // Payroll
   if (path.includes("/api/payroll-runs") && !path.includes("/api/payroll-runs/")) {
     if (method === "POST") {
-      const gross = body.items.reduce((s: number, i: { grossPay: number }) => s + i.grossPay, 0);
-      const ded = body.items.reduce((s: number, i: { deductions: number }) => s + i.deductions, 0);
-      const pr = { id: uid(), ...body, status: body.status ?? "DRAFT", grossPay: gross, deductions: ded, netPay: gross - ded, createdAt: new Date().toISOString() };
+      store.dispatch(createPayrollRun({ employees: store.getState().employees.items as unknown as import("@/types/erp").Employee[] }));
+      const pr = store.getState().finance.payrollRuns[0] as unknown as PayrollRun;
       mockPayroll = [pr, ...mockPayroll];
       return pr as T;
     }
-    return paginate(mockPayroll) as T;
+    const runs = (store.getState().finance.payrollRuns as unknown as PayrollRun[]) || mockPayroll;
+    return paginate(runs) as T;
   }
 
   // Sector records & domain workflows

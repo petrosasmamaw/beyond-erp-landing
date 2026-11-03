@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Download, FileText, Loader2, LogOut, RefreshCcw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
+import { useAppDispatch } from "@/store/hooks";
+import { logout as reduxLogout } from "@/store/slices/authSlice";
 import { getSectorDefinition } from "@/features/erp/config";
 import { getInitials, getTimeOfDay } from "@/lib/format";
 import { readOperationQueue, readQueue } from "@/features/erp/offline";
@@ -27,6 +29,7 @@ const SIDEBAR_KEY = "beyond_sidebar_collapsed";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticating, logout } = useAuth();
+  const dispatch = useAppDispatch();
   const {
     settings, isOnline, isSyncing, apiStatus, pendingCount, setPendingCount,
     ethiopianDate, holidayToday, installPrompt, toast,
@@ -128,7 +131,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span className={`connection-badge ${apiStatus}`}>{apiStatus}</span>
+              <span
+                style={{
+                  padding: "3px 9px",
+                  borderRadius: 20,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: "rgba(245, 158, 11, 0.15)",
+                  color: "#f59e0b",
+                  border: "1px solid rgba(245, 158, 11, 0.35)",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                DEMO MODE · IN-MEMORY
+              </span>
 
               <ThemeToggle />
 
@@ -171,7 +189,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
               <button
                 className="icon-button topbar-btn"
-                onClick={() => { logout(); router.replace("/login"); showToast("Signed out"); }}
+                onClick={() => {
+                  dispatch(reduxLogout());
+                  logout();
+                  router.replace("/login");
+                  showToast("Signed out of demo");
+                }}
                 aria-label="Sign out"
               >
                 <LogOut size={16} />
@@ -184,7 +207,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <i className="fa-regular fa-calendar" style={{ fontSize: 13, flexShrink: 0 }} />
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
               <strong style={{ fontSize: 13 }}>{ethiopianDate}</strong>
-              <span style={{ fontSize: 12 }}>· VAT 15%, ETB</span>
+              <span style={{ fontSize: 12 }}>· VAT 15% · ETB · NBE Compliant</span>
               {holidayToday ? <span className="holiday-badge">🎉 {holidayToday}</span> : null}
             </div>
           </div>

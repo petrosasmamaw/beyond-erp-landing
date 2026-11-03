@@ -8,10 +8,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAppDispatch } from "@/store/hooks";
+import { loginAsDemo } from "@/store/slices/authSlice";
+import { INITIAL_USER } from "@/store/initialData";
 
 export default function LoginPage() {
   const { user, login } = useAuth();
   const { toast, showToast } = useApp();
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const { theme } = useTheme();
   const dark = theme === "dark";
@@ -23,6 +27,21 @@ export default function LoginPage() {
   useEffect(() => {
     if (user) router.replace("/dashboard");
   }, [user, router]);
+
+  const handleTryDemo = (sectorId: string = "healthcare") => {
+    dispatch(loginAsDemo({ sectorId }));
+    const companyName =
+      sectorId === "retail-trading"
+        ? "Merkato Wholesale PLC"
+        : "Selam Medical & Trading PLC";
+    login("demo-jwt-token-beyond-erp-demo", {
+      ...INITIAL_USER,
+      companySectorId: sectorId,
+      companyName,
+    });
+    showToast("Logged in as Demo Owner (Yohannes Getachew)");
+    router.push("/dashboard");
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -238,6 +257,41 @@ export default function LoginPage() {
                 {loading && <Loader2 className="spin" size={17} />}
                 {loading ? "Signing in…" : "Sign in"}
                 {!loading && <ArrowRight size={16} />}
+              </button>
+
+              {/* Instant Demo Divider */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "14px 0 2px" }}>
+                <div style={{ flex: 1, height: 1, background: border }} />
+                <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: muted }}>
+                  Or Experience Instantly
+                </span>
+                <div style={{ flex: 1, height: 1, background: border }} />
+              </div>
+
+              {/* TRY DEMO BUTTON */}
+              <button
+                type="button"
+                onClick={() => handleTryDemo("healthcare")}
+                style={{
+                  width: "100%",
+                  height: 44,
+                  borderRadius: 10,
+                  border: "1.5px solid rgba(37, 99, 235, 0.4)",
+                  background: dark ? "rgba(37, 99, 235, 0.14)" : "rgba(37, 99, 235, 0.08)",
+                  color: dark ? "#93c5fd" : "#2563eb",
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  transition: "all 0.15s ease",
+                  boxShadow: "0 2px 8px rgba(37, 99, 235, 0.15)",
+                }}
+              >
+                <span style={{ fontSize: 16 }}>⚡</span>
+                <span>Try Interactive Demo (No Sign-up)</span>
               </button>
             </form>
 
