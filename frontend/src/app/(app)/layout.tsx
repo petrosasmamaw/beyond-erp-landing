@@ -14,6 +14,7 @@ import { readOperationQueue, readQueue } from "@/features/erp/offline";
 import { Sidebar } from "@/components/navigation/Sidebar";
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useTheme } from "@/contexts/ThemeContext";
 import { TransactionModal } from "@/components/modals/TransactionModal";
 import { EmployeeModal } from "@/components/modals/EmployeeModal";
 import { AdminModal } from "@/components/modals/AdminModal";
@@ -32,6 +33,8 @@ const SIDEBAR_KEY = "beyond_sidebar_collapsed";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticating, logout } = useAuth();
   const dispatch = useAppDispatch();
+  const { theme } = useTheme();
+  const dark = theme === "dark";
   const {
     settings, isOnline, isSyncing, apiStatus, pendingCount, setPendingCount,
     ethiopianDate, holidayToday, installPrompt, toast,
@@ -128,8 +131,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="app-main-panel">
           {/* Clean top bar */}
           <header className="app-topbar">
-            <div>
-              <div style={{ fontSize: 11, color: "var(--muted)", fontWeight: 600, lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 10.5, color: "var(--muted)", fontWeight: 600, lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
                 {getTimeOfDay()} · {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" })}
               </div>
               <button
@@ -141,18 +144,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   alignItems: "center",
                   gap: 7,
                   marginTop: 3,
-                  padding: "4px 10px 4px 8px",
+                  padding: "4px 10px 4px 7px",
                   borderRadius: 8,
-                  background: "rgba(37, 99, 235, 0.12)",
-                  border: "1px solid rgba(37, 99, 235, 0.28)",
-                  color: "var(--ink, #ffffff)",
+                  background: dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)",
+                  border: `1px solid ${dark ? "rgba(37, 99, 235, 0.35)" : "rgba(37, 99, 235, 0.22)"}`,
+                  color: dark ? "#f8fafc" : "#0f172a",
                   cursor: "pointer",
-                  fontSize: 14,
+                  fontSize: 13.5,
                   fontWeight: 700,
+                  maxWidth: "100%",
                   transition: "all 0.15s ease",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(37, 99, 235, 0.22)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(37, 99, 235, 0.12)")}
+                onMouseEnter={(e) => (e.currentTarget.style.background = dark ? "rgba(37, 99, 235, 0.25)" : "rgba(37, 99, 235, 0.15)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)")}
               >
                 <span
                   style={{
@@ -165,16 +169,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     alignItems: "center",
                     justifyContent: "center",
                     fontSize: 11,
+                    flexShrink: 0,
                   }}
                 >
                   <i className={companySector?.icon || "fa-solid fa-building"} />
                 </span>
-                <span>{companyName}</span>
-                <ChevronDown size={14} style={{ color: "var(--muted, #94a3b8)", marginLeft: 2 }} />
+                <span
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: "clamp(120px, 28vw, 260px)",
+                  }}
+                >
+                  {companyName}
+                </span>
+                <ChevronDown size={14} style={{ color: dark ? "#94a3b8" : "#64748b", marginLeft: 1, flexShrink: 0 }} />
               </button>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
               <span
                 style={{
                   padding: "3px 9px",
@@ -189,7 +203,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   whiteSpace: "nowrap",
                 }}
               >
-                DEMO MODE · IN-MEMORY
+                <span className="demo-badge-long">DEMO MODE · IN-MEMORY</span>
+                <span className="demo-badge-short">DEMO</span>
               </span>
 
               <ThemeToggle />

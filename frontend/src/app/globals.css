@@ -94,6 +94,19 @@ button {
   color: var(--muted);
 }
 
+.demo-badge-short {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .demo-badge-long {
+    display: none;
+  }
+  .demo-badge-short {
+    display: inline;
+  }
+}
+
 .topbar-user-info {
   display: none;
 }

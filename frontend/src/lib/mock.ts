@@ -3,6 +3,11 @@ import { addTransaction, editTransaction, deleteTransaction } from "@/store/slic
 import { addEmployee, editEmployee, deleteEmployee } from "@/store/slices/employeesSlice";
 import { createInvoice, createExpenseApproval, handleApprovalAction, createPayrollRun } from "@/store/slices/financeSlice";
 import { updateSettings } from "@/store/slices/settingsSlice";
+import {
+  SECTORS_CATALOG,
+  INITIAL_SECTOR_RECORDS,
+  INITIAL_WORK_ITEMS_BY_SECTOR,
+} from "@/store/initialData";
 import type {
   AuthResponse,
   ChartAccount,
@@ -93,85 +98,64 @@ export const MOCK_EMPLOYEES: Employee[] = [
   { id: "e6", fullName: "Mekdes Tadesse", position: "Cashier", department: "Sales", phone: "+251911000006", email: null, salary: 7500, status: "INACTIVE", hiredDate: d(400), createdAt: d(400) }
 ];
 
-export const MOCK_SECTORS: Sector[] = [
-  {
-    id: "retail-sector",
-    name: "Retail & Trade",
-    icon: "ShoppingBag",
-    color: "#1e40af",
-    lightColor: "#dbeafe",
-    textColor: "#1e40af",
-    description: "Wholesale and retail merchandise management",
-    features: ["Inventory", "POS", "Suppliers"],
-    teamMembers: [{ id: "tm1", type: "ADMIN", fullName: "Abebe Bekele", contact: "+251911000001", department: "Sales", permissions: ["View", "Transactions"], assignedFeatures: null, sectorId: "retail-sector", createdAt: d(365) }],
-    workItems: [
-      { id: "wi1", sectorId: "retail-sector", title: "Restock electronics shelf", status: "IN_PROGRESS", priority: "HIGH", dueDate: d(-2), assignedToId: "e1", createdById: "mock-user-1", description: null, metadata: null, createdAt: d(5) },
-      { id: "wi2", sectorId: "retail-sector", title: "Update price list Q2", status: "TODO", priority: "MEDIUM", dueDate: d(-7), assignedToId: null, createdById: "mock-user-1", description: null, metadata: null, createdAt: d(3) }
-    ],
-    sectorRecords: [
-      { id: "sr1", sectorId: "retail-sector", recordType: "Product", title: "Samsung A15 Phone", ownerName: "Abebe Bekele", status: "ACTIVE", value: 12500, metadata: {}, createdAt: d(20) },
-      { id: "sr2", sectorId: "retail-sector", recordType: "Product", title: "Office Chair – Ergonomic", ownerName: null, status: "ACTIVE", value: 4800, metadata: {}, createdAt: d(15) }
-    ]
-  },
-  {
-    id: "logistics-sector",
-    name: "Logistics & Transport",
-    icon: "Truck",
-    color: "#b45309",
-    lightColor: "#fef3c7",
-    textColor: "#b45309",
-    description: "Fleet, delivery, and freight operations",
-    features: ["Fleet", "Routes", "Freight"],
-    teamMembers: [{ id: "tm2", type: "MANAGER", fullName: "Dawit Mekonnen", contact: "+251911000003", department: "Logistics", permissions: null, assignedFeatures: ["Fleet", "Routes"], sectorId: "logistics-sector", createdAt: d(200) }],
-    workItems: [
-      { id: "wi3", sectorId: "logistics-sector", title: "Schedule vehicle maintenance", status: "TODO", priority: "URGENT", dueDate: d(-1), assignedToId: "e3", createdById: "mock-user-1", description: null, metadata: null, createdAt: d(2) }
-    ],
-    sectorRecords: [
-      { id: "sr3", sectorId: "logistics-sector", recordType: "Vehicle", title: "Toyota Land Cruiser – AA-12345", ownerName: "Dawit Mekonnen", status: "ACTIVE", value: 1800000, metadata: {}, createdAt: d(60) }
-    ]
-  },
-  {
-    id: "health-sector",
-    name: "Healthcare",
-    icon: "HeartPulse",
-    color: "#dc2626",
-    lightColor: "#fee2e2",
-    textColor: "#dc2626",
-    description: "Patient care, hospital operations, pharmacy, lab, billing, claims, and EHMIS-ready reporting",
-    features: [
-      "EMR / EHR",
-      "Queue & OPD",
-      "IPD & Beds",
-      "Pharmacy",
-      "Lab & Radiology",
-      "Billing & Claims",
-      "Inventory & Procurement",
-      "Security & Compliance",
-      "Reports & EHMIS",
-      "Patient Portal"
-    ],
-    teamMembers: [],
-    workItems: [],
-    sectorRecords: [
-      { id: "sr4", sectorId: "health-sector", recordType: "Patient", title: "Fatima Yusuf – Follow-up", ownerName: "Fatima Yusuf", status: "PENDING", value: null, metadata: {}, createdAt: d(3) }
-    ]
-  },
-  {
-    id: "hotel-sector",
-    name: "Hotel & Hospitality",
-    icon: "Hotel",
-    color: "#7c3aed",
-    lightColor: "#ede9fe",
-    textColor: "#7c3aed",
-    description: "Room booking and hospitality services",
-    features: ["Rooms", "Bookings", "F&B"],
-    teamMembers: [],
-    workItems: [],
-    sectorRecords: [
-      { id: "sr5", sectorId: "hotel-sector", recordType: "Booking", title: "Room 204 – Kebede Family", ownerName: "Kebede Alemu", status: "ACTIVE", value: 2400, metadata: {}, createdAt: d(1) }
-    ]
-  }
-];
+export const MOCK_SECTORS: Sector[] = SECTORS_CATALOG.map((sec) => ({
+  id: sec.id,
+  name: sec.name,
+  icon: sec.icon.replace(/^fa-solid fa-/, "").replace(/^fa-/, "") || "ShoppingBag",
+  color: sec.color,
+  lightColor: sec.lightColor,
+  textColor: sec.textColor,
+  description: sec.description,
+  features: sec.keyModules,
+  teamMembers: [
+    {
+      id: `tm-${sec.id}-1`,
+      type: "ADMIN" as const,
+      fullName: "Abebe Bekele",
+      contact: "+251911000001",
+      department: "Operations",
+      permissions: ["View", "Transactions", "Employees", "Reports"],
+      assignedFeatures: sec.keyModules.slice(0, 2),
+      sectorId: sec.id,
+      createdAt: d(365),
+    },
+    {
+      id: `tm-${sec.id}-2`,
+      type: "MANAGER" as const,
+      fullName: "Tigist Haile",
+      contact: "+251911000002",
+      department: "Finance",
+      permissions: null,
+      assignedFeatures: sec.keyModules.slice(1, 3),
+      sectorId: sec.id,
+      createdAt: d(200),
+    },
+  ],
+  workItems: (INITIAL_WORK_ITEMS_BY_SECTOR[sec.id] || []).map((wi) => ({
+    id: wi.id,
+    sectorId: wi.sectorId,
+    title: wi.title,
+    status: wi.status,
+    priority: wi.priority,
+    dueDate: wi.dueDate ?? null,
+    assignedToId: wi.assignedToId ?? null,
+    createdById: "mock-user-1",
+    description: wi.description ?? null,
+    metadata: null,
+    createdAt: wi.createdAt,
+  })),
+  sectorRecords: (INITIAL_SECTOR_RECORDS[sec.id] || []).map((sr) => ({
+    id: sr.id,
+    sectorId: sr.sectorId,
+    recordType: sr.recordType,
+    title: sr.title,
+    ownerName: sr.ownerName ?? null,
+    status: sr.status,
+    value: sr.value ?? null,
+    metadata: (sr.metadata as Record<string, unknown>) ?? {},
+    createdAt: sr.createdAt,
+  })),
+}));
 
 export const MOCK_DASHBOARD: Dashboard = {
   stats: {
@@ -180,7 +164,7 @@ export const MOCK_DASHBOARD: Dashboard = {
     netProfit: 157200,
     pendingSync: 1,
     employeeCount: 6,
-    sectorCount: 4
+    sectorCount: 12
   },
   taxSummary: {
     taxableRevenue: 264000,
