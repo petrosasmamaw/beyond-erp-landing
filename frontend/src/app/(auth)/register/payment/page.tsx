@@ -1122,63 +1122,68 @@ function PaymentContent() {
                 </div>
               </>
             ) : (
-              /* ================= CUSTOM / CONTACT ADMIN SECTION (CLEAN LIST FORMAT MATCHING CBE/TELEBIRR) ================= */
+              /* ================= CUSTOM / CONTACT ADMIN SECTION (CLEAN SINGLE-BORDER LIST, NO NESTED BOXES) ================= */
               <div
-                className="pay-account-box"
                 style={{
-                  borderRadius: 12,
-                  border: `1.5px solid ${border}`,
+                  borderRadius: 14,
+                  border: `1px solid ${border}`,
                   background: surface,
-                  padding: "20px 22px",
                   marginBottom: 18,
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
+                  overflow: "hidden"
                 }}
               >
                 {/* Header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                <div
+                  style={{
+                    padding: "16px 20px",
+                    borderBottom: `1px solid ${border}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 12
+                  }}
+                >
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 8,
-                        background: dark ? "rgba(37,99,235,0.18)" : "#eff6ff",
-                        color: "#2563eb",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0
-                      }}
-                    >
-                      <Building2 size={20} />
-                    </div>
-                    <div>
-                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
-                        Enterprise Administration
-                      </span>
-                      <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
-                        Contact for Custom Agreement
-                      </h3>
-                    </div>
+                    <Building2 size={18} style={{ color: "#2563eb" }} />
+                    <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: ink }}>
+                      Enterprise Administration
+                    </h3>
                   </div>
-                  <span style={{ fontSize: 12, color: muted }}>Payment by Agreement</span>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: "#2563eb",
+                      background: dark ? "rgba(37,99,235,0.12)" : "#eff6ff",
+                      border: `1px solid ${dark ? "rgba(37,99,235,0.25)" : "#dbeafe"}`,
+                      padding: "3px 9px",
+                      borderRadius: 6
+                    }}
+                  >
+                    Payment by Agreement
+                  </span>
                 </div>
 
-                {/* Concise notice */}
-                <p style={{ margin: "0 0 14px", fontSize: 13, color: muted, lineHeight: 1.45 }}>
-                  For custom ERP requirements, please contact our administration directly via phone, email, or Telegram to discuss specifications and pricing.
-                </p>
+                {/* Info line */}
+                <div
+                  style={{
+                    padding: "11px 20px",
+                    borderBottom: `1px solid ${border}`,
+                    fontSize: 13,
+                    color: muted,
+                    lineHeight: 1.45
+                  }}
+                >
+                  For custom ERP specifications, connect directly with our administration team.
+                </div>
 
-                {/* Contact List Rows */}
-                <div style={{ display: "grid", gap: 10 }}>
+                {/* Contact List */}
+                <div>
                   {/* Row 1: Phone */}
                   <div
-                    className="pay-account-row"
                     style={{
-                      padding: "12px 14px",
-                      borderRadius: 10,
-                      background: inputBg,
-                      border: `1px solid ${border}`,
+                      padding: "14px 20px",
+                      borderBottom: `1px solid ${border}`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -1186,47 +1191,32 @@ function PaymentContent() {
                       flexWrap: "wrap"
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "50%",
-                          background: dark ? "rgba(37,99,235,0.16)" : "#eff6ff",
-                          color: "#2563eb",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0
-                        }}
-                      >
-                        <Phone size={15} />
-                      </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <Phone size={16} style={{ color: "#2563eb", flexShrink: 0 }} />
                       <div>
-                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: muted, display: "block" }}>
                           Phone Support
-                        </p>
-                        <p style={{ margin: 0, fontSize: 15, fontWeight: 800, color: ink, letterSpacing: "0.02em" }}>
-                          +251 939 048 523 <span style={{ fontWeight: 500, color: muted, fontSize: 13 }}>/ +251 928 151 599</span>
-                        </p>
+                        </span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: ink }}>
+                          +251 939 048 523 <span style={{ color: muted, fontWeight: 500, fontSize: 13 }}>/ +251 928 151 599</span>
+                        </span>
                       </div>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <a
                         href="tel:+251939048523"
                         style={{
-                          height: 32,
-                          padding: "0 12px",
-                          borderRadius: 7,
-                          border: "1px solid #2563eb",
-                          background: dark ? "rgba(37,99,235,0.18)" : "#eff6ff",
-                          color: "#2563eb",
                           fontSize: 12,
                           fontWeight: 700,
+                          color: "#2563eb",
+                          textDecoration: "none",
+                          padding: "5px 12px",
+                          borderRadius: 6,
+                          border: `1px solid ${border}`,
+                          background: dark ? "rgba(37,99,235,0.08)" : "#eff6ff",
                           display: "inline-flex",
                           alignItems: "center",
-                          gap: 5,
-                          textDecoration: "none"
+                          gap: 4
                         }}
                       >
                         <Phone size={12} /> Call
@@ -1235,22 +1225,20 @@ function PaymentContent() {
                         type="button"
                         onClick={() => handleCopy("+251939048523", "Phone Number")}
                         style={{
-                          height: 32,
-                          padding: "0 12px",
-                          borderRadius: 7,
-                          border: "1px solid #2563eb",
-                          background: copied === "Phone Number" ? "#16a34a" : "#2563eb",
-                          color: "#ffffff",
                           fontSize: 12,
                           fontWeight: 700,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
+                          color: copied === "Phone Number" ? "#16a34a" : muted,
+                          background: "transparent",
+                          border: `1px solid ${border}`,
+                          padding: "5px 12px",
+                          borderRadius: 6,
                           cursor: "pointer",
-                          transition: "all 0.15s"
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 4
                         }}
                       >
-                        {copied === "Phone Number" ? <Check size={13} /> : <Copy size={13} />}
+                        {copied === "Phone Number" ? <Check size={12} /> : <Copy size={12} />}
                         {copied === "Phone Number" ? "Copied" : "Copy"}
                       </button>
                     </div>
@@ -1258,12 +1246,9 @@ function PaymentContent() {
 
                   {/* Row 2: Email */}
                   <div
-                    className="pay-account-row"
                     style={{
-                      padding: "12px 14px",
-                      borderRadius: 10,
-                      background: inputBg,
-                      border: `1px solid ${border}`,
+                      padding: "14px 20px",
+                      borderBottom: `1px solid ${border}`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -1271,47 +1256,32 @@ function PaymentContent() {
                       flexWrap: "wrap"
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "50%",
-                          background: dark ? "rgba(37,99,235,0.16)" : "#eff6ff",
-                          color: "#2563eb",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0
-                        }}
-                      >
-                        <Mail size={15} />
-                      </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <Mail size={16} style={{ color: "#2563eb", flexShrink: 0 }} />
                       <div>
-                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: muted, display: "block" }}>
                           Official Email
-                        </p>
-                        <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: ink, overflowWrap: "anywhere" }}>
+                        </span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: ink, overflowWrap: "anywhere" }}>
                           beyondsolutionsupport@gmail.com
-                        </p>
+                        </span>
                       </div>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <a
                         href="mailto:beyondsolutionsupport@gmail.com?subject=Custom%20ERP%20Enterprise%20Agreement"
                         style={{
-                          height: 32,
-                          padding: "0 12px",
-                          borderRadius: 7,
-                          border: "1px solid #2563eb",
-                          background: dark ? "rgba(37,99,235,0.18)" : "#eff6ff",
-                          color: "#2563eb",
                           fontSize: 12,
                           fontWeight: 700,
+                          color: "#2563eb",
+                          textDecoration: "none",
+                          padding: "5px 12px",
+                          borderRadius: 6,
+                          border: `1px solid ${border}`,
+                          background: dark ? "rgba(37,99,235,0.08)" : "#eff6ff",
                           display: "inline-flex",
                           alignItems: "center",
-                          gap: 5,
-                          textDecoration: "none"
+                          gap: 4
                         }}
                       >
                         <Mail size={12} /> Email
@@ -1320,22 +1290,20 @@ function PaymentContent() {
                         type="button"
                         onClick={() => handleCopy("beyondsolutionsupport@gmail.com", "Email Address")}
                         style={{
-                          height: 32,
-                          padding: "0 12px",
-                          borderRadius: 7,
-                          border: "1px solid #2563eb",
-                          background: copied === "Email Address" ? "#16a34a" : "#2563eb",
-                          color: "#ffffff",
                           fontSize: 12,
                           fontWeight: 700,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
+                          color: copied === "Email Address" ? "#16a34a" : muted,
+                          background: "transparent",
+                          border: `1px solid ${border}`,
+                          padding: "5px 12px",
+                          borderRadius: 6,
                           cursor: "pointer",
-                          transition: "all 0.15s"
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 4
                         }}
                       >
-                        {copied === "Email Address" ? <Check size={13} /> : <Copy size={13} />}
+                        {copied === "Email Address" ? <Check size={12} /> : <Copy size={12} />}
                         {copied === "Email Address" ? "Copied" : "Copy"}
                       </button>
                     </div>
@@ -1343,12 +1311,9 @@ function PaymentContent() {
 
                   {/* Row 3: Telegram */}
                   <div
-                    className="pay-account-row"
                     style={{
-                      padding: "12px 14px",
-                      borderRadius: 10,
-                      background: inputBg,
-                      border: `1px solid ${border}`,
+                      padding: "14px 20px",
+                      borderBottom: `1px solid ${border}`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -1356,48 +1321,32 @@ function PaymentContent() {
                       flexWrap: "wrap"
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "50%",
-                          background: "rgba(34, 158, 217, 0.15)",
-                          color: "#0284c7",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0
-                        }}
-                      >
-                        <Send size={15} />
-                      </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <Send size={16} style={{ color: "#0284c7", flexShrink: 0 }} />
                       <div>
-                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
-                          Telegram Support
-                        </p>
-                        <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: ink }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: muted, display: "block" }}>
+                          Telegram Channel
+                        </span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: ink }}>
                           @beyond_et
-                        </p>
+                        </span>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={handleTelegramClick}
                       style={{
-                        height: 32,
-                        padding: "0 14px",
-                        borderRadius: 7,
-                        border: 0,
-                        background: "linear-gradient(135deg, #229ED9 0%, #0088cc 100%)",
-                        color: "#ffffff",
                         fontSize: 12,
                         fontWeight: 700,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
+                        color: "#ffffff",
+                        background: "linear-gradient(135deg, #229ED9 0%, #0088cc 100%)",
+                        border: 0,
+                        padding: "6px 14px",
+                        borderRadius: 6,
                         cursor: "pointer",
-                        transition: "all 0.15s"
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6
                       }}
                     >
                       <Send size={12} />
@@ -1408,12 +1357,8 @@ function PaymentContent() {
 
                   {/* Row 4: Office */}
                   <div
-                    className="pay-account-row"
                     style={{
-                      padding: "12px 14px",
-                      borderRadius: 10,
-                      background: inputBg,
-                      border: `1px solid ${border}`,
+                      padding: "14px 20px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -1421,32 +1366,18 @@ function PaymentContent() {
                       flexWrap: "wrap"
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "50%",
-                          background: dark ? "rgba(37,99,235,0.16)" : "#eff6ff",
-                          color: "#2563eb",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0
-                        }}
-                      >
-                        <MapPin size={15} />
-                      </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <MapPin size={16} style={{ color: "#2563eb", flexShrink: 0 }} />
                       <div>
-                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: muted, display: "block" }}>
                           Head Office
-                        </p>
-                        <p style={{ margin: 0, fontSize: 13.5, fontWeight: 700, color: ink }}>
+                        </span>
+                        <span style={{ fontSize: 13.5, fontWeight: 700, color: ink }}>
                           Addis Ababa, 22 Bata Complex, 3rd Floor
-                        </p>
+                        </span>
                       </div>
                     </div>
-                    <span style={{ fontSize: 11.5, color: muted, flexShrink: 0 }}>
+                    <span style={{ fontSize: 11.5, color: muted }}>
                       Mon – Sat: 8:30 AM – 6:00 PM
                     </span>
                   </div>
