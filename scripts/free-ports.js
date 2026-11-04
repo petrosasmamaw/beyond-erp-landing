@@ -7,8 +7,24 @@
  */
 
 const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
 const PORTS = [8080, 4000];
+
+function cleanStaleNextCache() {
+  const nextDir = path.join(__dirname, "../frontend/.next");
+  const buildIdPath = path.join(nextDir, "BUILD_ID");
+  if (fs.existsSync(buildIdPath)) {
+    try {
+      console.log("[Port Manager] Found production build cache in frontend/.next. Cleaning for development...");
+      fs.rmSync(nextDir, { recursive: true, force: true });
+      console.log("[Port Manager] Cleaned frontend/.next.");
+    } catch {
+      // ignore
+    }
+  }
+}
 
 function killPortWindows(port) {
   try {
@@ -70,6 +86,7 @@ function freePorts() {
       killPortUnix(port);
     }
   }
+  cleanStaleNextCache();
 }
 
 freePorts();
