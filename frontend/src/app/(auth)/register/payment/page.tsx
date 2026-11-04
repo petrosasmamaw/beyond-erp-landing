@@ -89,10 +89,10 @@ const PLANS: Record<PlanTier, PlanConfig> = {
     badge: "Contact Admin",
     totalDisplay: "By Agreement",
     numericTotal: null,
-    subtotal: "Custom Enterprise Quote",
-    discount: "Negotiated Agreement",
-    taxableBase: "As per Agreement",
-    vat15: "15% on Official Invoice",
+    subtotal: "Custom / By Agreement",
+    discount: "—",
+    taxableBase: "—",
+    vat15: "Included in Agreement",
     subtext: "Enterprise Contract • Payment by Agreement",
     description: "Tailored multi-branch architectures & bespoke ERP integrations."
   }
@@ -144,8 +144,8 @@ function PaymentContent() {
 
   const sectorId = draft?.sectorId || sectorIdParam;
   const companySector = getSectorDefinition(sectorId);
-  const currentPlan = PLANS[selectedPlan];
-  const isCustomPlan = selectedPlan === "CUSTOM";
+  const isCustomSector = sectorId === "request-custom" || sectorId === "custom" || selectedPlan === "CUSTOM";
+  const currentPlan = PLANS[isCustomSector ? "CUSTOM" : selectedPlan];
 
   const cbeDetails = {
     bankName: "Commercial Bank of Ethiopia (CBE)",
@@ -192,12 +192,12 @@ function PaymentContent() {
 
     setSubmitting(true);
     try {
-      const paymentMethodVal = isCustomPlan ? "AGREEMENT" : selectedMethod;
-      const paymentRefVal = isCustomPlan
+      const paymentMethodVal = isCustomSector ? "AGREEMENT" : selectedMethod;
+      const paymentRefVal = isCustomSector
         ? "Enterprise Agreement - Contact Admin"
         : "Receipt via Telegram @beyond_et";
 
-      const paymentNote = isCustomPlan
+      const paymentNote = isCustomSector
         ? `[Tier: CUSTOM | Payment: By Agreement | Direct Admin Contact | Terms & Policy Confirmed]`
         : `[Tier: ${selectedPlan} (${currentPlan.totalDisplay} ETB) | Payment: ${selectedMethod} | Receipt submitted via Telegram @beyond_et | Terms & Policy Confirmed]`;
 
@@ -206,14 +206,14 @@ function PaymentContent() {
       await api.createRegistrationRequest({
         companyName: draft.companyName,
         tinNumber: draft.tinNumber || undefined,
-        sectorId: sectorId || (isCustomPlan ? "request-custom" : "general"),
+        sectorId: sectorId || (isCustomSector ? "request-custom" : "general"),
         fullName: draft.fullName,
         email: draft.email,
         phone: draft.phone,
         notes: combinedNotes,
         paymentMethod: paymentMethodVal,
         paymentReference: paymentRefVal,
-        isPaid: !isCustomPlan
+        isPaid: !isCustomSector
       });
 
       // Save to confirmed reg storage for the congratulations page
@@ -222,13 +222,13 @@ function PaymentContent() {
         JSON.stringify({
           ...draft,
           sectorId,
-          planTier: selectedPlan,
+          planTier: isCustomSector ? "CUSTOM" : selectedPlan,
           paymentMethod: paymentMethodVal,
           paymentRef: paymentRefVal
         })
       );
 
-      showToast(isCustomPlan ? "Enterprise request submitted successfully!" : "Payment confirmation & request submitted!");
+      showToast(isCustomSector ? "Enterprise request submitted successfully!" : "Payment confirmation & request submitted!");
       router.push("/submitted");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit request";
@@ -250,7 +250,7 @@ function PaymentContent() {
   const border = dark ? "#1a2d42" : "#e2e8f0";
   const ink = dark ? "#e2e8f0" : "#0f172a";
   const muted = dark ? "#8b9ab0" : "#64748b";
-  const inputBg = dark ? "#0a1220" : "#ffffff";
+  const inputBg = dark ? "#0a1220" : "#f8fafc";
   const sectorColor = companySector.color || "#2563eb";
   const sectorTint = dark ? "rgba(37,99,235,0.14)" : companySector.tint || "#eff6ff";
 
@@ -374,8 +374,8 @@ function PaymentContent() {
                   letterSpacing: "0.08em",
                   padding: "3px 8px",
                   borderRadius: 999,
-                  background: isCustomPlan ? "rgba(168, 85, 247, 0.3)" : "rgba(255, 255, 255, 0.18)",
-                  color: isCustomPlan ? "#e9d5ff" : "#ffffff",
+                  background: "rgba(255, 255, 255, 0.18)",
+                  color: "#ffffff",
                   border: "1px solid rgba(255, 255, 255, 0.25)"
                 }}
               >
@@ -396,7 +396,7 @@ function PaymentContent() {
               {/* Discount */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Discount</span>
-                <span style={{ fontWeight: 700, color: isCustomPlan ? "#bfdbfe" : "#4ade80", fontVariantNumeric: "tabular-nums" }}>
+                <span style={{ fontWeight: 700, color: isCustomSector ? "rgba(255, 255, 255, 0.7)" : "#4ade80", fontVariantNumeric: "tabular-nums" }}>
                   {currentPlan.discount}
                 </span>
               </div>
@@ -425,14 +425,14 @@ function PaymentContent() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#bfdbfe" }}>
-                  {isCustomPlan ? "Payment Term" : "Total Payable"}
+                  {isCustomSector ? "Payment Term" : "Total Payable"}
                 </div>
                 <div style={{ fontSize: 11, color: "rgba(219, 234, 254, 0.7)", marginTop: 2 }}>
-                  {isCustomPlan ? "Direct Administrative Agreement" : "Official VAT invoice provided"}
+                  {isCustomSector ? "Direct Administrative Agreement" : "Official VAT invoice provided"}
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                {isCustomPlan ? (
+                {isCustomSector ? (
                   <div style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
                     By Agreement
                   </div>
@@ -487,14 +487,14 @@ function PaymentContent() {
                   color: "#2563eb"
                 }}
               >
-                Step 3 of 3 • Pricing Tier &amp; Activation
+                {isCustomSector ? "Enterprise Custom Request" : "Step 3 of 3 • Pricing & Activation"}
               </p>
               <h2 style={{ margin: "0 0 6px", fontSize: 26, fontWeight: 700, color: ink, lineHeight: 1.15 }}>
-                {isCustomPlan ? "Enterprise Activation by Agreement" : "Choose payment method"}
+                {isCustomSector ? "Contact Administration" : "Choose payment method"}
               </h2>
               <p style={{ margin: 0, fontSize: 14, color: muted, lineHeight: 1.5 }}>
-                {isCustomPlan
-                  ? "Select your plan tier below. For custom architectures, connect directly with our admin leadership to finalize agreement."
+                {isCustomSector
+                  ? "For custom enterprise requirements, contact our administrative team directly to finalize specifications and pricing."
                   : "Select your package tier, transfer via CBE or Telebirr, and submit your receipt on Telegram for fast workspace setup."}
               </p>
             </div>
@@ -559,146 +559,120 @@ function PaymentContent() {
               </button>
             </div>
 
-            {/* ================= 3-TIER SECTOR PLAN SELECTOR ================= */}
-            <div style={{ marginBottom: 18 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                <label style={{ fontSize: 11.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: muted }}>
-                  Package Level &amp; Pricing
-                </label>
-                <span style={{ fontSize: 11, color: isCustomPlan ? "#a855f7" : "#2563eb", fontWeight: 700 }}>
-                  {selectedPlan === "BASIC" && "Standard Sectors Default"}
-                  {selectedPlan === "STANDARD" && "Manufacturing Tier Default"}
-                  {selectedPlan === "CUSTOM" && "Enterprise Custom Default"}
-                </span>
-              </div>
+            {/* ================= 2-TIER PLAN SELECTOR (ONLY SHOWN FOR STANDARD SECTORS, HIDDEN FOR CUSTOM) ================= */}
+            {!isCustomSector && (
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <label style={{ fontSize: 11.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: muted }}>
+                    Package Level &amp; Pricing
+                  </label>
+                  <span style={{ fontSize: 11, color: "#2563eb", fontWeight: 700 }}>
+                    {selectedPlan === "BASIC" ? "Standard Sectors Default" : "Manufacturing Tier Default"}
+                  </span>
+                </div>
 
-              <div className="pay-plan-grid">
-                {(["BASIC", "STANDARD", "CUSTOM"] as PlanTier[]).map((tierKey) => {
-                  const plan = PLANS[tierKey];
-                  const isSelected = selectedPlan === tierKey;
-                  return (
-                    <button
-                      key={tierKey}
-                      type="button"
-                      onClick={() => setSelectedPlan(tierKey)}
-                      style={{
-                        position: "relative",
-                        padding: "12px 14px",
-                        borderRadius: 12,
-                        border: `2px solid ${
-                          isSelected
-                            ? tierKey === "CUSTOM"
-                              ? "#8b5cf6"
-                              : "#2563eb"
-                            : border
-                        }`,
-                        background: isSelected
-                          ? tierKey === "CUSTOM"
+                <div className="pay-plan-grid">
+                  {(["BASIC", "STANDARD"] as PlanTier[]).map((tierKey) => {
+                    const plan = PLANS[tierKey];
+                    const isSelected = selectedPlan === tierKey;
+                    return (
+                      <button
+                        key={tierKey}
+                        type="button"
+                        onClick={() => setSelectedPlan(tierKey)}
+                        style={{
+                          position: "relative",
+                          padding: "12px 14px",
+                          borderRadius: 12,
+                          border: `2px solid ${isSelected ? "#2563eb" : border}`,
+                          background: isSelected
                             ? dark
-                              ? "rgba(139, 92, 246, 0.16)"
-                              : "#faf5ff"
-                            : dark
-                            ? "rgba(37, 99, 235, 0.16)"
-                            : "#eff6ff"
-                          : surface,
-                        textAlign: "left",
-                        cursor: "pointer",
-                        transition: "all 0.15s ease",
-                        boxShadow: isSelected
-                          ? tierKey === "CUSTOM"
-                            ? "0 4px 14px rgba(139, 92, 246, 0.18)"
-                            : "0 4px 14px rgba(37, 99, 235, 0.18)"
-                          : "none",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        minHeight: 88,
-                      }}
-                    >
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                          <span style={{ fontSize: 13, fontWeight: 800, color: ink }}>
-                            {plan.title}
-                          </span>
-                          {isSelected ? (
-                            <span style={{ color: tierKey === "CUSTOM" ? "#8b5cf6" : "#2563eb", display: "flex" }}>
-                              <CheckCircle2 size={16} />
+                              ? "rgba(37, 99, 235, 0.16)"
+                              : "#eff6ff"
+                            : surface,
+                          textAlign: "left",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          boxShadow: isSelected ? "0 4px 14px rgba(37, 99, 235, 0.18)" : "none",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          minHeight: 84,
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                            <span style={{ fontSize: 13, fontWeight: 800, color: ink }}>
+                              {plan.title}
                             </span>
-                          ) : (
-                            <span
-                              style={{
-                                width: 14,
-                                height: 14,
-                                borderRadius: "50%",
-                                border: `1.5px solid ${dark ? "#475569" : "#cbd5e1"}`
-                              }}
-                            />
-                          )}
+                            {isSelected ? (
+                              <span style={{ color: "#2563eb", display: "flex" }}>
+                                <CheckCircle2 size={16} />
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  width: 14,
+                                  height: 14,
+                                  borderRadius: "50%",
+                                  border: `1.5px solid ${dark ? "#475569" : "#cbd5e1"}`
+                                }}
+                              />
+                            )}
+                          </div>
+                          <span
+                            style={{
+                              display: "inline-block",
+                              fontSize: 10,
+                              fontWeight: 700,
+                              padding: "2px 6px",
+                              borderRadius: 4,
+                              background: isSelected
+                                ? dark
+                                  ? "rgba(37, 99, 235, 0.3)"
+                                  : "#dbeafe"
+                                : dark
+                                ? "#1a2d42"
+                                : "#f1f5f9",
+                              color: isSelected
+                                ? dark
+                                  ? "#93c5fd"
+                                  : "#1d4ed8"
+                                : muted,
+                              textTransform: "uppercase",
+                              letterSpacing: "0.04em",
+                              marginBottom: 6
+                            }}
+                          >
+                            {plan.badge}
+                          </span>
                         </div>
-                        <span
-                          style={{
-                            display: "inline-block",
-                            fontSize: 10,
-                            fontWeight: 700,
-                            padding: "2px 6px",
-                            borderRadius: 4,
-                            background: isSelected
-                              ? tierKey === "CUSTOM"
-                                ? dark
-                                  ? "rgba(139, 92, 246, 0.3)"
-                                  : "#f3e8ff"
-                                : dark
-                                ? "rgba(37, 99, 235, 0.3)"
-                                : "#dbeafe"
-                              : dark
-                              ? "#1a2d42"
-                              : "#f1f5f9",
-                            color: isSelected
-                              ? tierKey === "CUSTOM"
-                                ? dark
-                                  ? "#c4b5fd"
-                                  : "#7c3aed"
-                                : dark
-                                ? "#93c5fd"
-                                : "#1d4ed8"
-                              : muted,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.04em",
-                            marginBottom: 6
-                          }}
-                        >
-                          {plan.badge}
-                        </span>
-                      </div>
 
-                      <div>
-                        <div
-                          style={{
-                            fontSize: 15,
-                            fontWeight: 900,
-                            color: isSelected
-                              ? tierKey === "CUSTOM"
+                        <div>
+                          <div
+                            style={{
+                              fontSize: 15,
+                              fontWeight: 900,
+                              color: isSelected
                                 ? dark
-                                  ? "#c4b5fd"
-                                  : "#7c3aed"
-                                : dark
-                                ? "#60a5fa"
-                                : "#2563eb"
-                              : ink,
-                            letterSpacing: "-0.01em"
-                          }}
-                        >
-                          {plan.totalDisplay} {plan.numericTotal ? <span style={{ fontSize: 11, fontWeight: 700 }}>ETB</span> : null}
+                                  ? "#60a5fa"
+                                  : "#2563eb"
+                                : ink,
+                              letterSpacing: "-0.01em"
+                            }}
+                          >
+                            {plan.totalDisplay} <span style={{ fontSize: 11, fontWeight: 700 }}>ETB</span>
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* ================= CONDITIONAL BRANCH: BASIC/STANDARD vs CUSTOM ================= */}
-            {!isCustomPlan ? (
+            {!isCustomSector ? (
               <>
                 {/* Amount Due Banner */}
                 <div
@@ -1148,261 +1122,334 @@ function PaymentContent() {
                 </div>
               </>
             ) : (
-              /* ================= CUSTOM / ENTERPRISE CONTACT ADMIN SECTION ================= */
+              /* ================= CUSTOM / CONTACT ADMIN SECTION (CLEAN LIST FORMAT MATCHING CBE/TELEBIRR) ================= */
               <div
+                className="pay-account-box"
                 style={{
-                  borderRadius: 14,
-                  border: `1.5px solid ${dark ? "rgba(139, 92, 246, 0.4)" : "#c4b5fd"}`,
-                  background: dark ? "rgba(139, 92, 246, 0.08)" : "#faf5ff",
+                  borderRadius: 12,
+                  border: `1.5px solid ${border}`,
+                  background: surface,
                   padding: "20px 22px",
-                  marginBottom: 20,
+                  marginBottom: 18,
                   boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
                 }}
               >
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 16 }}>
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 10,
-                      background: dark ? "rgba(139, 92, 246, 0.25)" : "#ede9fe",
-                      color: dark ? "#c4b5fd" : "#7c3aed",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0
-                    }}
-                  >
-                    <Building2 size={20} />
+                {/* Header */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 8,
+                        background: dark ? "rgba(37,99,235,0.18)" : "#eff6ff",
+                        color: "#2563eb",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0
+                      }}
+                    >
+                      <Building2 size={20} />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
+                        Enterprise Administration
+                      </span>
+                      <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
+                        Contact for Custom Agreement
+                      </h3>
+                    </div>
                   </div>
-                  <div>
-                    <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: dark ? "#c4b5fd" : "#7c3aed" }}>
-                      Enterprise Custom Tier • Payment by Agreement
-                    </span>
-                    <h3 style={{ margin: "2px 0 4px", fontSize: 17, fontWeight: 700, color: ink }}>
-                      Direct Administrative Agreement
-                    </h3>
-                    <p style={{ margin: 0, fontSize: 13, color: muted, lineHeight: 1.45 }}>
-                      Custom ERP architecture, multi-branch instances, and bespoke integrations require a specialized contract agreement. Connect directly with our administration team below or submit your request for fast-track onboarding.
-                    </p>
-                  </div>
+                  <span style={{ fontSize: 12, color: muted }}>Payment by Agreement</span>
                 </div>
 
-                {/* Contact Channels Grid: Phone, Email */}
-                <div className="pay-contact-grid" style={{ marginBottom: 14 }}>
-                  {/* Channel 1: Phone */}
+                {/* Concise notice */}
+                <p style={{ margin: "0 0 14px", fontSize: 13, color: muted, lineHeight: 1.45 }}>
+                  For custom ERP requirements, please contact our administration directly via phone, email, or Telegram to discuss specifications and pricing.
+                </p>
+
+                {/* Contact List Rows */}
+                <div style={{ display: "grid", gap: 10 }}>
+                  {/* Row 1: Phone */}
                   <div
+                    className="pay-account-row"
                     style={{
                       padding: "12px 14px",
                       borderRadius: 10,
-                      background: surface,
+                      background: inputBg,
                       border: `1px solid ${border}`,
                       display: "flex",
-                      flexDirection: "column",
+                      alignItems: "center",
                       justifyContent: "space-between",
-                      gap: 8
+                      gap: 12,
+                      flexWrap: "wrap"
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <Phone size={15} style={{ color: "#2563eb", flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: muted }}>
-                        Direct Phone Support
-                      </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: "50%",
+                          background: dark ? "rgba(37,99,235,0.16)" : "#eff6ff",
+                          color: "#2563eb",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0
+                        }}
+                      >
+                        <Phone size={15} />
+                      </div>
+                      <div>
+                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                          Phone Support
+                        </p>
+                        <p style={{ margin: 0, fontSize: 15, fontWeight: 800, color: ink, letterSpacing: "0.02em" }}>
+                          +251 939 048 523 <span style={{ fontWeight: 500, color: muted, fontSize: 13 }}>/ +251 928 151 599</span>
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p style={{ margin: "0 0 2px", fontSize: 14, fontWeight: 800, color: ink, letterSpacing: "0.02em" }}>
-                        +251 939 048 523
-                      </p>
-                      <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: muted }}>
-                        +251 928 151 599
-                      </p>
-                    </div>
-                    <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <a
                         href="tel:+251939048523"
                         style={{
-                          flex: 1,
-                          height: 30,
-                          borderRadius: 6,
+                          height: 32,
+                          padding: "0 12px",
+                          borderRadius: 7,
+                          border: "1px solid #2563eb",
                           background: dark ? "rgba(37,99,235,0.18)" : "#eff6ff",
                           color: "#2563eb",
-                          fontSize: 11.5,
+                          fontSize: 12,
                           fontWeight: 700,
                           display: "inline-flex",
                           alignItems: "center",
-                          justifyContent: "center",
-                          textDecoration: "none",
-                          gap: 4
+                          gap: 5,
+                          textDecoration: "none"
                         }}
                       >
-                        <Phone size={11} /> Call Now
+                        <Phone size={12} /> Call
                       </a>
                       <button
                         type="button"
                         onClick={() => handleCopy("+251939048523", "Phone Number")}
                         style={{
-                          height: 30,
-                          padding: "0 10px",
-                          borderRadius: 6,
-                          border: `1px solid ${border}`,
-                          background: copied === "Phone Number" ? "#16a34a" : "transparent",
-                          color: copied === "Phone Number" ? "#ffffff" : ink,
-                          fontSize: 11,
+                          height: 32,
+                          padding: "0 12px",
+                          borderRadius: 7,
+                          border: "1px solid #2563eb",
+                          background: copied === "Phone Number" ? "#16a34a" : "#2563eb",
+                          color: "#ffffff",
+                          fontSize: 12,
                           fontWeight: 700,
-                          cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
-                          gap: 4
+                          gap: 5,
+                          cursor: "pointer",
+                          transition: "all 0.15s"
                         }}
                       >
-                        {copied === "Phone Number" ? <Check size={11} /> : <Copy size={11} />}
+                        {copied === "Phone Number" ? <Check size={13} /> : <Copy size={13} />}
                         {copied === "Phone Number" ? "Copied" : "Copy"}
                       </button>
                     </div>
                   </div>
 
-                  {/* Channel 2: Email */}
+                  {/* Row 2: Email */}
                   <div
+                    className="pay-account-row"
                     style={{
                       padding: "12px 14px",
                       borderRadius: 10,
-                      background: surface,
+                      background: inputBg,
                       border: `1px solid ${border}`,
                       display: "flex",
-                      flexDirection: "column",
+                      alignItems: "center",
                       justifyContent: "space-between",
-                      gap: 8
+                      gap: 12,
+                      flexWrap: "wrap"
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <Mail size={15} style={{ color: "#059669", flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: muted }}>
-                        Enterprise Email
-                      </span>
-                    </div>
-                    <div>
-                      <p style={{ margin: 0, fontSize: 13, fontWeight: 800, color: ink, overflowWrap: "anywhere" }}>
-                        beyondsolutionsupport@gmail.com
-                      </p>
-                      <p style={{ margin: "2px 0 0", fontSize: 11, color: muted }}>
-                        Response within 2 hours
-                      </p>
-                    </div>
-                    <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
-                      <a
-                        href="mailto:beyondsolutionsupport@gmail.com?subject=Enterprise%20ERP%20Agreement%20Request"
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div
                         style={{
-                          flex: 1,
-                          height: 30,
-                          borderRadius: 6,
-                          background: dark ? "rgba(16,185,129,0.18)" : "#ecfdf5",
-                          color: "#059669",
-                          fontSize: 11.5,
+                          width: 32,
+                          height: 32,
+                          borderRadius: "50%",
+                          background: dark ? "rgba(37,99,235,0.16)" : "#eff6ff",
+                          color: "#2563eb",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0
+                        }}
+                      >
+                        <Mail size={15} />
+                      </div>
+                      <div>
+                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                          Official Email
+                        </p>
+                        <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: ink, overflowWrap: "anywhere" }}>
+                          beyondsolutionsupport@gmail.com
+                        </p>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <a
+                        href="mailto:beyondsolutionsupport@gmail.com?subject=Custom%20ERP%20Enterprise%20Agreement"
+                        style={{
+                          height: 32,
+                          padding: "0 12px",
+                          borderRadius: 7,
+                          border: "1px solid #2563eb",
+                          background: dark ? "rgba(37,99,235,0.18)" : "#eff6ff",
+                          color: "#2563eb",
+                          fontSize: 12,
                           fontWeight: 700,
                           display: "inline-flex",
                           alignItems: "center",
-                          justifyContent: "center",
-                          textDecoration: "none",
-                          gap: 4
+                          gap: 5,
+                          textDecoration: "none"
                         }}
                       >
-                        <Mail size={11} /> Send Email
+                        <Mail size={12} /> Email
                       </a>
                       <button
                         type="button"
                         onClick={() => handleCopy("beyondsolutionsupport@gmail.com", "Email Address")}
                         style={{
-                          height: 30,
-                          padding: "0 10px",
-                          borderRadius: 6,
-                          border: `1px solid ${border}`,
-                          background: copied === "Email Address" ? "#16a34a" : "transparent",
-                          color: copied === "Email Address" ? "#ffffff" : ink,
-                          fontSize: 11,
+                          height: 32,
+                          padding: "0 12px",
+                          borderRadius: 7,
+                          border: "1px solid #2563eb",
+                          background: copied === "Email Address" ? "#16a34a" : "#2563eb",
+                          color: "#ffffff",
+                          fontSize: 12,
                           fontWeight: 700,
-                          cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
-                          gap: 4
+                          gap: 5,
+                          cursor: "pointer",
+                          transition: "all 0.15s"
                         }}
                       >
-                        {copied === "Email Address" ? <Check size={11} /> : <Copy size={11} />}
+                        {copied === "Email Address" ? <Check size={13} /> : <Copy size={13} />}
                         {copied === "Email Address" ? "Copied" : "Copy"}
                       </button>
                     </div>
                   </div>
-                </div>
 
-                {/* Telegram Direct Channel */}
-                <div
-                  style={{
-                    padding: "12px 14px",
-                    borderRadius: 10,
-                    background: dark ? "rgba(34, 158, 217, 0.12)" : "#f0f9ff",
-                    border: "1px solid rgba(34, 158, 217, 0.35)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    flexWrap: "wrap",
-                    marginBottom: 12
-                  }}
-                >
-                  <div style={{ minWidth: 200, flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <Send size={14} style={{ color: "#0284c7" }} />
-                      <span style={{ fontSize: 13, fontWeight: 800, color: ink }}>
-                        Administrative Telegram Channel
-                      </span>
-                    </div>
-                    <p style={{ margin: "2px 0 0", fontSize: 12, color: muted }}>
-                      Chat directly with our administrative team at <strong>@beyond_et</strong> for custom proposals.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleTelegramClick}
+                  {/* Row 3: Telegram */}
+                  <div
+                    className="pay-account-row"
                     style={{
-                      height: 36,
-                      padding: "0 16px",
-                      borderRadius: 8,
-                      border: 0,
-                      background: "linear-gradient(135deg, #229ED9 0%, #0088cc 100%)",
-                      color: "#ffffff",
-                      fontSize: 12.5,
-                      fontWeight: 700,
+                      padding: "12px 14px",
+                      borderRadius: 10,
+                      background: inputBg,
+                      border: `1px solid ${border}`,
                       display: "flex",
                       alignItems: "center",
-                      gap: 6,
-                      cursor: "pointer",
-                      boxShadow: "0 2px 8px rgba(34, 158, 217, 0.35)",
-                      flexShrink: 0
+                      justifyContent: "space-between",
+                      gap: 12,
+                      flexWrap: "wrap"
                     }}
                   >
-                    <Send size={13} />
-                    Chat with Admin (@beyond_et)
-                    <ExternalLink size={12} style={{ opacity: 0.8 }} />
-                  </button>
-                </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: "50%",
+                          background: "rgba(34, 158, 217, 0.15)",
+                          color: "#0284c7",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0
+                        }}
+                      >
+                        <Send size={15} />
+                      </div>
+                      <div>
+                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                          Telegram Support
+                        </p>
+                        <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: ink }}>
+                          @beyond_et
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleTelegramClick}
+                      style={{
+                        height: 32,
+                        padding: "0 14px",
+                        borderRadius: 7,
+                        border: 0,
+                        background: "linear-gradient(135deg, #229ED9 0%, #0088cc 100%)",
+                        color: "#ffffff",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        cursor: "pointer",
+                        transition: "all 0.15s"
+                      }}
+                    >
+                      <Send size={12} />
+                      Chat on Telegram
+                      <ExternalLink size={11} style={{ opacity: 0.8 }} />
+                    </button>
+                  </div>
 
-                {/* Corporate Location */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    fontSize: 12,
-                    color: muted,
-                    padding: "8px 12px",
-                    borderRadius: 8,
-                    background: surface,
-                    border: `1px solid ${border}`
-                  }}
-                >
-                  <MapPin size={14} style={{ color: "#ef4444", flexShrink: 0 }} />
-                  <span>
-                    <strong>Corporate Office:</strong> Addis Ababa, 22 Bata Complex, 3rd Floor &bull; Mon – Sat: 8:30 AM – 6:00 PM
-                  </span>
+                  {/* Row 4: Office */}
+                  <div
+                    className="pay-account-row"
+                    style={{
+                      padding: "12px 14px",
+                      borderRadius: 10,
+                      background: inputBg,
+                      border: `1px solid ${border}`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 12,
+                      flexWrap: "wrap"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: "50%",
+                          background: dark ? "rgba(37,99,235,0.16)" : "#eff6ff",
+                          color: "#2563eb",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0
+                        }}
+                      >
+                        <MapPin size={15} />
+                      </div>
+                      <div>
+                        <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
+                          Head Office
+                        </p>
+                        <p style={{ margin: 0, fontSize: 13.5, fontWeight: 700, color: ink }}>
+                          Addis Ababa, 22 Bata Complex, 3rd Floor
+                        </p>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: 11.5, color: muted, flexShrink: 0 }}>
+                      Mon – Sat: 8:30 AM – 6:00 PM
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
@@ -1512,8 +1559,8 @@ function PaymentContent() {
                       lineHeight: 1.45,
                     }}
                   >
-                    {isCustomPlan
-                      ? "I authorize Beyond ERP to process our enterprise registration request and agree that custom terms will be finalized directly with administration."
+                    {isCustomSector
+                      ? "I authorize Beyond ERP to process our enterprise registration request under direct agreement."
                       : "I authorize Beyond ERP to activate our Ethiopian enterprise workspace and confirm submitted registration information is accurate."}
                   </p>
                 </div>
@@ -1538,8 +1585,6 @@ function PaymentContent() {
                   border: 0,
                   background: submitting
                     ? "#3b82f6"
-                    : isCustomPlan
-                    ? "linear-gradient(135deg, #7c3aed, #6d28d9)"
                     : "linear-gradient(135deg, #2563eb, #1d4ed8)",
                   color: "#ffffff",
                   fontSize: 15,
@@ -1551,23 +1596,21 @@ function PaymentContent() {
                   cursor: submitting ? "not-allowed" : "pointer",
                   boxShadow: submitting
                     ? "none"
-                    : isCustomPlan
-                    ? "0 4px 16px rgba(124, 58, 237, 0.35)"
                     : "0 4px 16px rgba(37, 99, 235, 0.35)",
                   transition: "all 0.15s"
                 }}
               >
                 {submitting ? (
                   <Loader2 className="spin" size={18} />
-                ) : isCustomPlan ? (
+                ) : isCustomSector ? (
                   <Send size={18} />
                 ) : (
                   <Check size={18} />
                 )}
                 {submitting
                   ? "Submitting Registration..."
-                  : isCustomPlan
-                  ? "Submit Enterprise Request (Payment by Agreement)"
+                  : isCustomSector
+                  ? "Submit Request (Payment by Agreement)"
                   : "Done — I Have Sent the Payment"}
               </button>
 

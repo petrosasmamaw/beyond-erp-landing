@@ -148,17 +148,13 @@ export default function SubmittedPage() {
             width: 60,
             height: 60,
             borderRadius: "50%",
-            background: isAgreement
-              ? "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)"
-              : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             color: "#ffffff",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto 14px",
-            boxShadow: isAgreement
-              ? "0 8px 24px rgba(139, 92, 246, 0.3)"
-              : "0 8px 24px rgba(16, 185, 129, 0.3)",
+            boxShadow: "0 8px 24px rgba(16, 185, 129, 0.3)",
           }}
         >
           {isAgreement ? <Building2 size={32} /> : <CheckCircle2 size={34} strokeWidth={2.4} />}
@@ -172,7 +168,7 @@ export default function SubmittedPage() {
             fontWeight: 800,
             textTransform: "uppercase",
             letterSpacing: "0.14em",
-            color: isAgreement ? (dark ? "#c4b5fd" : "#7c3aed") : "#10b981",
+            color: isAgreement ? (dark ? "#60a5fa" : "#2563eb") : "#10b981",
           }}
         >
           {isAgreement ? "Enterprise Request Received" : "Registration Received"}
@@ -204,7 +200,7 @@ export default function SubmittedPage() {
           {isAgreement ? (
             <>
               Your enterprise registration request has been submitted under{" "}
-              <strong style={{ color: dark ? "#c4b5fd" : "#7c3aed" }}>Payment by Agreement</strong>.
+              <strong style={{ color: dark ? "#60a5fa" : "#2563eb" }}>Payment by Agreement</strong>.
               <br />
               <strong style={{ color: ink }}>
                 Our administrative leadership will contact you directly to finalize your contract scope and deliver your custom ERP workspace credentials.
@@ -243,8 +239,8 @@ export default function SubmittedPage() {
                 gap: 5,
                 padding: "2px 9px",
                 borderRadius: 999,
-                background: isAgreement ? "rgba(139, 92, 246, 0.12)" : "rgba(16, 185, 129, 0.12)",
-                color: isAgreement ? (dark ? "#c4b5fd" : "#7c3aed") : "#059669",
+                background: isAgreement ? "rgba(37, 99, 235, 0.12)" : "rgba(16, 185, 129, 0.12)",
+                color: isAgreement ? "#2563eb" : "#059669",
                 fontSize: 10,
                 fontWeight: 700,
               }}
@@ -254,7 +250,7 @@ export default function SubmittedPage() {
                   width: 5,
                   height: 5,
                   borderRadius: "50%",
-                  background: isAgreement ? "#8b5cf6" : "#10b981",
+                  background: isAgreement ? "#2563eb" : "#10b981",
                 }}
               />
               {isAgreement ? "Admin Direct Agreement" : "Under Verification"}
@@ -282,7 +278,7 @@ export default function SubmittedPage() {
             </div>
             <div>
               <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Package Tier</p>
-              <p style={{ margin: 0, fontWeight: 700, color: isAgreement ? (dark ? "#c4b5fd" : "#7c3aed") : "#2563eb" }}>
+              <p style={{ margin: 0, fontWeight: 700, color: "#2563eb" }}>
                 {reg?.planTier === "STANDARD"
                   ? "Standard (80,000 ETB)"
                   : reg?.planTier === "CUSTOM"
@@ -292,7 +288,7 @@ export default function SubmittedPage() {
             </div>
             <div>
               <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Payment Method</p>
-              <p style={{ margin: 0, fontWeight: 700, color: isAgreement ? "#7c3aed" : "#2563eb" }}>
+              <p style={{ margin: 0, fontWeight: 700, color: "#2563eb" }}>
                 {isAgreement
                   ? "Payment by Agreement"
                   : reg?.paymentMethod === "TELEBIRR"
@@ -314,16 +310,8 @@ export default function SubmittedPage() {
           className="pay-telegram-callout"
           style={{
             borderRadius: 12,
-            border: isAgreement
-              ? "1px solid rgba(139, 92, 246, 0.4)"
-              : "1px solid rgba(34, 158, 217, 0.35)",
-            background: isAgreement
-              ? dark
-                ? "rgba(139, 92, 246, 0.1)"
-                : "rgba(139, 92, 246, 0.06)"
-              : dark
-              ? "rgba(34, 158, 217, 0.08)"
-              : "rgba(34, 158, 217, 0.06)",
+            border: "1px solid rgba(34, 158, 217, 0.35)",
+            background: dark ? "rgba(34, 158, 217, 0.08)" : "rgba(34, 158, 217, 0.06)",
             padding: "14px 16px",
             marginBottom: 18,
             display: "flex",
@@ -351,7 +339,7 @@ export default function SubmittedPage() {
               height: 36,
               padding: "0 14px",
               borderRadius: 8,
-              background: isAgreement ? "#7c3aed" : "#229ED9",
+              background: "#229ED9",
               color: "#ffffff",
               fontSize: 12,
               fontWeight: 700,
@@ -360,7 +348,7 @@ export default function SubmittedPage() {
               gap: 6,
               textDecoration: "none",
               flexShrink: 0,
-              boxShadow: isAgreement ? "0 4px 12px rgba(124, 58, 237, 0.3)" : "0 4px 12px rgba(34, 158, 217, 0.3)",
+              boxShadow: "0 4px 12px rgba(34, 158, 217, 0.3)",
             }}
           >
             <Send size={13} />
@@ -436,7 +424,7 @@ export default function SubmittedPage() {
             <strong>Support:</strong> +251 939 048 523 &bull; +251 928 151 599 &bull; beyondsolutionsupport@gmail.com
           </p>
           <p style={{ margin: 0 }}>
-            Office: Addis Ababa, 22 Bata Complex 3rd Floor &bull; Powered by beyond.et
+            Office: Addis Ababa, 22 Bata Complex, 3rd Floor &bull; Powered by beyond.et
           </p>
         </div>
       </div>
