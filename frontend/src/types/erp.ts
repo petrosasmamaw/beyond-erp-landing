@@ -22,7 +22,7 @@ export interface User {
   permissions: string[];
   effectivePermissions: string[];
   status: AccountStatus;
-  lastLoginAt: string;
+  lastLoginAt?: string | null;
   createdAt: string;
 }
 

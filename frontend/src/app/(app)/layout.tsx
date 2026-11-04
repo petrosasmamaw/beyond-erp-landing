@@ -33,13 +33,16 @@ import type { User as ApiUser } from "@/lib/types";
 const SIDEBAR_KEY = "beyond_sidebar_collapsed";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticating, logout } = useAuth();
+  const { user, isDemo, isAuthenticating, logout } = useAuth();
   const reduxUser = useAppSelector((state) => state.auth.user);
+  const isReduxDemo = useAppSelector((state) => state.auth.isDemo);
   const isReduxAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const reduxSectorId = useAppSelector((state) => state.sectors.activeSectorId);
   const reduxCompanyName = useAppSelector(
     (state) => state.auth.user?.companyName ?? state.settings.settings?.companyName
   );
+
+  const isDemoActive = Boolean(isDemo || isReduxDemo);
 
   // Active user can be sourced from AuthContext or Redux in-memory demo state
   const activeUser = user ?? (reduxUser ? (reduxUser as unknown as ApiUser) : null);
@@ -143,77 +146,92 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div style={{ fontSize: 10.5, color: "var(--muted)", fontWeight: 600, lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
                 {getTimeOfDay()} · {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" })}
               </div>
-              <button
-                type="button"
-                onClick={() => dispatch(openModal({ type: "sector-select" }))}
-                title="Click to switch Ethiopian industry sector workspace"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 7,
-                  marginTop: 3,
-                  padding: "4px 10px 4px 7px",
-                  borderRadius: 8,
-                  background: dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)",
-                  border: `1px solid ${dark ? "rgba(37, 99, 235, 0.35)" : "rgba(37, 99, 235, 0.22)"}`,
-                  color: dark ? "#f8fafc" : "#0f172a",
-                  cursor: "pointer",
-                  fontSize: 13.5,
-                  fontWeight: 700,
-                  maxWidth: "100%",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = dark ? "rgba(37, 99, 235, 0.25)" : "rgba(37, 99, 235, 0.15)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)")}
-              >
-                <span
+              {isDemoActive ? (
+                <button
+                  type="button"
+                  onClick={() => dispatch(openModal({ type: "sector-select" }))}
+                  title="Click to switch Ethiopian industry sector workspace"
                   style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 5,
-                    background: companySector?.color ? `${companySector.color}25` : "rgba(37, 99, 235, 0.2)",
-                    color: companySector?.color || "#3b82f6",
-                    display: "flex",
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 11,
-                    flexShrink: 0,
+                    gap: 7,
+                    marginTop: 3,
+                    padding: "4px 10px 4px 7px",
+                    borderRadius: 8,
+                    background: dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)",
+                    border: `1px solid ${dark ? "rgba(37, 99, 235, 0.35)" : "rgba(37, 99, 235, 0.22)"}`,
+                    color: dark ? "#f8fafc" : "#0f172a",
+                    cursor: "pointer",
+                    fontSize: 13.5,
+                    fontWeight: 700,
+                    maxWidth: "100%",
+                    transition: "all 0.15s ease",
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = dark ? "rgba(37, 99, 235, 0.25)" : "rgba(37, 99, 235, 0.15)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)")}
                 >
-                  <i className={companySector?.icon || "fa-solid fa-building"} />
-                </span>
-                <span
-                  style={{
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    maxWidth: "clamp(120px, 28vw, 260px)",
-                  }}
-                >
-                  {companyName}
-                </span>
-                <ChevronDown size={14} style={{ color: dark ? "#94a3b8" : "#64748b", marginLeft: 1, flexShrink: 0 }} />
-              </button>
+                  <span
+                    style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: 5,
+                      background: companySector?.color ? `${companySector.color}25` : "rgba(37, 99, 235, 0.2)",
+                      color: companySector?.color || "#3b82f6",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 11,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <i className={companySector?.icon || "fa-solid fa-building"} />
+                  </span>
+                  <span
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      maxWidth: "clamp(120px, 28vw, 260px)",
+                    }}
+                  >
+                    {companyName}
+                  </span>
+                  <ChevronDown size={14} style={{ color: dark ? "#94a3b8" : "#64748b", marginLeft: 1, flexShrink: 0 }} />
+                </button>
+              ) : (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3 }}>
+                  <strong style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", lineHeight: 1.25 }}>
+                    {companyName}
+                  </strong>
+                  {settings?.tinNumber && (
+                    <span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 4, background: "var(--border)", color: "var(--muted)", fontWeight: 600 }}>
+                      TIN: {settings.tinNumber}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-              <span
-                style={{
-                  padding: "3px 9px",
-                  borderRadius: 20,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  background: "rgba(245, 158, 11, 0.15)",
-                  color: "#f59e0b",
-                  border: "1px solid rgba(245, 158, 11, 0.35)",
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <span className="demo-badge-long">DEMO MODE · IN-MEMORY</span>
-                <span className="demo-badge-short">DEMO</span>
-              </span>
+              {isDemoActive && (
+                <span
+                  style={{
+                    padding: "3px 9px",
+                    borderRadius: 20,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    background: "rgba(245, 158, 11, 0.15)",
+                    color: "#f59e0b",
+                    border: "1px solid rgba(245, 158, 11, 0.35)",
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <span className="demo-badge-long">DEMO MODE · IN-MEMORY</span>
+                  <span className="demo-badge-short">DEMO</span>
+                </span>
+              )}
 
               {/* Beyond AI Assistant Drawer Trigger */}
               <button
@@ -286,7 +304,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   dispatch(reduxLogout());
                   logout();
                   router.replace("/login");
-                  showToast("Signed out of demo");
+                  showToast(isDemoActive ? "Signed out of demo session" : "Signed out successfully");
                 }}
                 aria-label="Sign out"
               >

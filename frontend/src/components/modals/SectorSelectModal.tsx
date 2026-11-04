@@ -95,16 +95,8 @@ export function SectorSelectModal({
     dispatch(loginAsDemo({ sectorId, companyName }));
     setMockProfile(sectorId, companyName);
 
-    const demoUser = {
-      ...INITIAL_USER,
-      companySectorId: sectorId,
-      companyName,
-    };
-
-    if (authContext?.login) {
-      authContext.login("demo-jwt-token-beyond-erp-demo", demoUser);
-    } else if (typeof window !== "undefined") {
-      localStorage.setItem("beyond_erp_auth_token_v1", "demo-jwt-token-beyond-erp-demo");
+    if (authContext?.loginDemo) {
+      authContext.loginDemo(sectorId, companyName);
     }
 
     dispatch(showToast(`Switched to ${sectorName} workspace (${companyName})`));

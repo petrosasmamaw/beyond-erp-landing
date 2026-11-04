@@ -27,25 +27,89 @@ import { mockFetch } from "./mock";
 
 const MOCK = process.env.NEXT_PUBLIC_MOCK === "true";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
-const tokenKey = "beyond_erp_auth_token_v1";
 
-export function getAuthToken() {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(tokenKey);
+// ===================================================================
+// Cookie Utilities & Distinct Cookie Keys
+// Real account login and Demo sessions MUST have completely different tokens & cookies!
+// ===================================================================
+export const REAL_TOKEN_COOKIE = "beyond_real_token";
+export const REAL_TOKEN_STORAGE = "beyond_erp_auth_token_v1";
+
+export const DEMO_TOKEN_COOKIE = "beyond_demo_token";
+export const DEMO_TOKEN_STORAGE = "beyond_erp_demo_session_v1";
+
+export function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp("(?:^|;\\s*)" + name + "=([^;]*)"));
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
-export function setAuthToken(token: string | null) {
-  if (typeof window === "undefined") return;
-  if (token) {
-    localStorage.setItem(tokenKey, token);
+export function setCookie(name: string, value: string | null, days = 7) {
+  if (typeof document === "undefined") return;
+  if (!value) {
+    document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax`;
   } else {
-    localStorage.removeItem(tokenKey);
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Expires=${expires}; SameSite=Lax`;
   }
 }
 
+/**
+ * Real Account Auth Token (stored in `beyond_real_token` cookie + localStorage)
+ */
+export function getRealAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return getCookie(REAL_TOKEN_COOKIE) || localStorage.getItem(REAL_TOKEN_STORAGE) || null;
+}
+
+export function setRealAuthToken(token: string | null) {
+  if (typeof window === "undefined") return;
+  setCookie(REAL_TOKEN_COOKIE, token, 14);
+  if (token) {
+    localStorage.setItem(REAL_TOKEN_STORAGE, token);
+  } else {
+    localStorage.removeItem(REAL_TOKEN_STORAGE);
+  }
+}
+
+/**
+ * Demo Session Token (stored in `beyond_demo_token` cookie + localStorage)
+ */
+export function getDemoAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return getCookie(DEMO_TOKEN_COOKIE) || localStorage.getItem(DEMO_TOKEN_STORAGE) || null;
+}
+
+export function setDemoAuthToken(token: string | null) {
+  if (typeof window === "undefined") return;
+  setCookie(DEMO_TOKEN_COOKIE, token, 7);
+  if (token) {
+    localStorage.setItem(DEMO_TOKEN_STORAGE, token);
+  } else {
+    localStorage.removeItem(DEMO_TOKEN_STORAGE);
+  }
+}
+
+/**
+ * Clear both Real and Demo cookies & local storage
+ */
+export function clearAllAuthTokens() {
+  setRealAuthToken(null);
+  setDemoAuthToken(null);
+}
+
+// Backward-compatible aliases for existing calls
+export function getAuthToken() {
+  return getRealAuthToken();
+}
+
+export function setAuthToken(token: string | null) {
+  setRealAuthToken(token);
+}
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  if (MOCK) return mockFetch<T>(path, init);
-  const token = getAuthToken();
+  const token = getRealAuthToken();
+  if (MOCK && !token) return mockFetch<T>(path, init);
   const response = await fetch(`${API_URL}${path}`, {
     ...init,
     headers: {
@@ -69,12 +133,40 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   health: () => apiFetch<{ ok: boolean; service: string }>("/backend-health"),
-  login: (input: { email: string; password: string }) =>
-    apiFetch<AuthResponse>("/api/auth/login", {
+  login: async (input: { email: string; password: string }) => {
+    // Real account login: always contacts backend /api/auth/login directly
+    const targetUrl = API_URL ? `${API_URL}/api/auth/login` : "/api/auth/login";
+    const response = await fetch(targetUrl, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input)
-    }),
-  me: () => apiFetch<{ user: User }>("/api/auth/me"),
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new Error(body?.message ?? `Invalid email or password (${response.status})`);
+    }
+
+    return response.json() as Promise<AuthResponse>;
+  },
+  me: async () => {
+    const token = getRealAuthToken();
+    if (!token) throw new Error("Authentication required");
+    const targetUrl = API_URL ? `${API_URL}/api/auth/me` : "/api/auth/me";
+    const response = await fetch(targetUrl, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new Error(body?.message ?? `Failed to fetch session (${response.status})`);
+    }
+
+    return response.json() as Promise<{ user: User }>;
+  },
   dashboard: () => apiFetch<Dashboard>("/api/dashboard"),
   sectors: () => apiFetch<Sector[]>("/api/sectors"),
   transactions: (type = "ALL") => apiFetch<Transaction[]>(`/api/transactions?type=${type}`),

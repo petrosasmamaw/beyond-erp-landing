@@ -43,8 +43,14 @@ export const authSlice = createSlice({
       state.isAuthenticated = true;
       state.isDemo = true;
     },
-    login: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
+    login: (state, action: PayloadAction<Partial<User> & { id: string; fullName: string; email: string; role: UserRole }>) => {
+      state.user = {
+        ...INITIAL_USER,
+        ...action.payload,
+        companyName: action.payload.companyName || INITIAL_USER.companyName,
+        companySectorId: action.payload.companySectorId || INITIAL_USER.companySectorId,
+        companyTinNumber: action.payload.companyTinNumber || INITIAL_USER.companyTinNumber,
+      } as User;
       state.isAuthenticated = true;
       state.isDemo = false;
     },

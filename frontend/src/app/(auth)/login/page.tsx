@@ -9,14 +9,15 @@ import { useApp } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { loginAsDemo } from "@/store/slices/authSlice";
+import { loginAsDemo, login as reduxLogin } from "@/store/slices/authSlice";
 import { openModal } from "@/store/slices/uiSlice";
 import { INITIAL_USER } from "@/store/initialData";
 import { SectorSelectModal } from "@/components/modals/SectorSelectModal";
 
 export default function LoginPage() {
-  const { user, login } = useAuth();
+  const { user, isDemo, login } = useAuth();
   const reduxUser = useAppSelector((state) => state.auth.user);
+  const isReduxDemo = useAppSelector((state) => state.auth.isDemo);
   const isReduxAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const { toast, showToast } = useApp();
   const dispatch = useAppDispatch();
@@ -28,32 +29,32 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
 
+  // ONLY auto-redirect if signed into a REAL ACCOUNT!
+  // NEVER auto-redirect if in demo mode so the user can freely sign in to real account.
   useEffect(() => {
-    if (user || (isReduxAuthenticated && reduxUser)) router.replace("/dashboard");
-  }, [user, isReduxAuthenticated, reduxUser, router]);
-
-  const handleTryDemo = (sectorId: string = "healthcare") => {
-    dispatch(loginAsDemo({ sectorId }));
-    const companyName =
-      sectorId === "retail-trading"
-        ? "Merkato Wholesale PLC"
-        : "Selam Medical & Trading PLC";
-    login("demo-jwt-token-beyond-erp-demo", {
-      ...INITIAL_USER,
-      companySectorId: sectorId,
-      companyName,
-    });
-    showToast("Logged in as Demo Owner (Yohannes Getachew)");
-    router.push("/dashboard");
-  };
+    if (user && !isDemo && !isReduxDemo) {
+      router.replace("/dashboard");
+    }
+  }, [user, isDemo, isReduxDemo, router]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
+      // Real account login: hits backend /api/auth/login directly
       const result = await api.login(form);
+      // login() in AuthContext sets beyond_real_token and clears beyond_demo_token
       login(result.token, result.user);
+      dispatch(
+        reduxLogin({
+          ...result.user,
+          companyName: result.user.companyName ?? undefined,
+          companySectorId: result.user.companySectorId ?? undefined,
+          companyTinNumber: result.user.companyTinNumber ?? undefined,
+        })
+      );
       showToast(`Welcome, ${result.user.fullName}`);
+      router.push("/dashboard");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Login failed");
     } finally {
@@ -184,7 +185,7 @@ export default function LoginPage() {
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 28px 48px" }}>
           <div style={{ width: "100%", maxWidth: 400 }}>
 
-            <div style={{ marginBottom: 30 }}>
+            <div style={{ marginBottom: 24 }}>
               <h2 style={{ margin: "0 0 6px", fontSize: 26, fontWeight: 700, color: ink, lineHeight: 1.15 }}>
                 Sign in
               </h2>
@@ -192,6 +193,42 @@ export default function LoginPage() {
                 Access your Beyond ERP workspace.
               </p>
             </div>
+
+            {Boolean(isDemo || isReduxDemo) && (
+              <div
+                style={{
+                  marginBottom: 20,
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  background: dark ? "rgba(37, 99, 235, 0.14)" : "#eff6ff",
+                  border: `1px solid ${dark ? "rgba(37, 99, 235, 0.3)" : "#bfdbfe"}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 10,
+                }}
+              >
+                <span style={{ fontSize: 12.5, color: dark ? "#93c5fd" : "#1e40af", fontWeight: 500 }}>
+                  ⚡ <strong>Demo session active</strong>. Sign in for your real account.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => router.push("/dashboard")}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#2563eb",
+                    fontWeight: 700,
+                    fontSize: 12,
+                    textDecoration: "underline",
+                    flexShrink: 0,
+                  }}
+                >
+                  Return to demo →
+                </button>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13, fontWeight: 600, color: ink }}>
