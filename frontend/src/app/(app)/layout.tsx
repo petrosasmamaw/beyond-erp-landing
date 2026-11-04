@@ -36,6 +36,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticating, logout } = useAuth();
   const reduxUser = useAppSelector((state) => state.auth.user);
   const isReduxAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const reduxSectorId = useAppSelector((state) => state.sectors.activeSectorId);
+  const reduxCompanyName = useAppSelector(
+    (state) => state.auth.user?.companyName ?? state.settings.settings?.companyName
+  );
 
   // Active user can be sourced from AuthContext or Redux in-memory demo state
   const activeUser = user ?? (reduxUser ? (reduxUser as unknown as ApiUser) : null);
@@ -110,11 +114,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </main>
     );
   }
-
-  const reduxSectorId = useAppSelector((state) => state.sectors.activeSectorId);
-  const reduxCompanyName = useAppSelector(
-    (state) => state.auth.user?.companyName ?? state.settings.settings?.companyName
-  );
 
   const language = settings?.language ?? "English";
   const companyName = reduxCompanyName ?? activeUser.companyName ?? settings?.companyName ?? "Beyond ERP";
