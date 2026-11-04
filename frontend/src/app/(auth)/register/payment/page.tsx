@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Smartphone,
   Sparkles,
+  X,
   Zap
 } from "lucide-react";
 import { api } from "@/lib/api";
@@ -47,7 +48,8 @@ function PaymentContent() {
   const [draft, setDraft] = useState<RegistrationDraft | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<"CBE" | "TELEBIRR">("CBE");
   const [copied, setCopied] = useState<string | null>(null);
-  const [reference, setReference] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(true);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -103,9 +105,15 @@ function PaymentContent() {
       return;
     }
 
+    if (!agreedToTerms) {
+      setError("Please agree to the Terms of Service and Privacy Policy to continue.");
+      showToast("Please agree to the Terms of Service & Privacy Policy");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const paymentNote = `[Payment: ${selectedMethod}${reference ? ` | Ref: ${reference.trim()}` : " | Screenshot via Telegram"}]`;
+      const paymentNote = `[Payment: ${selectedMethod} | Receipt submitted via Telegram @beyond_et | Terms & Policy Confirmed]`;
       const combinedNotes = draft.notes ? `${paymentNote} ${draft.notes}` : paymentNote;
 
       await api.createRegistrationRequest({
@@ -117,7 +125,7 @@ function PaymentContent() {
         phone: draft.phone,
         notes: combinedNotes,
         paymentMethod: selectedMethod,
-        paymentReference: reference.trim() || "Sent via Telegram @beyond_et",
+        paymentReference: "Receipt via Telegram @beyond_et",
         isPaid: true
       });
 
@@ -128,7 +136,7 @@ function PaymentContent() {
           ...draft,
           sectorId,
           paymentMethod: selectedMethod,
-          paymentRef: reference || "Sent via Telegram @beyond_et"
+          paymentRef: "Receipt via Telegram @beyond_et"
         })
       );
 
@@ -885,31 +893,115 @@ function PaymentContent() {
               </button>
             </div>
 
-            {/* Optional Reference Input */}
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13, fontWeight: 600, color: ink }}>
-                Transaction Reference / Sender Phone <span style={{ color: muted, fontWeight: 500 }}>(optional)</span>
+            {/* Terms of Service & Privacy Policy Agreement Card */}
+            <div
+              style={{
+                marginBottom: 20,
+                borderRadius: 12,
+                border: `1.5px solid ${agreedToTerms ? (dark ? "rgba(37, 99, 235, 0.45)" : "#93c5fd") : border}`,
+                background: agreedToTerms
+                  ? dark
+                    ? "rgba(37, 99, 235, 0.08)"
+                    : "#eff6ff"
+                  : dark
+                  ? "#0b1424"
+                  : "#f8fafc",
+                padding: "14px 16px",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 12,
+                  cursor: "pointer",
+                  userSelect: "none",
+                }}
+              >
                 <input
-                  value={reference}
-                  onChange={(e) => setReference(e.target.value)}
-                  placeholder="e.g. CBE reference FT... or your Telebirr phone number"
-                  style={{
-                    height: 44,
-                    borderRadius: 10,
-                    border: `1.5px solid ${border}`,
-                    background: inputBg,
-                    padding: "0 14px",
-                    color: ink,
-                    fontSize: 14,
-                    outline: "none"
-                  }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = border)}
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  style={{ display: "none" }}
                 />
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 6,
+                    border: `1.5px solid ${agreedToTerms ? "#2563eb" : dark ? "#334155" : "#cbd5e1"}`,
+                    background: agreedToTerms ? "#2563eb" : dark ? "#0a1220" : "#ffffff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    marginTop: 2,
+                    transition: "all 0.15s ease",
+                    boxShadow: agreedToTerms ? "0 2px 6px rgba(37, 99, 235, 0.35)" : "none",
+                  }}
+                >
+                  {agreedToTerms && <Check size={13} color="#ffffff" strokeWidth={3} />}
+                </div>
+
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: ink, lineHeight: 1.45 }}>
+                    I agree to the{" "}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowTermsModal(true);
+                      }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        color: dark ? "#60a5fa" : "#2563eb",
+                        fontWeight: 700,
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                        fontSize: 13.5,
+                      }}
+                    >
+                      Terms of Service
+                    </button>{" "}
+                    and{" "}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowTermsModal(true);
+                      }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        color: dark ? "#60a5fa" : "#2563eb",
+                        fontWeight: 700,
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                        fontSize: 13.5,
+                      }}
+                    >
+                      Privacy Policy
+                    </button>
+                    .
+                  </div>
+                  <p
+                    style={{
+                      margin: "5px 0 0",
+                      fontSize: 12,
+                      color: muted,
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    I authorize Beyond ERP to activate our Ethiopian enterprise workspace and confirm submitted registration information is accurate.
+                  </p>
+                </div>
               </label>
-              <p style={{ margin: "4px 0 0", fontSize: 11, color: muted }}>
-                Entering your transaction reference helps our finance team match your payment faster.
-              </p>
             </div>
 
             {error && (
@@ -971,6 +1063,133 @@ function PaymentContent() {
           </div>
         </div>
       </div>
+
+      {/* Terms of Service & Privacy Policy Modal */}
+      {showTermsModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000,
+            background: "rgba(0, 0, 0, 0.65)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+          }}
+          onClick={() => setShowTermsModal(false)}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 580,
+              maxHeight: "85vh",
+              overflowY: "auto",
+              background: surface,
+              borderRadius: 16,
+              border: `1px solid ${border}`,
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)",
+              padding: "26px 28px",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 9,
+                    background: dark ? "rgba(37,99,235,0.2)" : "#eff6ff",
+                    color: "#2563eb",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <ShieldCheck size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: ink }}>Terms of Service & Privacy Policy</h3>
+                  <span style={{ fontSize: 11.5, color: muted }}>Beyond ERP Ethiopia • Enterprise Customer Agreement</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTermsModal(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: muted,
+                  padding: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ fontSize: 13, color: ink, lineHeight: 1.6, display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <strong style={{ color: dark ? "#93c5fd" : "#1d4ed8" }}>1. Scope of Enterprise ERP Service</strong>
+                <p style={{ margin: "4px 0 0", color: muted, fontSize: 12.5 }}>
+                  Beyond ERP delivers cloud-native and offline-first enterprise management including general ledgers, Point of Sale, Ethiopian ERCA 15% VAT calculation, inventory control, and CRM workflows.
+                </p>
+              </div>
+
+              <div>
+                <strong style={{ color: dark ? "#93c5fd" : "#1d4ed8" }}>2. Confidentiality & Data Protection</strong>
+                <p style={{ margin: "4px 0 0", color: muted, fontSize: 12.5 }}>
+                  All financial records, TIN numbers, staff payroll, and client records are strictly protected under your organization tenant. Data is never disclosed to unauthorized parties or used outside workspace operations.
+                </p>
+              </div>
+
+              <div>
+                <strong style={{ color: dark ? "#93c5fd" : "#1d4ed8" }}>3. Verification & Activation Policy</strong>
+                <p style={{ margin: "4px 0 0", color: muted, fontSize: 12.5 }}>
+                  Upon payment confirmation via CBE or Telebirr receipt submission on Telegram (@beyond_et), company workspace credentials and administration access are provisioned directly to your registered business email.
+                </p>
+              </div>
+
+              <div>
+                <strong style={{ color: dark ? "#93c5fd" : "#1d4ed8" }}>4. Support Operations SLA</strong>
+                <p style={{ margin: "4px 0 0", color: muted, fontSize: 12.5 }}>
+                  Subscribers receive dedicated onboarding assistance, regulatory Ethiopian fiscal calendar updates, and technical support through our Addis Ababa support center.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 22, display: "flex", justifyContent: "flex-end", gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setAgreedToTerms(true);
+                  setShowTermsModal(false);
+                }}
+                style={{
+                  height: 40,
+                  padding: "0 22px",
+                  borderRadius: 8,
+                  border: 0,
+                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  color: "#ffffff",
+                  fontSize: 13.5,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
+                }}
+              >
+                I Understand & Agree
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast ? <div className="toast">{toast}</div> : null}
     </main>
