@@ -85,7 +85,7 @@ export default function LandingPage() {
         <section className="hero">
           <div className="hero-left">
             <div className="hero-eyebrow">ENTERPRISE OPERATING SYSTEM</div>
-            <h1 className="hero-title">
+            <h1 className="hero-title" style={{ color: dark ? "#ffffff" : "#1d4ed8" }}>
               ከዛሬ ጀምሮ ፣<br />
               ንግድዎን በቀላሉ<br />
               ያስተዳድሩ

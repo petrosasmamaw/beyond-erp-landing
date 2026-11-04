@@ -211,7 +211,7 @@
         }
 
         [data-theme="dark"] .hero-title {
-          color: #60a5fa;
+          color: #ffffff;
         }
 
         [data-theme="light"] .hero-title {
@@ -1147,6 +1147,10 @@
         }
 
         @media (max-width: 560px) {
+          .hero-title {
+            font-size: clamp(30px, 8.5vw, 42px);
+            line-height: 1.18;
+          }
           .hero-card-container {
             max-width: 100%;
           }
