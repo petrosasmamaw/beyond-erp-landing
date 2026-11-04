@@ -15,7 +15,7 @@ import {
 import type { Dashboard } from "@/lib/types";
 
 export type LangKey =
-  | "home" | "sectors" | "money" | "team" | "finance" | "reports" | "admin" | "setup"
+  | "home" | "crm" | "sectors" | "money" | "team" | "finance" | "reports" | "admin" | "setup"
   | "morning" | "afternoon" | "evening"
   | "dashboard" | "addTransaction" | "revenue" | "expenses" | "netProfit" | "pendingSync"
   | "employees" | "settings" | "search" | "save" | "cancel" | "delete" | "edit" | "add"
@@ -25,7 +25,7 @@ export type LangKey =
 
 const i18n: Record<string, Partial<Record<LangKey, string>>> = {
   Amharic: {
-    home: "ዋና", sectors: "ዘርፎች", money: "ገንዘብ", team: "ቡድን",
+    home: "ዋና", crm: "ሲአርኤም (ደንበኞች)", sectors: "ዘርፎች", money: "ገንዘብ", team: "ቡድን",
     finance: "ፋይናንስ", reports: "ሪፖርቶች", admin: "አስተዳዳሪ", setup: "ቅንብር",
     morning: "ጥዋት", afternoon: "ከሰዓት", evening: "ምሽት",
     dashboard: "ዳሽቦርድ", addTransaction: "ግብይት ጨምር", revenue: "ገቢ",

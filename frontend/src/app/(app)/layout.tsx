@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Download, FileText, Loader2, LogOut, RefreshCcw } from "lucide-react";
+import { ChevronDown, Download, FileText, Loader2, LogOut, RefreshCcw, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout as reduxLogout } from "@/store/slices/authSlice";
-import { openModal } from "@/store/slices/uiSlice";
+import { openModal, toggleAiAssistant } from "@/store/slices/uiSlice";
 import { getSectorDefinition } from "@/features/erp/config";
 import { getInitials, getTimeOfDay } from "@/lib/format";
 import { readOperationQueue, readQueue } from "@/features/erp/offline";
@@ -27,11 +27,20 @@ import { SectorRecordModal } from "@/components/modals/SectorRecordModal";
 import { DomainWorkflowModal } from "@/components/modals/DomainWorkflowModal";
 import { FailedOpsModal } from "@/components/modals/FailedOpsModal";
 import { SectorSelectModal } from "@/components/modals/SectorSelectModal";
+import { AIAssistantSidebar } from "@/components/AIAssistantSidebar";
+import type { User as ApiUser } from "@/lib/types";
 
 const SIDEBAR_KEY = "beyond_sidebar_collapsed";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticating, logout } = useAuth();
+  const reduxUser = useAppSelector((state) => state.auth.user);
+  const isReduxAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  // Active user can be sourced from AuthContext or Redux in-memory demo state
+  const activeUser = user ?? (reduxUser ? (reduxUser as unknown as ApiUser) : null);
+  const isAuthenticated = !!activeUser || isReduxAuthenticated;
+
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const dark = theme === "dark";
@@ -58,10 +67,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (!isAuthenticating && !user) {
+    if (!isAuthenticating && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [user, isAuthenticating, router]);
+  }, [isAuthenticated, isAuthenticating, router]);
 
   useEffect(() => {
     setPendingCount(readQueue().length + readOperationQueue().length);
@@ -89,7 +98,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [setPendingCount]);
 
-  if (isAuthenticating || !user) {
+  if ((isAuthenticating && !isAuthenticated) || !activeUser) {
     return (
       <main className="splash-screen" aria-label="Loading">
         <div className="splash-card">
@@ -108,8 +117,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   );
 
   const language = settings?.language ?? "English";
-  const companyName = reduxCompanyName ?? user.companyName ?? settings?.companyName ?? "Beyond ERP";
-  const companySector = getSectorDefinition(reduxSectorId ?? user.companySectorId ?? settings?.companySectorId ?? "");
+  const companyName = reduxCompanyName ?? activeUser.companyName ?? settings?.companyName ?? "Beyond ERP";
+  const companySector = getSectorDefinition(reduxSectorId ?? activeUser.companySectorId ?? settings?.companySectorId ?? "");
 
   return (
     <main className="app-shell">
@@ -207,6 +216,32 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <span className="demo-badge-short">DEMO</span>
               </span>
 
+              {/* Beyond AI Assistant Drawer Trigger */}
+              <button
+                type="button"
+                className="topbar-btn"
+                onClick={() => dispatch(toggleAiAssistant())}
+                title="Open Beyond AI Assistant"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "4px 10px",
+                  borderRadius: 20,
+                  background: dark ? "rgba(124, 58, 237, 0.2)" : "rgba(124, 58, 237, 0.1)",
+                  color: dark ? "#c4b5fd" : "#6d28d9",
+                  border: "1px solid rgba(124, 58, 237, 0.35)",
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <Sparkles size={13} style={{ color: "#a855f7" }} />
+                <span className="demo-badge-long">AI Assistant</span>
+              </button>
+
               <ThemeToggle />
 
               <button
@@ -238,11 +273,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   color: "white", display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 12, fontWeight: 700, flexShrink: 0,
                 }}>
-                  {getInitials(user.fullName)}
+                  {getInitials(activeUser.fullName)}
                 </div>
                 <div className="topbar-user-info">
-                  <strong>{user.fullName.split(" ")[0]}</strong>
-                  <span>{user.role.toLowerCase()}</span>
+                  <strong>{activeUser.fullName.split(" ")[0]}</strong>
+                  <span>{activeUser.role.toLowerCase()}</span>
                 </div>
               </div>
 
@@ -299,6 +334,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <DomainWorkflowModal />
       <FailedOpsModal />
       <SectorSelectModal />
+      <AIAssistantSidebar />
     </main>
   );
 }

@@ -26,14 +26,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={fontSansClass} suppressHydrationWarning>
       <head>
-        {/* Preload primary Amharic display font */}
-        <link
-          rel="preload"
-          href="/fonts/balderasu.ttf"
-          as="font"
-          type="font/ttf"
-          crossOrigin="anonymous"
-        />
         {/* Prevent flash of wrong theme - default to dark blue theme */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('beyond_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()` }} />
         <link

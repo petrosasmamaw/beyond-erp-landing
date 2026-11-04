@@ -337,18 +337,18 @@ function uid() { return "mock-" + Math.random().toString(36).slice(2); }
 const MOCK_SECTOR_KEY = "beyond_mock_sector_v1";
 const MOCK_COMPANY_KEY = "beyond_mock_company_v1";
 
-function getMockSectorId(): string {
+export function getMockSectorId(): string {
   if (typeof window === "undefined") return "retail-trading";
   return localStorage.getItem(MOCK_SECTOR_KEY) ?? "healthcare";
 }
 
-function setMockProfile(sectorId: string, companyName?: string) {
+export function setMockProfile(sectorId: string, companyName?: string) {
   if (typeof window === "undefined") return;
   localStorage.setItem(MOCK_SECTOR_KEY, sectorId);
   if (companyName) localStorage.setItem(MOCK_COMPANY_KEY, companyName);
 }
 
-function getMockCompanyName(): string {
+export function getMockCompanyName(): string {
   if (typeof window === "undefined") return MOCK_SETTINGS.companyName;
   return localStorage.getItem(MOCK_COMPANY_KEY) ?? MOCK_SETTINGS.companyName;
 }

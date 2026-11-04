@@ -12,6 +12,7 @@ import { openModal } from "@/store/slices/uiSlice";
 
 const UNIVERSAL_TOP: { path: string; labelKey: LangKey; icon: string }[] = [
   { path: "/dashboard", labelKey: "home", icon: "fa-solid fa-chart-pie" },
+  { path: "/crm", labelKey: "crm", icon: "fa-solid fa-briefcase" },
   { path: "/transactions", labelKey: "money", icon: "fa-solid fa-money-bill-transfer" },
   { path: "/employees", labelKey: "team", icon: "fa-solid fa-users" },
 ];

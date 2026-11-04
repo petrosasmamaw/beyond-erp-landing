@@ -1,5 +1,12 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+export interface AiMessage {
+  id: string;
+  sender: "ai" | "user";
+  text: string;
+  timestamp: string;
+}
+
 export interface UiState {
   sidebarCollapsed: boolean;
   activeModal: string | null;
@@ -7,7 +14,18 @@ export interface UiState {
   toastMessage: string | null;
   theme: "dark" | "light";
   pendingSyncCount: number;
+  isAiAssistantOpen: boolean;
+  aiMessages: AiMessage[];
 }
+
+const INITIAL_AI_MESSAGES: AiMessage[] = [
+  {
+    id: "msg-welcome",
+    sender: "ai",
+    text: "Selam! I am Beyond AI Assistant, trained on Ethiopian tax regulations (ERCA 15% VAT, Withholding, TOT), NBE compliance, and sector-specific operational KPIs. How can I assist your enterprise today?",
+    timestamp: "Just now",
+  },
+];
 
 const initialState: UiState = {
   sidebarCollapsed: false,
@@ -16,6 +34,8 @@ const initialState: UiState = {
   toastMessage: null,
   theme: "dark",
   pendingSyncCount: 1,
+  isAiAssistantOpen: false,
+  aiMessages: INITIAL_AI_MESSAGES,
 };
 
 export const uiSlice = createSlice({
@@ -49,6 +69,37 @@ export const uiSlice = createSlice({
       state.pendingSyncCount = 0;
       state.toastMessage = "All operations synced to ledger";
     },
+    // AI Assistant Reducers
+    toggleAiAssistant: (state) => {
+      state.isAiAssistantOpen = !state.isAiAssistantOpen;
+    },
+    openAiAssistant: (state) => {
+      state.isAiAssistantOpen = true;
+    },
+    closeAiAssistant: (state) => {
+      state.isAiAssistantOpen = false;
+    },
+    sendAiMessage: (state, action: PayloadAction<string>) => {
+      const userMsg: AiMessage = {
+        id: `usr-${Date.now()}`,
+        sender: "user",
+        text: action.payload,
+        timestamp: "Now",
+      };
+      state.aiMessages.push(userMsg);
+    },
+    receiveAiReply: (state, action: PayloadAction<string>) => {
+      const replyMsg: AiMessage = {
+        id: `ai-${Date.now()}`,
+        sender: "ai",
+        text: action.payload,
+        timestamp: "Now",
+      };
+      state.aiMessages.push(replyMsg);
+    },
+    clearAiChat: (state) => {
+      state.aiMessages = INITIAL_AI_MESSAGES;
+    },
   },
 });
 
@@ -60,7 +111,12 @@ export const {
   showToast,
   hideToast,
   simulateSync,
+  toggleAiAssistant,
+  openAiAssistant,
+  closeAiAssistant,
+  sendAiMessage,
+  receiveAiReply,
+  clearAiChat,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;
-

@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginAsDemo } from "@/store/slices/authSlice";
 import { openModal } from "@/store/slices/uiSlice";
 import { INITIAL_USER } from "@/store/initialData";
@@ -16,6 +16,8 @@ import { SectorSelectModal } from "@/components/modals/SectorSelectModal";
 
 export default function LoginPage() {
   const { user, login } = useAuth();
+  const reduxUser = useAppSelector((state) => state.auth.user);
+  const isReduxAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const { toast, showToast } = useApp();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -27,8 +29,8 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false);
 
   useEffect(() => {
-    if (user) router.replace("/dashboard");
-  }, [user, router]);
+    if (user || (isReduxAuthenticated && reduxUser)) router.replace("/dashboard");
+  }, [user, isReduxAuthenticated, reduxUser, router]);
 
   const handleTryDemo = (sectorId: string = "healthcare") => {
     dispatch(loginAsDemo({ sectorId }));
@@ -200,6 +202,7 @@ export default function LoginPage() {
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   required
                   autoFocus
+                  autoComplete="email"
                   placeholder="you@company.com"
                   style={{
                     height: 44, width: "100%", borderRadius: 10, border: `1.5px solid ${border}`,
@@ -219,6 +222,7 @@ export default function LoginPage() {
                     value={form.password}
                     onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
                     required
+                    autoComplete="current-password"
                     placeholder="••••••••"
                     style={{
                       height: 44, width: "100%", borderRadius: 10, border: `1.5px solid ${border}`,
@@ -292,7 +296,7 @@ export default function LoginPage() {
                 }}
               >
                 <span style={{ fontSize: 16 }}>⚡</span>
-                <span>Try Interactive Demo — Choose Sector</span>
+                <span>Try Demo (Select Any of 12 Sectors)</span>
               </button>
             </form>
 

@@ -7,10 +7,12 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { closeModal, showToast } from "@/store/slices/uiSlice";
 import { switchSector } from "@/store/slices/sectorsSlice";
 import { loginAsDemo } from "@/store/slices/authSlice";
-import { SECTORS_CATALOG } from "@/store/initialData";
+import { SECTORS_CATALOG, INITIAL_USER } from "@/store/initialData";
 import type { SectorMeta } from "@/types/erp";
 import { useApp } from "@/contexts/AppContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { setMockProfile } from "@/lib/mock";
 
 export function SectorSelectModal({
   isOpenExternal,
@@ -35,6 +37,14 @@ export function SectorSelectModal({
     appContext = useApp();
   } catch {
     // Rendered outside AppContext (e.g., on login page)
+  }
+
+  let authContext: ReturnType<typeof useAuth> | null = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    authContext = useAuth();
+  } catch {
+    // Rendered outside AuthContext
   }
 
   const isOpen =
@@ -83,6 +93,20 @@ export function SectorSelectModal({
   const handleSelectSector = (sectorId: string, companyName: string, sectorName: string) => {
     dispatch(switchSector(sectorId));
     dispatch(loginAsDemo({ sectorId, companyName }));
+    setMockProfile(sectorId, companyName);
+
+    const demoUser = {
+      ...INITIAL_USER,
+      companySectorId: sectorId,
+      companyName,
+    };
+
+    if (authContext?.login) {
+      authContext.login("demo-jwt-token-beyond-erp-demo", demoUser);
+    } else if (typeof window !== "undefined") {
+      localStorage.setItem("beyond_erp_auth_token_v1", "demo-jwt-token-beyond-erp-demo");
+    }
+
     dispatch(showToast(`Switched to ${sectorName} workspace (${companyName})`));
 
     handleClose();

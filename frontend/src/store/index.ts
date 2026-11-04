@@ -3,6 +3,7 @@ import authReducer from "./slices/authSlice";
 import transactionsReducer from "./slices/transactionsSlice";
 import employeesReducer from "./slices/employeesSlice";
 import financeReducer from "./slices/financeSlice";
+import crmReducer from "./slices/crmSlice";
 import sectorsReducer from "./slices/sectorsSlice";
 import settingsReducer from "./slices/settingsSlice";
 import uiReducer from "./slices/uiSlice";
@@ -13,6 +14,7 @@ export const store = configureStore({
     transactions: transactionsReducer,
     employees: employeesReducer,
     finance: financeReducer,
+    crm: crmReducer,
     sectors: sectorsReducer,
     settings: settingsReducer,
     ui: uiReducer,
