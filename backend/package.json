@@ -5,9 +5,10 @@
   "type": "module",
   "main": "dist/src/index.js",
   "scripts": {
-    "predev": "node ../scripts/free-ports.js",
+    "predev": "node ../scripts/free-ports.js 4000",
     "dev": "tsx watch src/index.ts",
     "build": "prisma generate && tsc -p tsconfig.json",
+    "prestart": "node ../scripts/free-ports.js 4000",
     "start": "node dist/src/index.js",
     "postinstall": "prisma generate && tsc -p tsconfig.json",
     "db:generate": "prisma generate",
