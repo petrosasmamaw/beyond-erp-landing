@@ -264,6 +264,14 @@ export const demoEmployees = [
 
 export const demoUsers = [
   {
+    id: "usr-admin-gmail",
+    fullName: "System Admin",
+    email: "admin@gmail.com",
+    phone: "+251 939 048 523",
+    role: "ADMIN" as const,
+    password: "12345678"
+  },
+  {
     id: "usr-owner",
     fullName: "Beyond Owner",
     email: "owner@beyonderp.local",
