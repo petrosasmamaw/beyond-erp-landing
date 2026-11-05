@@ -335,11 +335,18 @@ function PaymentContent() {
 
           {/* 3 Brand Value Bullets */}
           <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }}>
-            {([
-              { icon: <Zap size={14} />, label: "Instant CBE & Telebirr direct transfer" },
-              { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@beyond_et)" },
-              { icon: <ShieldCheck size={14} />, label: "Isolated company database provisioned" },
-            ] as const).map(({ icon, label }) => (
+            {(isCustomSector
+              ? [
+                  { icon: <Building2 size={14} />, label: "Custom enterprise multi-branch architecture" },
+                  { icon: <ShieldCheck size={14} />, label: "Dedicated infrastructure & bespoke integrations" },
+                  { icon: <Send size={14} />, label: "Direct administrative contact & priority setup" },
+                ]
+              : [
+                  { icon: <Zap size={14} />, label: "Instant CBE & Telebirr direct transfer" },
+                  { icon: <Send size={14} />, label: "Fast Telegram receipt verification (@beyond_et)" },
+                  { icon: <ShieldCheck size={14} />, label: "Isolated company database provisioned" },
+                ]
+            ).map(({ icon, label }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(219,234,254,0.9)", fontSize: 13.5 }}>
                 <span style={{ color: "#93c5fd", flexShrink: 0, display: "flex" }}>{icon}</span>
                 <span>{label}</span>
@@ -347,106 +354,102 @@ function PaymentContent() {
             ))}
           </div>
 
-          {/* ================= REAL CHECKOUT SUMMARY CARD ================= */}
-          <div
-            style={{
-              marginTop: 24,
-              width: "100%",
-              maxWidth: 420,
-              background: "transparent",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              borderRadius: 14,
-              padding: "16px 18px",
-              color: "#ffffff",
-              boxSizing: "border-box"
-            }}
-          >
-            {/* Header row */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                <Receipt size={14} style={{ color: "#93c5fd" }} />
-                <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#ffffff" }}>
-                  Checkout Summary
-                </span>
-              </div>
-              <span
-                style={{
-                  fontSize: 10.5,
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  padding: "3px 8px",
-                  borderRadius: 999,
-                  background: "rgba(255, 255, 255, 0.18)",
-                  color: "#ffffff",
-                  border: "1px solid rgba(255, 255, 255, 0.25)"
-                }}
-              >
-                {currentPlan.title} Tier
-              </span>
-            </div>
-
-            {/* Price Breakdown Table */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
-              {/* Subtotal */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Subtotal</span>
-                <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
-                  {currentPlan.subtotal}
-                </span>
-              </div>
-
-              {/* Discount */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Discount</span>
-                <span style={{ fontWeight: 700, color: isCustomSector ? "rgba(255, 255, 255, 0.7)" : "#4ade80", fontVariantNumeric: "tabular-nums" }}>
-                  {currentPlan.discount}
-                </span>
-              </div>
-
-              {/* Net Taxable Amount */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(219, 234, 254, 0.75)", fontSize: 12 }}>Net Taxable Base</span>
-                <span style={{ fontWeight: 600, color: "rgba(219, 234, 254, 0.9)", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
-                  {currentPlan.taxableBase}
-                </span>
-              </div>
-
-              {/* VAT 15% */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>VAT (15%)</span>
-                <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
-                  {currentPlan.vat15}
-                </span>
-              </div>
-            </div>
-
-            {/* Total Divider */}
-            <div style={{ borderTop: "1px dashed rgba(255, 255, 255, 0.25)", margin: "12px 0 10px" }} />
-
-            {/* Total Payable Row */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#bfdbfe" }}>
-                  {isCustomSector ? "Payment Term" : "Total Payable"}
+          {/* ================= REAL CHECKOUT SUMMARY CARD (BASIC & STANDARD ONLY) ================= */}
+          {!isCustomSector && (
+            <div
+              style={{
+                marginTop: 24,
+                width: "100%",
+                maxWidth: 420,
+                background: "transparent",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: 14,
+                padding: "16px 18px",
+                color: "#ffffff",
+                boxSizing: "border-box"
+              }}
+            >
+              {/* Header row */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                  <Receipt size={14} style={{ color: "#93c5fd" }} />
+                  <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#ffffff" }}>
+                    Checkout Summary
+                  </span>
                 </div>
-                <div style={{ fontSize: 11, color: "rgba(219, 234, 254, 0.7)", marginTop: 2 }}>
-                  {isCustomSector ? "Direct Administrative Agreement" : "Official VAT invoice provided"}
+                <span
+                  style={{
+                    fontSize: 10.5,
+                    fontWeight: 800,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    padding: "3px 8px",
+                    borderRadius: 999,
+                    background: "rgba(255, 255, 255, 0.18)",
+                    color: "#ffffff",
+                    border: "1px solid rgba(255, 255, 255, 0.25)"
+                  }}
+                >
+                  {currentPlan.title} Tier
+                </span>
+              </div>
+
+              {/* Price Breakdown Table */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
+                {/* Subtotal */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Subtotal</span>
+                  <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
+                    {currentPlan.subtotal}
+                  </span>
+                </div>
+
+                {/* Discount */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Discount</span>
+                  <span style={{ fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>
+                    {currentPlan.discount}
+                  </span>
+                </div>
+
+                {/* Net Taxable Amount */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "rgba(219, 234, 254, 0.75)", fontSize: 12 }}>Net Taxable Base</span>
+                  <span style={{ fontWeight: 600, color: "rgba(219, 234, 254, 0.9)", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
+                    {currentPlan.taxableBase}
+                  </span>
+                </div>
+
+                {/* VAT 15% */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>VAT (15%)</span>
+                  <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
+                    {currentPlan.vat15}
+                  </span>
                 </div>
               </div>
-              <div style={{ textAlign: "right" }}>
-                {isCustomSector ? (
-                  <div style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
-                    By Agreement
+
+              {/* Total Divider */}
+              <div style={{ borderTop: "1px dashed rgba(255, 255, 255, 0.25)", margin: "12px 0 10px" }} />
+
+              {/* Total Payable Row */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#bfdbfe" }}>
+                    Total Payable
                   </div>
-                ) : (
+                  <div style={{ fontSize: 11, color: "rgba(219, 234, 254, 0.7)", marginTop: 2 }}>
+                    Official VAT invoice provided
+                  </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
                   <div style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1 }}>
                     {currentPlan.totalDisplay} <span style={{ fontSize: 13, fontWeight: 700, color: "#93c5fd" }}>ETB</span>
                   </div>
-                )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Footer */}
