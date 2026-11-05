@@ -6,9 +6,9 @@
   "scripts": {
     "clean:ports": "node scripts/free-ports.js",
     "predev": "node scripts/free-ports.js",
-    "dev": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "dev": "concurrently --kill-others-on-fail --restart-tries 5 --restart-after 1000 -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "prestart": "node scripts/free-ports.js",
-    "start": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"npm run start --prefix backend\" \"npm run start --prefix frontend\"",
+    "start": "concurrently --kill-others-on-fail -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"npm run start --prefix backend\" \"npm run start --prefix frontend\"",
     "dev:backend": "npm run dev --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend",
     "build": "npm run build --prefix backend && npm run build --prefix frontend"

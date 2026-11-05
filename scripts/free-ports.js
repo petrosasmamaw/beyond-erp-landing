@@ -29,6 +29,22 @@ function cleanStaleNextCache() {
       // ignore
     }
   }
+
+  // Remove stale dev lock files if they exist
+  try {
+    const lockFiles = [
+      path.join(nextDir, "dev", "lock"),
+      path.join(nextDir, "lock")
+    ];
+    for (const lf of lockFiles) {
+      if (fs.existsSync(lf)) {
+        fs.rmSync(lf, { force: true });
+        console.log(`[Port Manager] Removed stale Next.js lock: ${lf}`);
+      }
+    }
+  } catch {
+    // ignore
+  }
 }
 
 function getListeningPidsWindows(port) {
