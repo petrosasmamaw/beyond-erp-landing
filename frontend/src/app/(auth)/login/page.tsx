@@ -27,9 +27,14 @@ export default function LoginPage() {
 
   // ONLY auto-redirect if signed into a REAL ACCOUNT!
   // NEVER auto-redirect if in demo mode so the user can freely sign in to real account.
+  // Directs ADMIN or OWNER roles straight to /admin; other roles to /dashboard.
   useEffect(() => {
     if (user && !isDemo && !isReduxDemo) {
-      router.replace("/dashboard");
+      if (user.role === "ADMIN" || user.role === "OWNER") {
+        router.replace("/admin");
+      } else {
+        router.replace("/dashboard");
+      }
     }
   }, [user, isDemo, isReduxDemo, router]);
 
@@ -50,7 +55,11 @@ export default function LoginPage() {
         })
       );
       showToast(`Welcome, ${result.user.fullName}`);
-      router.push("/dashboard");
+      if (result.user.role === "ADMIN" || result.user.role === "OWNER") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Login failed");
     } finally {

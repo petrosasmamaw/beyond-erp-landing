@@ -62,8 +62,10 @@ export function AdminView({
   });
 
   const canManageUsers =
-    currentUser?.effectivePermissions.includes("*") ||
-    currentUser?.effectivePermissions.includes("Users");
+    currentUser?.role === "ADMIN" ||
+    currentUser?.role === "OWNER" ||
+    Boolean(currentUser?.effectivePermissions?.includes("*")) ||
+    Boolean(currentUser?.effectivePermissions?.includes("Users"));
 
   const loadAdmin = useCallback(async () => {
     const tasks: Promise<unknown>[] = [];
