@@ -2,12 +2,32 @@
 
 import { type CSSProperties, type FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Briefcase, Languages, Loader2, ShieldCheck, Wifi } from "lucide-react";
-import { api } from "@/lib/api";
+import { ArrowLeft, ArrowRight, Briefcase, CheckCircle2, Languages, Loader2, ShieldCheck, Wifi } from "lucide-react";
 import { getSectorDefinition } from "@/features/erp/config";
 import { useApp } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
+
+function validateEthiopianPhone(phone: string): { isValid: boolean; formatted: string; error?: string } {
+  const trimmed = phone.trim();
+  if (!trimmed) {
+    return { isValid: false, formatted: "", error: "Phone number is required" };
+  }
+  // Strip spaces, dashes, dots, parentheses
+  const cleaned = trimmed.replace(/[\s\-\.\(\)]/g, "");
+  // Check matching: +251 9/7..., 251 9/7..., 09/07..., or 9/7... (Ethiopian mobile standards)
+  const match = cleaned.match(/^(?:\+?251|0)?([79]\d{8})$/);
+  if (!match) {
+    return {
+      isValid: false,
+      formatted: trimmed,
+      error: "Enter a valid Ethiopian phone number (e.g. 0911 234 567 or +251 911 234 567)"
+    };
+  }
+  const digits = match[1];
+  const formatted = `+251 ${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5)}`;
+  return { isValid: true, formatted };
+}
 
 function RegisterDetailsContent() {
   const router = useRouter();
@@ -28,7 +48,7 @@ function RegisterDetailsContent() {
     notes: "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -52,25 +72,83 @@ function RegisterDetailsContent() {
     }
   }, []);
 
+  // Validation rules
+  const trimmedCompany = form.companyName.trim();
+  const isCompanyNameValid = trimmedCompany.length >= 3 && /[a-zA-Z\u1200-\u137F]/.test(trimmedCompany);
+  const companyError = touched.companyName && !isCompanyNameValid
+    ? "Company name must be at least 3 letters (e.g. Selam Trading PLC)"
+    : "";
+
+  const trimmedFullName = form.fullName.trim();
+  const isFullNameValid = trimmedFullName.length >= 3 && /[a-zA-Z\u1200-\u137F]/.test(trimmedFullName);
+  const fullNameError = touched.fullName && !isFullNameValid
+    ? "Please enter your full contact name (at least 3 characters)"
+    : "";
+
+  const trimmedEmail = form.email.trim();
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const isEmailValid = emailRegex.test(trimmedEmail);
+  const emailError = touched.email && !isEmailValid
+    ? "Enter a valid business email address (e.g. name@company.com)"
+    : "";
+
+  const phoneResult = validateEthiopianPhone(form.phone);
+  const isPhoneValid = phoneResult.isValid;
+  const phoneError = touched.phone && !isPhoneValid ? (phoneResult.error || "Invalid phone number") : "";
+
+  const trimmedTin = form.tinNumber.trim().replace(/[\s\-]/g, "");
+  const isTinValid = !trimmedTin || /^\d{10}$/.test(trimmedTin);
+  const tinError = touched.tinNumber && !isTinValid
+    ? "TIN number must be exactly 10 digits (e.g. 0012345678)"
+    : "";
+
+  const isSectorValid = Boolean(sectorId);
+  const canContinue = isCompanyNameValid && isFullNameValid && isEmailValid && isPhoneValid && isTinValid && isSectorValid;
+
+  const handleBlur = (field: string) => {
+    setTouched((t) => ({ ...t, [field]: true }));
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const errs: Record<string, string> = {};
-    if (!sectorId) errs.sectorId = "No sector selected. Please choose a sector.";
-    if (!form.companyName.trim()) errs.companyName = "Company name is required";
-    if (!form.fullName.trim()) errs.fullName = "Your full name is required";
-    if (!form.email.trim()) errs.email = "Email is required";
-    if (!form.phone.trim()) errs.phone = "Phone number is required";
+    setTouched({
+      companyName: true,
+      fullName: true,
+      email: true,
+      phone: true,
+      tinNumber: true,
+    });
 
-    if (Object.keys(errs).length) {
-      setErrors(errs);
+    if (!canContinue) {
+      if (!isSectorValid) {
+        showToast("Please choose your company sector first");
+        router.push("/register");
+        return;
+      }
+      showToast("Please fill all required fields in the proper format");
       return;
     }
 
+    setLoading(true);
     try {
-      sessionStorage.setItem("beyond_reg_draft", JSON.stringify({ ...form, sectorId }));
+      const normalizedPhone = phoneResult.formatted || form.phone.trim();
+      const draftData = {
+        ...form,
+        companyName: form.companyName.trim(),
+        fullName: form.fullName.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: normalizedPhone,
+        tinNumber: trimmedTin || undefined,
+        sectorId,
+      };
+
+      sessionStorage.setItem("beyond_reg_draft", JSON.stringify(draftData));
+      showToast("Company profile saved");
       router.push(`/register/payment?sectorId=${encodeURIComponent(sectorId)}`);
     } catch {
       router.push(`/register/payment?sectorId=${encodeURIComponent(sectorId)}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,8 +158,9 @@ function RegisterDetailsContent() {
   const ink = dark ? "#e2e8f0" : "#0f172a";
   const muted = dark ? "#8b9ab0" : "#64748b";
   const inputBg = dark ? "#0a1220" : "#f8fafc";
-  const errorBorder = "#fda4af";
-  const errorText = "#e11d48";
+  const errorBorder = "#f43f5e";
+  const errorText = "#f43f5e";
+  const successBorder = "#10b981";
   const sectorColor = companySector.color || "#2563eb";
   const sectorTint = dark ? "rgba(37,99,235,0.14)" : companySector.tint || "#eff6ff";
   const backToSectorHref = sectorId ? `/register?sectorId=${sectorId}` : "/register";
@@ -101,25 +180,25 @@ function RegisterDetailsContent() {
     gap: 14,
   };
 
-  const fieldStyle = (hasError = false): CSSProperties => ({
+  const fieldStyle = (hasError = false, isValid = false): CSSProperties => ({
     height: 44,
     width: "100%",
     borderRadius: 10,
-    border: `1.5px solid ${hasError ? errorBorder : border}`,
+    border: `1.5px solid ${hasError ? errorBorder : isValid ? successBorder : border}`,
     background: inputBg,
     padding: "0 14px",
     color: ink,
     fontSize: 14,
     outline: "none",
-    transition: "border-color 0.15s",
+    transition: "border-color 0.15s, box-shadow 0.15s",
     boxSizing: "border-box",
   });
 
-  const notesStyle = (hasError = false): CSSProperties => ({
+  const notesStyle: CSSProperties = {
     minHeight: 84,
     width: "100%",
     borderRadius: 10,
-    border: `1.5px solid ${hasError ? errorBorder : border}`,
+    border: `1.5px solid ${border}`,
     background: inputBg,
     padding: "12px 14px",
     color: ink,
@@ -129,10 +208,10 @@ function RegisterDetailsContent() {
     resize: "vertical",
     transition: "border-color 0.15s",
     boxSizing: "border-box",
-  });
+  };
 
   const errorStyle: CSSProperties = {
-    margin: "2px 0 0",
+    margin: "4px 0 0",
     color: errorText,
     fontSize: 12,
     fontWeight: 600,
@@ -140,6 +219,7 @@ function RegisterDetailsContent() {
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", background: bg }}>
+      {/* Left Brand Panel */}
       <div
         style={{
           width: "42%",
@@ -155,13 +235,10 @@ function RegisterDetailsContent() {
         }}
         className="login-brand-panel"
       >
-        {/* Atmospheric orbs */}
         <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(96,165,250,0.2) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: -100, left: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-        {/* Left Brand Content — Logo and Brand at top of contents, starting from left */}
         <div style={{ position: "relative", zIndex: 2 }}>
-          {/* Logo & Brand Name */}
           <div
             style={{
               display: "flex",
@@ -231,6 +308,7 @@ function RegisterDetailsContent() {
         </p>
       </div>
 
+      {/* Right Form Panel */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         <div className="reg-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
           <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => router.push("/")}>
@@ -254,16 +332,17 @@ function RegisterDetailsContent() {
           <div className="reg-form-wrap" style={{ width: "100%", maxWidth: 620 }}>
             <div className="reg-heading" style={{ marginBottom: 24 }}>
               <p style={{ margin: "0 0 10px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#2563eb" }}>
-                Step 2 of 3
+                Step 2 of 3 • Company Information
               </p>
               <h2 style={{ margin: "0 0 6px", fontSize: 26, fontWeight: 700, color: ink, lineHeight: 1.15 }}>
                 Company &amp; contact details
               </h2>
               <p style={{ margin: 0, fontSize: 14, color: muted, lineHeight: 1.5 }}>
-                Enter your company profile. On the next step, you will choose CBE or Telebirr to complete payment and activate your workspace.
+                Provide your official enterprise details below. Ensure your phone and email are valid to receive your workspace activation link.
               </p>
             </div>
 
+            {/* Selected Sector Overview Badge */}
             <div className="reg-sector-badge" style={{ marginBottom: 20, borderRadius: 10, border: `1px solid ${border}`, background: dark ? "#0a1220" : "#f8fafc", padding: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
                 <div style={{ width: 44, height: 44, borderRadius: 10, border: `1px solid ${border}`, background: sectorTint, color: sectorColor, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -286,139 +365,186 @@ function RegisterDetailsContent() {
                 Change
               </button>
             </div>
-            {errors.sectorId ? <p style={{ ...errorStyle, marginTop: -12, marginBottom: 16 }}>{errors.sectorId}</p> : null}
 
             <form onSubmit={handleSubmit} style={{ display: "grid", gap: 14 }}>
+              {/* Row 1: Company Name & TIN */}
               <div style={gridStyle}>
                 <label style={labelStyle}>
-                  Company name
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Company Name <span style={{ color: "#ef4444" }}>*</span></span>
+                    {touched.companyName && isCompanyNameValid && (
+                      <span style={{ color: "#10b981", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 3 }}>
+                        <CheckCircle2 size={12} /> Valid
+                      </span>
+                    )}
+                  </div>
                   <input
                     value={form.companyName}
-                    onChange={(e) => {
-                      setForm((f) => ({ ...f, companyName: e.target.value }));
-                      setErrors((er) => ({ ...er, companyName: "" }));
-                    }}
+                    onChange={(e) => setForm((f) => ({ ...f, companyName: e.target.value }))}
+                    onBlur={() => handleBlur("companyName")}
                     required
                     autoFocus
-                    placeholder="Selam Trading PLC"
-                    style={fieldStyle(Boolean(errors.companyName))}
+                    placeholder="e.g. Selam Trading PLC"
+                    style={fieldStyle(Boolean(companyError), touched.companyName && isCompanyNameValid)}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = errors.companyName ? errorBorder : border)}
-                    aria-invalid={Boolean(errors.companyName)}
+                    aria-invalid={Boolean(companyError)}
                   />
-                  {errors.companyName ? <p style={errorStyle}>{errors.companyName}</p> : null}
+                  {companyError ? <p style={errorStyle}>{companyError}</p> : null}
                 </label>
 
                 <label style={labelStyle}>
-                  TIN number <span style={{ color: muted, fontWeight: 500 }}>(optional)</span>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>TIN Number <span style={{ color: muted, fontWeight: 500 }}>(optional)</span></span>
+                    {form.tinNumber.trim() && isTinValid && (
+                      <span style={{ color: "#10b981", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 3 }}>
+                        <CheckCircle2 size={12} /> 10 Digits
+                      </span>
+                    )}
+                  </div>
                   <input
                     value={form.tinNumber}
                     onChange={(e) => setForm((f) => ({ ...f, tinNumber: e.target.value }))}
-                    placeholder="0012345678"
-                    style={fieldStyle()}
+                    onBlur={() => handleBlur("tinNumber")}
+                    maxLength={10}
+                    placeholder="e.g. 0012345678"
+                    style={fieldStyle(Boolean(tinError), Boolean(form.tinNumber.trim() && isTinValid))}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = border)}
                   />
+                  {tinError ? <p style={errorStyle}>{tinError}</p> : null}
                 </label>
               </div>
 
+              {/* Row 2: Full Name & Email */}
               <div style={gridStyle}>
                 <label style={labelStyle}>
-                  Your full name
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Contact Full Name <span style={{ color: "#ef4444" }}>*</span></span>
+                    {touched.fullName && isFullNameValid && (
+                      <span style={{ color: "#10b981", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 3 }}>
+                        <CheckCircle2 size={12} /> Valid
+                      </span>
+                    )}
+                  </div>
                   <input
                     value={form.fullName}
-                    onChange={(e) => {
-                      setForm((f) => ({ ...f, fullName: e.target.value }));
-                      setErrors((er) => ({ ...er, fullName: "" }));
-                    }}
+                    onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
+                    onBlur={() => handleBlur("fullName")}
                     required
-                    placeholder="Abebe Kebede"
-                    style={fieldStyle(Boolean(errors.fullName))}
+                    placeholder="e.g. Abebe Kebede"
+                    style={fieldStyle(Boolean(fullNameError), touched.fullName && isFullNameValid)}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = errors.fullName ? errorBorder : border)}
-                    aria-invalid={Boolean(errors.fullName)}
+                    aria-invalid={Boolean(fullNameError)}
                   />
-                  {errors.fullName ? <p style={errorStyle}>{errors.fullName}</p> : null}
+                  {fullNameError ? <p style={errorStyle}>{fullNameError}</p> : null}
                 </label>
 
                 <label style={labelStyle}>
-                  Email address
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Business Email <span style={{ color: "#ef4444" }}>*</span></span>
+                    {touched.email && isEmailValid && (
+                      <span style={{ color: "#10b981", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 3 }}>
+                        <CheckCircle2 size={12} /> Valid
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="email"
                     value={form.email}
-                    onChange={(e) => {
-                      setForm((f) => ({ ...f, email: e.target.value }));
-                      setErrors((er) => ({ ...er, email: "" }));
-                    }}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    onBlur={() => handleBlur("email")}
                     required
-                    placeholder="owner@company.com"
-                    style={fieldStyle(Boolean(errors.email))}
+                    placeholder="e.g. owner@company.com"
+                    style={fieldStyle(Boolean(emailError), touched.email && isEmailValid)}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = errors.email ? errorBorder : border)}
-                    aria-invalid={Boolean(errors.email)}
+                    aria-invalid={Boolean(emailError)}
                   />
-                  {errors.email ? <p style={errorStyle}>{errors.email}</p> : null}
+                  {emailError ? <p style={errorStyle}>{emailError}</p> : null}
                 </label>
               </div>
 
+              {/* Row 3: Phone & Notes */}
               <div style={gridStyle}>
                 <label style={labelStyle}>
-                  Phone number
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Phone Number <span style={{ color: "#ef4444" }}>*</span></span>
+                    {touched.phone && isPhoneValid && (
+                      <span style={{ color: "#10b981", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 3 }}>
+                        <CheckCircle2 size={12} /> Ethiopian Format
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="tel"
                     value={form.phone}
-                    onChange={(e) => {
-                      setForm((f) => ({ ...f, phone: e.target.value }));
-                      setErrors((er) => ({ ...er, phone: "" }));
-                    }}
+                    onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                    onBlur={() => handleBlur("phone")}
                     required
-                    placeholder="+251 911 234 567"
-                    style={fieldStyle(Boolean(errors.phone))}
+                    placeholder="e.g. 0911 234 567 or +251 911 234 567"
+                    style={fieldStyle(Boolean(phoneError), touched.phone && isPhoneValid)}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = errors.phone ? errorBorder : border)}
-                    aria-invalid={Boolean(errors.phone)}
+                    aria-invalid={Boolean(phoneError)}
                   />
-                  {errors.phone ? <p style={errorStyle}>{errors.phone}</p> : null}
+                  {phoneError ? (
+                    <p style={errorStyle}>{phoneError}</p>
+                  ) : (
+                    <span style={{ fontSize: 11.5, color: muted }}>
+                      Format: 09XX / 07XX or +251 9XX
+                    </span>
+                  )}
                 </label>
 
                 <label style={labelStyle}>
-                  Notes <span style={{ color: muted, fontWeight: 500 }}>(optional)</span>
+                  <span>Additional Notes <span style={{ color: muted, fontWeight: 500 }}>(optional)</span></span>
                   <textarea
                     value={form.notes}
                     onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                    placeholder="Payment ref, modules, or setup notes"
-                    style={notesStyle()}
+                    placeholder="Custom module requests or deployment notes"
+                    style={notesStyle}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
                     onBlur={(e) => (e.currentTarget.style.borderColor = border)}
                   />
                 </label>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  height: 48,
-                  borderRadius: 10,
-                  border: 0,
-                  marginTop: 6,
-                  background: loading ? "#3b82f6" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                  color: "white",
-                  fontWeight: 700,
-                  fontSize: 14,
-                  cursor: loading ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  boxShadow: loading ? "none" : "0 4px 14px rgba(37,99,235,0.35)",
-                  transition: "opacity 0.15s, transform 0.15s",
-                }}
-              >
-                {loading && <Loader2 className="spin" size={17} />}
-                {loading ? "Processing..." : "Continue to Payment"}
-                {!loading && <ArrowRight size={16} />}
-              </button>
+              {/* Submit Button — ONLY CAN CONTINUE IF FORMAT IS FULLY VALID */}
+              <div style={{ marginTop: 8 }}>
+                <button
+                  type="submit"
+                  disabled={!canContinue || loading}
+                  style={{
+                    height: 48,
+                    width: "100%",
+                    borderRadius: 10,
+                    border: 0,
+                    background: !canContinue
+                      ? (dark ? "rgba(255,255,255,0.06)" : "#e2e8f0")
+                      : loading
+                      ? "#3b82f6"
+                      : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                    color: !canContinue ? (dark ? "#64748b" : "#94a3b8") : "#ffffff",
+                    fontWeight: 700,
+                    fontSize: 15,
+                    cursor: !canContinue || loading ? "not-allowed" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    boxShadow: !canContinue || loading ? "none" : "0 4px 14px rgba(37,99,235,0.35)",
+                    transition: "all 0.15s ease",
+                    opacity: !canContinue ? 0.65 : 1,
+                  }}
+                >
+                  {loading && <Loader2 className="spin" size={17} />}
+                  {loading ? "Processing..." : "Continue to Payment"}
+                  {!loading && <ArrowRight size={16} />}
+                </button>
+
+                {!canContinue && (
+                  <p style={{ margin: "6px 0 0", textAlign: "center", fontSize: 12, color: muted }}>
+                    Complete all required fields in the proper format above to proceed to payment.
+                  </p>
+                )}
+              </div>
             </form>
 
             <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "22px 0" }}>

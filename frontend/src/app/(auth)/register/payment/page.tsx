@@ -60,7 +60,7 @@ const PLANS: Record<PlanTier, PlanConfig> = {
   BASIC: {
     id: "BASIC",
     title: "Basic",
-    badge: "Standard Sectors",
+    badge: "Retail & Trading",
     totalDisplay: "41,000",
     numericTotal: 41000,
     subtotal: "36,500.00 ETB",
@@ -68,20 +68,20 @@ const PLANS: Record<PlanTier, PlanConfig> = {
     taxableBase: "35,652.00 ETB",
     vat15: "+ 5,348.00 ETB",
     subtext: "Annual 365 Days • 15% VAT Included",
-    description: "Standard business workflows, retail, healthcare & professional services."
+    description: "POS checkout, stock ledger, barcode scanning & retail operations."
   },
   STANDARD: {
     id: "STANDARD",
     title: "Standard",
-    badge: "Manufacturing",
+    badge: "Enterprise Sector Tier",
     totalDisplay: "80,000",
     numericTotal: 80000,
     subtotal: "72,000.00 ETB",
     discount: "- 2,434.78 ETB",
     taxableBase: "69,565.22 ETB",
     vat15: "+ 10,434.78 ETB",
-    subtext: "Annual 365 Days • 15% VAT Included • Multi-BOM & Batch",
-    description: "Industrial manufacturing, multi-BOM assembly & production lines."
+    subtext: "Annual 365 Days • 15% VAT Included • Advanced Workflows",
+    description: "Industry-specialized workflows, multi-branch, BOM/batches & comprehensive ledger."
   },
   CUSTOM: {
     id: "CUSTOM",
@@ -98,16 +98,22 @@ const PLANS: Record<PlanTier, PlanConfig> = {
   }
 };
 
-function getSectorDefaultPlan(sectorId?: string | null): PlanTier {
-  if (!sectorId) return "BASIC";
-  const normalized = sectorId.toLowerCase().trim();
-  if (normalized === "manufacturing") {
-    return "STANDARD";
-  }
-  if (normalized === "request-custom" || normalized === "custom") {
+/**
+ * Sector Pricing Rule:
+ * - Only "Retail & Trading" is BASIC (41,000 ETB)
+ * - "Request Custom" is CUSTOM (Payment by Agreement)
+ * - ALL OTHER SECTORS are STANDARD (80,000 ETB)
+ */
+function getSectorPlan(sectorId?: string | null): PlanTier {
+  if (!sectorId) return "STANDARD";
+  const s = sectorId.toLowerCase().trim();
+  if (s === "request-custom" || s === "custom") {
     return "CUSTOM";
   }
-  return "BASIC";
+  if (s === "retail-trading" || s === "retail" || s === "retail-sector") {
+    return "BASIC";
+  }
+  return "STANDARD";
 }
 
 function PaymentContent() {
@@ -119,7 +125,6 @@ function PaymentContent() {
 
   const sectorIdParam = searchParams.get("sectorId") ?? "";
   const [draft, setDraft] = useState<RegistrationDraft | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<PlanTier>(() => getSectorDefaultPlan(sectorIdParam));
   const [selectedMethod, setSelectedMethod] = useState<"CBE" | "TELEBIRR">("CBE");
   const [copied, setCopied] = useState<string | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(true);
@@ -134,18 +139,17 @@ function PaymentContent() {
       if (stored) {
         const parsed = JSON.parse(stored) as RegistrationDraft;
         setDraft(parsed);
-        const initialSector = parsed.sectorId || sectorIdParam;
-        setSelectedPlan(getSectorDefaultPlan(initialSector));
       }
     } catch {
       // ignore
     }
-  }, [sectorIdParam]);
+  }, []);
 
   const sectorId = draft?.sectorId || sectorIdParam;
   const companySector = getSectorDefinition(sectorId);
-  const isCustomSector = sectorId === "request-custom" || sectorId === "custom" || selectedPlan === "CUSTOM";
-  const currentPlan = PLANS[isCustomSector ? "CUSTOM" : selectedPlan];
+  const selectedPlan = getSectorPlan(sectorId);
+  const currentPlan = PLANS[selectedPlan];
+  const isCustomSector = selectedPlan === "CUSTOM";
 
   const cbeDetails = {
     bankName: "Commercial Bank of Ethiopia (CBE)",
@@ -178,7 +182,6 @@ function PaymentContent() {
     setError("");
 
     if (!draft || !draft.companyName || !draft.email) {
-      // Fallback: If draft was cleared, redirect back to details
       showToast("Please enter your company details first");
       router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register");
       return;
@@ -199,7 +202,7 @@ function PaymentContent() {
 
       const paymentNote = isCustomSector
         ? `[Tier: CUSTOM | Payment: By Agreement | Direct Admin Contact | Terms & Policy Confirmed]`
-        : `[Tier: ${selectedPlan} (${currentPlan.totalDisplay} ETB) | Payment: ${selectedMethod} | Receipt submitted via Telegram @beyond_et | Terms & Policy Confirmed]`;
+        : `[Tier: ${selectedPlan} (${currentPlan.totalDisplay} ETB) | Sector: ${companySector.name} | Payment: ${selectedMethod} | Receipt submitted via Telegram @beyond_et | Terms & Policy Confirmed]`;
 
       const combinedNotes = draft.notes ? `${paymentNote} ${draft.notes}` : paymentNote;
 
@@ -222,7 +225,7 @@ function PaymentContent() {
         JSON.stringify({
           ...draft,
           sectorId,
-          planTier: isCustomSector ? "CUSTOM" : selectedPlan,
+          planTier: selectedPlan,
           paymentMethod: paymentMethodVal,
           paymentRef: paymentRefVal
         })
@@ -487,7 +490,7 @@ function PaymentContent() {
                   color: "#2563eb"
                 }}
               >
-                {isCustomSector ? "Enterprise Custom Request" : "Step 3 of 3 • Pricing & Activation"}
+                {isCustomSector ? "Enterprise Custom Request" : "Step 3 of 3 • Payment & Activation"}
               </p>
               <h2 style={{ margin: "0 0 6px", fontSize: 26, fontWeight: 700, color: ink, lineHeight: 1.15 }}>
                 {isCustomSector ? "Contact Administration" : "Choose payment method"}
@@ -495,7 +498,7 @@ function PaymentContent() {
               <p style={{ margin: 0, fontSize: 14, color: muted, lineHeight: 1.5 }}>
                 {isCustomSector
                   ? "For custom enterprise requirements, contact our administrative team directly to finalize specifications and pricing."
-                  : "Select your package tier, transfer via CBE or Telebirr, and submit your receipt on Telegram for fast workspace setup."}
+                  : "Transfer via CBE or Telebirr below, then submit your receipt screenshot on Telegram for fast workspace setup."}
               </p>
             </div>
 
@@ -503,7 +506,7 @@ function PaymentContent() {
             <div
               className="pay-company-badge"
               style={{
-                marginBottom: 18,
+                marginBottom: 16,
                 borderRadius: 10,
                 border: `1px solid ${border}`,
                 background: dark ? "#0a1220" : "#f8fafc",
@@ -559,114 +562,67 @@ function PaymentContent() {
               </button>
             </div>
 
-            {/* ================= 2-TIER PLAN SELECTOR (ONLY SHOWN FOR STANDARD SECTORS, HIDDEN FOR CUSTOM) ================= */}
+            {/* ================= ASSIGNED SECTOR TIER BADGE (LOCKED BY SECTOR, NO CHOOSING) ================= */}
             {!isCustomSector && (
-              <div style={{ marginBottom: 18 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <label style={{ fontSize: 11.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: muted }}>
-                    Package Level &amp; Pricing
-                  </label>
-                  <span style={{ fontSize: 11, color: "#2563eb", fontWeight: 700 }}>
-                    {selectedPlan === "BASIC" ? "Standard Sectors Default" : "Manufacturing Tier Default"}
-                  </span>
-                </div>
-
-                <div className="pay-plan-grid">
-                  {(["BASIC", "STANDARD"] as PlanTier[]).map((tierKey) => {
-                    const plan = PLANS[tierKey];
-                    const isSelected = selectedPlan === tierKey;
-                    return (
-                      <button
-                        key={tierKey}
-                        type="button"
-                        onClick={() => setSelectedPlan(tierKey)}
+              <div
+                style={{
+                  marginBottom: 16,
+                  padding: "12px 16px",
+                  borderRadius: 10,
+                  border: `1px solid ${border}`,
+                  background: surface,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  flexWrap: "wrap"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 6,
+                      background: dark ? "rgba(37,99,235,0.18)" : "#eff6ff",
+                      color: "#2563eb",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0
+                    }}
+                  >
+                    <CheckCircle2 size={16} />
+                  </div>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 13.5, fontWeight: 800, color: ink }}>
+                        {currentPlan.title} Tier Package
+                      </span>
+                      <span
                         style={{
-                          position: "relative",
-                          padding: "12px 14px",
-                          borderRadius: 12,
-                          border: `2px solid ${isSelected ? "#2563eb" : border}`,
-                          background: isSelected
-                            ? dark
-                              ? "rgba(37, 99, 235, 0.16)"
-                              : "#eff6ff"
-                            : surface,
-                          textAlign: "left",
-                          cursor: "pointer",
-                          transition: "all 0.15s ease",
-                          boxShadow: isSelected ? "0 4px 14px rgba(37, 99, 235, 0.18)" : "none",
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                          minHeight: 84,
+                          fontSize: 10.5,
+                          fontWeight: 700,
+                          padding: "2px 7px",
+                          borderRadius: 4,
+                          background: dark ? "rgba(37,99,235,0.22)" : "#dbeafe",
+                          color: dark ? "#93c5fd" : "#1d4ed8",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em"
                         }}
                       >
-                        <div>
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                            <span style={{ fontSize: 13, fontWeight: 800, color: ink }}>
-                              {plan.title}
-                            </span>
-                            {isSelected ? (
-                              <span style={{ color: "#2563eb", display: "flex" }}>
-                                <CheckCircle2 size={16} />
-                              </span>
-                            ) : (
-                              <span
-                                style={{
-                                  width: 14,
-                                  height: 14,
-                                  borderRadius: "50%",
-                                  border: `1.5px solid ${dark ? "#475569" : "#cbd5e1"}`
-                                }}
-                              />
-                            )}
-                          </div>
-                          <span
-                            style={{
-                              display: "inline-block",
-                              fontSize: 10,
-                              fontWeight: 700,
-                              padding: "2px 6px",
-                              borderRadius: 4,
-                              background: isSelected
-                                ? dark
-                                  ? "rgba(37, 99, 235, 0.3)"
-                                  : "#dbeafe"
-                                : dark
-                                ? "#1a2d42"
-                                : "#f1f5f9",
-                              color: isSelected
-                                ? dark
-                                  ? "#93c5fd"
-                                  : "#1d4ed8"
-                                : muted,
-                              textTransform: "uppercase",
-                              letterSpacing: "0.04em",
-                              marginBottom: 6
-                            }}
-                          >
-                            {plan.badge}
-                          </span>
-                        </div>
-
-                        <div>
-                          <div
-                            style={{
-                              fontSize: 15,
-                              fontWeight: 900,
-                              color: isSelected
-                                ? dark
-                                  ? "#60a5fa"
-                                  : "#2563eb"
-                                : ink,
-                              letterSpacing: "-0.01em"
-                            }}
-                          >
-                            {plan.totalDisplay} <span style={{ fontSize: 11, fontWeight: 700 }}>ETB</span>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
+                        {selectedPlan === "BASIC" ? "Retail & Trading" : "Standard Enterprise"}
+                      </span>
+                    </div>
+                    <p style={{ margin: "2px 0 0", fontSize: 12, color: muted }}>
+                      {currentPlan.description}
+                    </p>
+                  </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <span style={{ fontSize: 16, fontWeight: 900, color: "#2563eb" }}>
+                    {currentPlan.totalDisplay} ETB
+                  </span>
                 </div>
               </div>
             )}

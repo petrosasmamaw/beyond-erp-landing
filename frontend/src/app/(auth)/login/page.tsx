@@ -9,16 +9,12 @@ import { useApp } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { loginAsDemo, login as reduxLogin } from "@/store/slices/authSlice";
-import { openModal } from "@/store/slices/uiSlice";
-import { INITIAL_USER } from "@/store/initialData";
-import { SectorSelectModal } from "@/components/modals/SectorSelectModal";
+import { login as reduxLogin } from "@/store/slices/authSlice";
 
 export default function LoginPage() {
   const { user, isDemo, login } = useAuth();
   const reduxUser = useAppSelector((state) => state.auth.user);
   const isReduxDemo = useAppSelector((state) => state.auth.isDemo);
-  const isReduxAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const { toast, showToast } = useApp();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -63,7 +59,6 @@ export default function LoginPage() {
   };
 
   const bg = dark ? "#080e19" : "#f5f8ff";
-  const surface = dark ? "#0f1a2e" : "#ffffff";
   const border = dark ? "#1a2d42" : "#e2e8f0";
   const ink = dark ? "#e2e8f0" : "#0f172a";
   const muted = dark ? "#8b9ab0" : "#64748b";
@@ -160,7 +155,7 @@ export default function LoginPage() {
         </div>
 
         <p style={{ margin: 0, fontSize: 11, color: "rgba(148,163,184,0.5)", position: "relative" }}>
-          © {new Date().getFullYear()} Beyond ERP Ethiopia
+          &copy; {new Date().getFullYear()} Beyond ERP Ethiopia
         </p>
       </div>
 
@@ -193,42 +188,6 @@ export default function LoginPage() {
                 Access your Beyond ERP workspace.
               </p>
             </div>
-
-            {Boolean(isDemo || isReduxDemo) && (
-              <div
-                style={{
-                  marginBottom: 20,
-                  padding: "10px 14px",
-                  borderRadius: 10,
-                  background: dark ? "rgba(37, 99, 235, 0.14)" : "#eff6ff",
-                  border: `1px solid ${dark ? "rgba(37, 99, 235, 0.3)" : "#bfdbfe"}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 10,
-                }}
-              >
-                <span style={{ fontSize: 12.5, color: dark ? "#93c5fd" : "#1e40af", fontWeight: 500 }}>
-                  ⚡ <strong>Demo session active</strong>. Sign in for your real account.
-                </span>
-                <button
-                  type="button"
-                  onClick={() => router.push("/dashboard")}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "#2563eb",
-                    fontWeight: 700,
-                    fontSize: 12,
-                    textDecoration: "underline",
-                    flexShrink: 0,
-                  }}
-                >
-                  Return to demo →
-                </button>
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13, fontWeight: 600, color: ink }}>
@@ -300,41 +259,6 @@ export default function LoginPage() {
                 {loading ? "Signing in…" : "Sign in"}
                 {!loading && <ArrowRight size={16} />}
               </button>
-
-              {/* Instant Demo Divider */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "14px 0 2px" }}>
-                <div style={{ flex: 1, height: 1, background: border }} />
-                <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: muted }}>
-                  Or Experience Instantly
-                </span>
-                <div style={{ flex: 1, height: 1, background: border }} />
-              </div>
-
-              {/* TRY DEMO BUTTON */}
-              <button
-                type="button"
-                onClick={() => dispatch(openModal({ type: "sector-select" }))}
-                style={{
-                  width: "100%",
-                  height: 44,
-                  borderRadius: 10,
-                  border: "1.5px solid rgba(37, 99, 235, 0.4)",
-                  background: dark ? "rgba(37, 99, 235, 0.14)" : "rgba(37, 99, 235, 0.08)",
-                  color: dark ? "#93c5fd" : "#2563eb",
-                  fontWeight: 700,
-                  fontSize: 13.5,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  transition: "all 0.15s ease",
-                  boxShadow: "0 2px 8px rgba(37, 99, 235, 0.15)",
-                }}
-              >
-                <span style={{ fontSize: 16 }}>⚡</span>
-                <span>Try Demo (Select Any of 12 Sectors)</span>
-              </button>
             </form>
 
             {/* Divider */}
@@ -379,7 +303,6 @@ export default function LoginPage() {
       </div>
 
       {toast ? <div className="toast">{toast}</div> : null}
-      <SectorSelectModal />
     </main>
   );
 }
