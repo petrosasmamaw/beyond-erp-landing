@@ -267,6 +267,25 @@ export const SECTORS_CATALOG: SectorMeta[] = [
       { key: "documents", label: "Documents", icon: "fa-solid fa-folder-open" },
       { key: "counters", label: "Counters", icon: "fa-solid fa-building-user" }
     ]
+  },
+  {
+    id: "request-custom",
+    name: "Request Custom",
+    shortName: "Custom",
+    defaultCompanyName: "Custom Enterprise Solutions PLC",
+    defaultTin: "0099887766",
+    icon: "fa-solid fa-wand-magic-sparkles",
+    color: "#8b5cf6",
+    lightColor: "#f5f3ff",
+    textColor: "#6d28d9",
+    description: "Tailored ERP workflows, specialized modules, and bespoke integrations built for your business.",
+    keyModules: ["Custom Workflows", "Specialized Modules", "Bespoke Integrations", "Dedicated Reporting"],
+    navItems: [
+      { key: "workflows", label: "Custom Workflows", icon: "fa-solid fa-diagram-project" },
+      { key: "modules", label: "Specialized Modules", icon: "fa-solid fa-cubes" },
+      { key: "integrations", label: "Bespoke Integrations", icon: "fa-solid fa-network-wired" },
+      { key: "reporting", label: "Dedicated Reporting", icon: "fa-solid fa-chart-line" }
+    ]
   }
 ];
 
