@@ -2,7 +2,7 @@
 
 import { type CSSProperties, type FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Briefcase, CheckCircle2, Languages, Loader2, ShieldCheck, Wifi, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Briefcase, CheckCircle2, Languages, Loader2, ShieldCheck, Wifi } from "lucide-react";
 import { getSectorDefinition } from "@/features/erp/config";
 import { useApp } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -64,9 +64,22 @@ function RegisterDetailsContent() {
       const saved = sessionStorage.getItem("beyond_reg_draft");
       if (saved) {
         const parsed = JSON.parse(saved);
+        // Ensure company name remains completely empty unless user explicitly filled a custom company name previously for this exact sector
+        const isSectorMatch = parsed.sectorId === sectorId;
+        const isDefaultSectorName =
+          !parsed.companyName ||
+          parsed.companyName.includes("Demo Co") ||
+          parsed.companyName.includes("Workspace") ||
+          parsed.companyName.includes("PLC Demo") ||
+          parsed.companyName.toLowerCase().includes("supermarket plc") ||
+          parsed.companyName.toLowerCase().includes("trading plc") ||
+          parsed.companyName === companySector.name;
+
+        const effectiveCompany = isSectorMatch && !isDefaultSectorName ? parsed.companyName : "";
+
         setForm((f) => ({
           ...f,
-          companyName: parsed.companyName || f.companyName,
+          companyName: effectiveCompany,
           tinNumber: parsed.tinNumber || f.tinNumber,
           fullName: parsed.fullName || f.fullName,
           email: parsed.email || f.email,
@@ -77,7 +90,7 @@ function RegisterDetailsContent() {
     } catch {
       // ignore
     }
-  }, []);
+  }, [sectorId, companySector.name]);
 
   // Validation rules
   const trimmedCompany = form.companyName.trim();
@@ -167,8 +180,20 @@ function RegisterDetailsContent() {
   };
 
   const handleInstantDemo = () => {
+    if (!canContinue) {
+      setTouched({
+        companyName: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        tinNumber: true,
+      });
+      showToast("First fill out details");
+      return;
+    }
+
     const effectiveSectorId = sectorId || "retail-trading";
-    const effectiveCompany = form.companyName.trim() || `${companySector.name || "Enterprise"} Workspace`;
+    const effectiveCompany = form.companyName.trim();
     const normalizedPhone = phoneResult.formatted || form.phone.trim();
 
     // 1. Redux demo session setup with full custom company profile
@@ -609,36 +634,46 @@ function RegisterDetailsContent() {
                   {!loading && <ArrowRight size={16} />}
                 </button>
 
-                {/* Instant Demo with Company Details Button */}
+                {/* Instant Demo Button — Inactive before form is filled; alerts to fill details if clicked while inactive */}
                 <button
                   type="button"
                   onClick={handleInstantDemo}
+                  title={!canContinue ? "First fill out company details" : "Launch Instant Demo"}
                   style={{
                     height: 44,
                     width: "100%",
                     marginTop: 10,
                     borderRadius: 10,
-                    border: `1.5px solid ${dark ? "rgba(37,99,235,0.45)" : "rgba(37,99,235,0.3)"}`,
-                    background: dark ? "rgba(37,99,235,0.14)" : "rgba(37,99,235,0.06)",
-                    color: dark ? "#93c5fd" : "#2563eb",
+                    border: !canContinue
+                      ? `1.5px solid ${dark ? "#1a2a40" : "#e2e8f0"}`
+                      : `1.5px solid ${dark ? "rgba(37,99,235,0.45)" : "rgba(37,99,235,0.3)"}`,
+                    background: !canContinue
+                      ? (dark ? "rgba(255,255,255,0.02)" : "#f8fafc")
+                      : (dark ? "rgba(37,99,235,0.14)" : "rgba(37,99,235,0.06)"),
+                    color: !canContinue
+                      ? (dark ? "#64748b" : "#94a3b8")
+                      : (dark ? "#93c5fd" : "#2563eb"),
                     fontWeight: 700,
                     fontSize: 14,
-                    cursor: "pointer",
+                    cursor: !canContinue ? "not-allowed" : "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: 8,
                     transition: "all 0.15s ease",
+                    opacity: !canContinue ? 0.65 : 1,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = dark ? "rgba(37,99,235,0.24)" : "rgba(37,99,235,0.14)";
+                    if (canContinue) {
+                      e.currentTarget.style.background = dark ? "rgba(37,99,235,0.24)" : "rgba(37,99,235,0.14)";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = dark ? "rgba(37,99,235,0.14)" : "rgba(37,99,235,0.06)";
+                    if (canContinue) {
+                      e.currentTarget.style.background = dark ? "rgba(37,99,235,0.14)" : "rgba(37,99,235,0.06)";
+                    }
                   }}
                 >
-                  <Zap size={16} />
-                  Instant Demo with My Company Details
+                  Instant Demo
                 </button>
 
                 {!canContinue && (
