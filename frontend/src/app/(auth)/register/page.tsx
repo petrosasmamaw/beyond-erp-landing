@@ -43,21 +43,53 @@ function RegisterContent() {
       return;
     }
 
-    const companyName = `${selectedSector.name} Demo Co.`;
+    let companyName = `${selectedSector.name} Demo Co.`;
+    let fullName: string | undefined;
+    let email: string | undefined;
+    let phone: string | undefined;
+    let tinNumber: string | undefined;
+
+    try {
+      const saved = sessionStorage.getItem("beyond_reg_draft");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.companyName) companyName = parsed.companyName;
+        if (parsed.fullName) fullName = parsed.fullName;
+        if (parsed.email) email = parsed.email;
+        if (parsed.phone) phone = parsed.phone;
+        if (parsed.tinNumber) tinNumber = parsed.tinNumber;
+      }
+    } catch {
+      // ignore
+    }
 
     // 1. Redux demo session setup
     dispatch(switchSector(selectedId));
-    dispatch(loginAsDemo({ sectorId: selectedId, companyName }));
+    dispatch(
+      loginAsDemo({
+        sectorId: selectedId,
+        companyName,
+        fullName,
+        email,
+        phone,
+        tinNumber,
+      })
+    );
 
     // 2. Mock profile sync
-    setMockProfile(selectedId, companyName);
+    setMockProfile(selectedId, companyName, { fullName, email, phone, tinNumber });
 
     // 3. AuthContext demo cookie & local storage
     if (loginDemo) {
-      loginDemo(selectedId, companyName);
+      loginDemo(selectedId, companyName, {
+        fullName,
+        email,
+        phone,
+        companyTinNumber: tinNumber,
+      });
     }
 
-    showToast(`Launching ${selectedSector.name} interactive workspace...`);
+    showToast(`Launching ${companyName} interactive workspace...`);
     router.push("/dashboard");
   };
 

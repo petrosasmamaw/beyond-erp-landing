@@ -38,8 +38,11 @@ export const settingsSlice = createSlice({
         const sectorMeta = SECTORS_CATALOG.find((s) => s.id === sectorId);
         if (sectorMeta) {
           state.settings.companySectorId = sectorMeta.id;
-          state.settings.companyName = action.payload?.companyName ?? sectorMeta.defaultCompanyName;
-          state.settings.tinNumber = sectorMeta.defaultTin;
+          state.settings.companyName = action.payload?.companyName || sectorMeta.defaultCompanyName;
+          state.settings.tinNumber = action.payload?.tinNumber || sectorMeta.defaultTin;
+          if (action.payload?.email) {
+            // keep contact email
+          }
         }
       });
   },

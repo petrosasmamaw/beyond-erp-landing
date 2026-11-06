@@ -236,8 +236,8 @@ function PaymentContent() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit request";
       if (msg.includes("already exists") || msg.includes("already completed")) {
-        showToast("Account already exists - please sign in");
-        router.push("/login");
+        showToast("Request already received - our team will contact you");
+        router.push("/submitted");
       } else {
         setError(msg);
         showToast(msg);

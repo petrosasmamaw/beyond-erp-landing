@@ -211,7 +211,7 @@ export default function SubmittedPage() {
               Your registration request and payment confirmation have been received successfully.
               <br />
               <strong style={{ color: ink }}>
-                Our company team will contact you soon and will send your workspace link and login credentials.
+                Our company team will contact you soon and will send your workspace link and access details.
               </strong>
             </>
           )}
@@ -380,29 +380,6 @@ export default function SubmittedPage() {
           >
             <Home size={18} />
             Back to Home
-          </button>
-
-          <button
-            type="button"
-            onClick={() => router.push("/login")}
-            style={{
-              height: 40,
-              borderRadius: 10,
-              border: `1px solid ${border}`,
-              background: dark ? "#111827" : "#ffffff",
-              color: dark ? "#cbd5e1" : "#475569",
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              transition: "background 0.15s",
-            }}
-          >
-            <Lock size={15} />
-            Existing Customer? Sign In
           </button>
         </div>
 

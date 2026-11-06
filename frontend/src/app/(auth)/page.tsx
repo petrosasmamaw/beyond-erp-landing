@@ -72,9 +72,6 @@ export default function LandingPage() {
 
           <div className="nav-actions">
             <ThemeToggle />
-            <button type="button" className="nav-signin" onClick={() => router.push("/login")}>
-              Log in
-            </button>
             <button type="button" className="nav-cta" onClick={() => router.push("/register")}>
               Sign up
             </button>
@@ -99,8 +96,8 @@ export default function LandingPage() {
                 Start Free Trial
                 <ArrowRight size={16} />
               </button>
-              <button type="button" className="btn-link" onClick={() => router.push("/login")}>
-                Explore Modules
+              <button type="button" className="btn-link" onClick={() => router.push("/register")}>
+                Explore Sectors &amp; Demo
               </button>
             </div>
 
@@ -344,9 +341,9 @@ export default function LandingPage() {
                   Create workspace
                   <ArrowRight size={16} />
                 </button>
-                <button type="button" className="btn-link" onClick={() => router.push("/login")}>
-                  Talk to us
-                </button>
+                <a href="#start" className="btn-link" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
+                  Contact Us
+                </a>
               </div>
             </div>
 
@@ -428,7 +425,6 @@ export default function LandingPage() {
                 <a href="#features">Features</a>
                 <a href="#start">Pricing</a>
                 <a href="#start">Contact</a>
-                <a href="/login">Sign In</a>
                 <a href="/register">Get Started</a>
               </div>
             </div>

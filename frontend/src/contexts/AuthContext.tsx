@@ -130,13 +130,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const sectorMeta = SECTORS_CATALOG.find((s) => s.id === sectorId);
       const effectiveCompany =
         companyName || sectorMeta?.defaultCompanyName || "Merkato Wholesale & Supermarket PLC";
-      const effectiveTin = sectorMeta?.defaultTin || "0012345678";
+      const effectiveTin = overrides?.companyTinNumber || sectorMeta?.defaultTin || "0012345678";
 
       const demoUser: User = {
         ...(INITIAL_USER as unknown as User),
         id: "demo-user-owner",
         fullName: overrides?.fullName || INITIAL_USER.fullName,
-        email: overrides?.email || "demo@beyonderp.et",
+        email: overrides?.email || (companyName ? `contact@${companyName.toLowerCase().replace(/[^a-z0-9]/g, "")}.et` : "demo@beyonderp.et"),
         phone: overrides?.phone || "+251 911 234 567",
         companyName: effectiveCompany,
         companyTinNumber: effectiveTin,

@@ -79,7 +79,7 @@ export function Footer({ inApp = false }: FooterProps) {
           <a href="/#start">About</a>
           <a href="/#start">Contact</a>
           <a href="/#start">Careers</a>
-          <a href="/login">Sign in</a>
+          <a href="/register">Start trial</a>
         </div>
 
         <div className="footer-col">

@@ -2,9 +2,14 @@
 
 import { type CSSProperties, type FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Briefcase, CheckCircle2, Languages, Loader2, ShieldCheck, Wifi } from "lucide-react";
+import { ArrowLeft, ArrowRight, Briefcase, CheckCircle2, Languages, Loader2, ShieldCheck, Wifi, Zap } from "lucide-react";
 import { getSectorDefinition } from "@/features/erp/config";
 import { useApp } from "@/contexts/AppContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAppDispatch } from "@/store/hooks";
+import { switchSector } from "@/store/slices/sectorsSlice";
+import { loginAsDemo } from "@/store/slices/authSlice";
+import { setMockProfile } from "@/lib/mock";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -33,6 +38,8 @@ function RegisterDetailsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast, showToast } = useApp();
+  const { loginDemo } = useAuth();
+  const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const dark = theme === "dark";
 
@@ -143,6 +150,13 @@ function RegisterDetailsContent() {
       };
 
       sessionStorage.setItem("beyond_reg_draft", JSON.stringify(draftData));
+      // Sync mock profile & Redux so their company name and contact info are active everywhere
+      setMockProfile(sectorId, draftData.companyName, {
+        fullName: draftData.fullName,
+        email: draftData.email,
+        phone: draftData.phone,
+        tinNumber: draftData.tinNumber,
+      });
       showToast("Company profile saved");
       router.push(`/register/payment?sectorId=${encodeURIComponent(sectorId)}`);
     } catch {
@@ -150,6 +164,62 @@ function RegisterDetailsContent() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleInstantDemo = () => {
+    const effectiveSectorId = sectorId || "retail-trading";
+    const effectiveCompany = form.companyName.trim() || `${companySector.name || "Enterprise"} Workspace`;
+    const normalizedPhone = phoneResult.formatted || form.phone.trim();
+
+    // 1. Redux demo session setup with full custom company profile
+    dispatch(switchSector(effectiveSectorId));
+    dispatch(
+      loginAsDemo({
+        sectorId: effectiveSectorId,
+        companyName: effectiveCompany,
+        fullName: form.fullName.trim() || undefined,
+        email: form.email.trim() || undefined,
+        phone: normalizedPhone || undefined,
+        tinNumber: trimmedTin || undefined,
+      })
+    );
+
+    // 2. Mock profile sync
+    setMockProfile(effectiveSectorId, effectiveCompany, {
+      fullName: form.fullName.trim() || undefined,
+      email: form.email.trim() || undefined,
+      phone: normalizedPhone || undefined,
+      tinNumber: trimmedTin || undefined,
+    });
+
+    // 3. Save draft in sessionStorage
+    try {
+      const draftData = {
+        ...form,
+        companyName: effectiveCompany,
+        fullName: form.fullName.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: normalizedPhone,
+        tinNumber: trimmedTin || undefined,
+        sectorId: effectiveSectorId,
+      };
+      sessionStorage.setItem("beyond_reg_draft", JSON.stringify(draftData));
+    } catch {
+      // ignore
+    }
+
+    // 4. AuthContext demo session
+    if (loginDemo) {
+      loginDemo(effectiveSectorId, effectiveCompany, {
+        fullName: form.fullName.trim() || undefined,
+        email: form.email.trim() || undefined,
+        phone: normalizedPhone || undefined,
+        companyTinNumber: trimmedTin || undefined,
+      });
+    }
+
+    showToast(`Launching demo workspace as ${effectiveCompany}...`);
+    router.push("/dashboard");
   };
 
   const bg = dark ? "#080e19" : "#f5f8ff";
@@ -539,6 +609,38 @@ function RegisterDetailsContent() {
                   {!loading && <ArrowRight size={16} />}
                 </button>
 
+                {/* Instant Demo with Company Details Button */}
+                <button
+                  type="button"
+                  onClick={handleInstantDemo}
+                  style={{
+                    height: 44,
+                    width: "100%",
+                    marginTop: 10,
+                    borderRadius: 10,
+                    border: `1.5px solid ${dark ? "rgba(37,99,235,0.45)" : "rgba(37,99,235,0.3)"}`,
+                    background: dark ? "rgba(37,99,235,0.14)" : "rgba(37,99,235,0.06)",
+                    color: dark ? "#93c5fd" : "#2563eb",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = dark ? "rgba(37,99,235,0.24)" : "rgba(37,99,235,0.14)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = dark ? "rgba(37,99,235,0.14)" : "rgba(37,99,235,0.06)";
+                  }}
+                >
+                  <Zap size={16} />
+                  Instant Demo with My Company Details
+                </button>
+
                 {!canContinue && (
                   <p style={{ margin: "6px 0 0", textAlign: "center", fontSize: 12, color: muted }}>
                     Complete all required fields in the proper format above to proceed to payment.
@@ -561,13 +663,6 @@ function RegisterDetailsContent() {
               >
                 <ArrowLeft size={14} />
                 Back to sectors
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push("/login")}
-                style={{ background: "none", border: "none", cursor: "pointer", color: muted, fontSize: 13, padding: "6px 0" }}
-              >
-                Already approved? Sign in
               </button>
             </div>
 

@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
       const result = await api.resetPassword({ email, otp, newPassword: form.newPassword });
       showToast(result.message);
       sessionStorage.removeItem("beyond_reset_email");
-      router.push("/login");
+      router.push("/");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Reset failed");
     } finally {

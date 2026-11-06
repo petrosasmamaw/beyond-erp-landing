@@ -342,10 +342,22 @@ export function getMockSectorId(): string {
   return localStorage.getItem(MOCK_SECTOR_KEY) ?? "healthcare";
 }
 
-export function setMockProfile(sectorId: string, companyName?: string) {
+export function setMockProfile(
+  sectorId: string,
+  companyName?: string,
+  overrides?: { fullName?: string; email?: string; phone?: string; tinNumber?: string }
+) {
   if (typeof window === "undefined") return;
   localStorage.setItem(MOCK_SECTOR_KEY, sectorId);
-  if (companyName) localStorage.setItem(MOCK_COMPANY_KEY, companyName);
+  if (companyName) {
+    localStorage.setItem(MOCK_COMPANY_KEY, companyName);
+    mockSettings = {
+      ...mockSettings,
+      companyName,
+      companySectorId: sectorId,
+      tinNumber: overrides?.tinNumber || mockSettings.tinNumber,
+    };
+  }
 }
 
 export function getMockCompanyName(): string {

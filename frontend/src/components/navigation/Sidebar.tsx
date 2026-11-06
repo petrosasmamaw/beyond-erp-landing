@@ -7,7 +7,7 @@ import { t, type LangKey, type SectorDefinition } from "@/features/erp/config";
 import { getSectorConfig } from "@/features/sectors";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/slices/uiSlice";
 
 const UNIVERSAL_TOP: { path: string; labelKey: LangKey; icon: string }[] = [
@@ -42,6 +42,8 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const activeUser = useAppSelector((state) => state.auth.user);
+  const companyInitial = companyName ? companyName.trim().charAt(0).toUpperCase() : "B";
   const { theme } = useTheme();
   const dark = theme === "dark";
   const sectorConfig = getSectorConfig(sector.id);
@@ -193,32 +195,77 @@ export function Sidebar({
         }}
       >
         {!collapsed && (
-          <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
-            <img
-              src="/logo.png"
-              alt="Beyond ERP"
-              width={28}
-              height={28}
-              style={{ borderRadius: "50%", flexShrink: 0, display: "block" }}
-            />
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 12.5, fontWeight: 700, lineHeight: 1.2 }}>
-                <span style={{ color: "#ffffff" }}>Beyond ERP</span>
-              </div>
-              <div style={{ fontSize: 11, color: muted, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: 134 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0, flex: 1 }}>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: sector?.color ? `linear-gradient(135deg, ${sector.color}, #1d4ed8)` : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 800,
+                fontSize: 14,
+                flexShrink: 0,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+              }}
+              title={companyName}
+            >
+              {companyInitial}
+            </div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  lineHeight: 1.2,
+                  color: "#ffffff",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                }}
+                title={companyName}
+              >
                 {companyName}
+              </div>
+              <div
+                style={{
+                  fontSize: 10.5,
+                  color: muted,
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  maxWidth: 136,
+                  marginTop: 2,
+                }}
+              >
+                {activeUser?.phone || (activeUser?.companyTinNumber ? `TIN: ${activeUser.companyTinNumber}` : sector.name)}
               </div>
             </div>
           </div>
         )}
         {collapsed && (
-          <img
-            src="/logo.png"
-            alt="Beyond ERP"
-            width={28}
-            height={28}
-            style={{ borderRadius: "50%", flexShrink: 0, display: "block" }}
-          />
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 8,
+              background: sector?.color ? `linear-gradient(135deg, ${sector.color}, #1d4ed8)` : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 800,
+              fontSize: 14,
+              flexShrink: 0,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+            }}
+            title={companyName}
+          >
+            {companyInitial}
+          </div>
         )}
         <button
           onClick={onToggle}

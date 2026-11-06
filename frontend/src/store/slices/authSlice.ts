@@ -21,21 +21,37 @@ export const authSlice = createSlice({
   reducers: {
     loginAsDemo: (
       state,
-      action: PayloadAction<{ sectorId?: string; companyName?: string } | undefined>
+      action: PayloadAction<
+        | {
+            sectorId?: string;
+            companyName?: string;
+            fullName?: string;
+            email?: string;
+            phone?: string;
+            tinNumber?: string;
+          }
+        | undefined
+      >
     ) => {
       const sectorId = action?.payload?.sectorId ?? "retail-trading";
       const sectorMeta = SECTORS_CATALOG.find((s) => s.id === sectorId);
       const companyName =
-        action?.payload?.companyName ??
-        sectorMeta?.defaultCompanyName ??
+        action?.payload?.companyName ||
+        sectorMeta?.defaultCompanyName ||
         "Merkato Wholesale & Supermarket PLC";
-      const companyTinNumber = sectorMeta?.defaultTin ?? "0012345678";
+      const companyTinNumber = action?.payload?.tinNumber || sectorMeta?.defaultTin || "0012345678";
+      const fullName = action?.payload?.fullName || INITIAL_USER.fullName;
+      const email = action?.payload?.email || INITIAL_USER.email;
+      const phone = action?.payload?.phone || INITIAL_USER.phone;
 
       state.user = {
         ...INITIAL_USER,
         companySectorId: sectorId,
         companyName,
         companyTinNumber,
+        fullName,
+        email,
+        phone,
         role: "OWNER",
         status: "ACTIVE",
         lastLoginAt: new Date().toISOString(),

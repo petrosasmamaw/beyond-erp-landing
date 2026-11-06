@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Download, FileText, Loader2, LogOut, RefreshCcw, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
@@ -57,6 +57,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     syncPending, handleInstall, showToast, openFailedOpsModal
   } = useApp();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -75,9 +76,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isAuthenticating && !isAuthenticated) {
-      router.replace("/login");
+      if (pathname?.startsWith("/admin")) return;
+      router.replace("/");
     }
-  }, [isAuthenticated, isAuthenticating, router]);
+  }, [isAuthenticated, isAuthenticating, router, pathname]);
 
   useEffect(() => {
     setPendingCount(readQueue().length + readOperationQueue().length);
@@ -303,7 +305,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => {
                   dispatch(reduxLogout());
                   logout();
-                  router.replace("/login");
+                  router.replace("/");
                   showToast(isDemoActive ? "Signed out of demo session" : "Signed out successfully");
                 }}
                 aria-label="Sign out"
@@ -324,7 +326,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="print-header">
-            <h1>Beyond ERP System — {settings?.companyName ?? "Business Report"}</h1>
+            <h1>{companyName} — Business Report</h1>
             <span>TIN: {settings?.tinNumber ?? "N/A"} | Printed: {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
             <span>Ethiopian Date: {ethiopianDate}</span>
           </div>
