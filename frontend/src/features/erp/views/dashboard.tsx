@@ -99,12 +99,14 @@ export function DashboardView({
   const muted = "var(--text-muted)";
   const subtle = "var(--bg-subtle)";
 
+  const isNetNegative = dashboard.stats.netProfit < 0;
+
   const kpis = [
     {
       label: "Revenue",
       value: formatCurrency(dashboard.stats.revenue),
       icon: TrendingUp,
-      accent: "#10b981",
+      color: "var(--text-primary)",
       trend: "+12%",
       up: true,
     },
@@ -112,7 +114,7 @@ export function DashboardView({
       label: "Expenses",
       value: formatCurrency(dashboard.stats.expenses),
       icon: Receipt,
-      accent: "#f43f5e",
+      color: "var(--text-primary)",
       trend: "+3%",
       up: false,
     },
@@ -120,15 +122,15 @@ export function DashboardView({
       label: "Net Profit",
       value: formatCurrency(Math.abs(dashboard.stats.netProfit)),
       icon: Wallet,
-      accent: dashboard.stats.netProfit >= 0 ? "#2563eb" : "#f43f5e",
-      trend: dashboard.stats.netProfit >= 0 ? "+8%" : "-8%",
-      up: dashboard.stats.netProfit >= 0,
+      color: isNetNegative ? "var(--negative)" : "var(--text-primary)",
+      trend: isNetNegative ? "-8%" : "+8%",
+      up: !isNetNegative,
     },
     {
       label: "Pending Sync",
       value: String(dashboard.stats.pendingSync),
       icon: RefreshCw,
-      accent: "#f59e0b",
+      color: "var(--text-primary)",
       trend: null,
       up: true,
     },
@@ -137,150 +139,88 @@ export function DashboardView({
   const topChart = Math.max(...revenueChart, 1);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
       {/* ── Page Header ── */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
         <div>
-          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.04em" }}>
             Overview
           </p>
-          <h2 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 700, color: ink, lineHeight: 1.2 }}>
+          <h2 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 600, color: ink, lineHeight: "28px", letterSpacing: "-0.01em" }}>
             Good to see you, {firstName}
           </h2>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Sector Chip */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {/* Sector inline text */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 7,
-              padding: "6px 11px",
-              borderRadius: 8,
-              border: `1px solid ${border}`,
-              background: surface,
+              gap: 6,
+              color: muted,
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "0 4px",
             }}
           >
-            <div
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 5,
-                background: dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)",
-                color: "#2563eb",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {renderFeatureIcon(sector.icon, 13)}
-            </div>
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: ink }}>{sector.shortName}</span>
+            {renderFeatureIcon(sector.icon, 16)}
+            <span>{sector.shortName}</span>
           </div>
 
           <button
             onClick={() => openTransactionModal()}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "7px 14px",
-              borderRadius: 8,
-              border: 0,
-              background: "#2563eb",
-              color: "#fff",
-              fontWeight: 600,
-              fontSize: 13,
-              cursor: "pointer",
-              transition: "background 0.15s ease",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#1d4ed8")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#2563eb")}
+            className="btn-primary"
           >
             <Plus size={14} /> {t("addTransaction", language)}
           </button>
 
           <button
             onClick={openTelebirrModal}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "7px 13px",
-              borderRadius: 8,
-              border: `1px solid ${border}`,
-              background: surface,
-              color: ink,
-              fontWeight: 600,
-              fontSize: 13,
-              cursor: "pointer",
-            }}
+            className="btn-secondary"
           >
-            <Smartphone size={14} style={{ color: "#2563eb" }} /> Telebirr
+            <Smartphone size={14} style={{ color: muted }} /> Telebirr
           </button>
         </div>
       </div>
 
-      {/* ── KPI Metric Cards (De-boxed, Senior Flat Styling) ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12 }} className="kpi-grid">
+      {/* ── KPI Strip (Single-Surface 4-Cell Pattern) ── */}
+      <div className="kpi-strip" style={{ marginBottom: 0 }}>
         {kpis.map((k) => {
           const IconComp = k.icon;
           return (
-            <div
-              key={k.label}
-              style={{
-                padding: "16px 18px",
-                borderRadius: 10,
-                border: `1px solid ${border}`,
-                background: surface,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-              }}
-            >
+            <div key={k.label} className="kpi-cell">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                <span style={{ fontSize: 11, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                   {k.label}
                 </span>
-                <div
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 7,
-                    background: dark ? "rgba(255, 255, 255, 0.05)" : "rgba(15, 23, 42, 0.04)",
-                    color: k.accent,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <IconComp size={15} />
-                </div>
+                <span style={{ color: muted, display: "flex", alignItems: "center" }}>
+                  <IconComp size={16} />
+                </span>
               </div>
 
               <div
                 style={{
-                  fontSize: "clamp(16px, 1.8vw, 21px)",
-                  fontWeight: 700,
-                  color: ink,
-                  lineHeight: 1.1,
+                  fontSize: 20,
+                  fontWeight: 600,
+                  color: k.color,
+                  lineHeight: "28px",
                   fontVariantNumeric: "tabular-nums",
-                  letterSpacing: "-0.02em",
+                  letterSpacing: "-0.01em",
                 }}
               >
                 {k.value}
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, lineHeight: "16px" }}>
                 {k.trend ? (
                   <>
                     {k.up ? (
-                      <ArrowUpRight size={13} style={{ color: "#10b981" }} />
+                      <ArrowUpRight size={13} style={{ color: "var(--positive)" }} />
                     ) : (
-                      <ArrowDownRight size={13} style={{ color: "#f43f5e" }} />
+                      <ArrowDownRight size={13} style={{ color: "var(--negative)" }} />
                     )}
-                    <span style={{ color: k.up ? "#10b981" : "#f43f5e", fontWeight: 600 }}>{k.trend}</span>
+                    <span style={{ color: k.up ? "var(--positive)" : "var(--negative)", fontWeight: 500 }}>{k.trend}</span>
                     <span style={{ color: muted }}>vs last month</span>
                   </>
                 ) : (
@@ -293,37 +233,25 @@ export function DashboardView({
       </div>
 
       {/* ── Chart + Sector Modules ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: 12 }} className="chart-tools-grid">
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 280px", gap: 24 }} className="chart-tools-grid">
 
         {/* 12-Month Revenue Overview */}
-        <div style={{ padding: "18px 20px", borderRadius: 10, border: `1px solid ${border}`, background: surface }}>
+        <div className="ui-surface" style={{ padding: 16 }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
             <div>
-              <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                 Revenue Performance
               </p>
-              <h3 style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: ink }}>
+              <h3 style={{ margin: "4px 0 0", fontSize: 14, fontWeight: 600, color: ink, lineHeight: "20px" }}>
                 12-Month Rolling Ledger
               </h3>
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-                padding: "3px 8px",
-                borderRadius: 6,
-                background: dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)",
-                color: "#2563eb",
-                fontSize: 11,
-                fontWeight: 700,
-              }}
-            >
-              <TrendingUp size={12} /> ETB
+            <div className="chip">
+              <TrendingUp size={12} style={{ marginRight: 4 }} /> ETB
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 108 }}>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 108, borderBottom: `1px solid ${border}` }}>
             {revenueChart.map((v, i) => {
               const pct = (v / topChart) * 100;
               const isLast = i === revenueChart.length - 1;
@@ -336,34 +264,31 @@ export function DashboardView({
                       style={{
                         width: "100%",
                         height: `${Math.max(pct, 5)}%`,
-                        borderRadius: "3px 3px 0 0",
+                        borderRadius: "4px 4px 0 0",
                         background: (isLast || isMax)
-                          ? "linear-gradient(180deg, #3b82f6, #2563eb)"
-                          : dark ? "#1e293b" : "#cbd5e1",
+                          ? "var(--accent-blue)"
+                          : "var(--border-strong)",
                         transition: "height 0.25s ease",
                       }}
                     />
                   </div>
-                  <span style={{ fontSize: 9, color: muted, fontWeight: 600 }}>{MONTHS[i]?.[0]}</span>
+                  <span style={{ fontSize: 11, color: muted, fontWeight: 400, textAlign: "center" }}>{MONTHS[i]?.[0]}</span>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Sector Quick Modules (De-boxed Clean List) */}
+        {/* Sector Quick Modules (Single Surface Flat List) */}
         <div
+          className="ui-surface"
           style={{
-            padding: "16px",
-            borderRadius: 10,
-            border: `1px solid ${border}`,
-            background: surface,
             display: "flex",
             flexDirection: "column",
           }}
         >
-          <div style={{ marginBottom: 10 }}>
-            <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}` }}>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.04em" }}>
               {sector.shortName} Modules
             </p>
           </div>
@@ -377,36 +302,23 @@ export function DashboardView({
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 10,
-                    padding: "8px 6px",
-                    borderRadius: 6,
+                    gap: 12,
+                    padding: "12px 16px",
                     borderBottom: isLast ? "none" : `1px solid ${border}`,
                     cursor: "pointer",
-                    transition: "background 0.12s ease",
+                    transition: "background-color 0.12s ease-out",
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = subtle)}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 >
-                  <div
-                    style={{
-                      width: 26,
-                      height: 26,
-                      borderRadius: 6,
-                      background: dark ? "rgba(255, 255, 255, 0.05)" : "rgba(15, 23, 42, 0.04)",
-                      color: "#2563eb",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {renderFeatureIcon(f.icon, 13)}
-                  </div>
+                  <span style={{ color: muted, display: "flex", alignItems: "center", flexShrink: 0 }}>
+                    {renderFeatureIcon(f.icon, 16)}
+                  </span>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {f.title}
                     </div>
-                    <div style={{ fontSize: 10.5, color: muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div style={{ fontSize: 12, color: muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {f.description}
                     </div>
                   </div>
@@ -417,21 +329,21 @@ export function DashboardView({
         </div>
       </div>
 
-      {/* ── Recent Activity Ledger (De-boxed Clean Rows) ── */}
-      <div style={{ borderRadius: 10, border: `1px solid ${border}`, background: surface, overflow: "hidden" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", borderBottom: `1px solid ${border}` }}>
+      {/* ── Recent Activity Ledger (Single Surface Table) ── */}
+      <div className="ui-surface" style={{ overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: `1px solid ${border}` }}>
           <div>
-            <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.04em" }}>
               Transactions
             </p>
-            <h3 style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: ink }}>
+            <h3 style={{ margin: "4px 0 0", fontSize: 14, fontWeight: 600, color: ink, lineHeight: "20px" }}>
               {isLoading ? "Loading activity…" : `${dashboard.recentTransactions.length} Recent Transactions`}
             </h3>
           </div>
         </div>
 
         {dashboard.recentTransactions.length === 0 && !isLoading ? (
-          <div style={{ padding: "36px 18px", textAlign: "center", color: muted, fontSize: 13 }}>
+          <div style={{ padding: "32px 16px", textAlign: "center", color: muted, fontSize: 13 }}>
             No transactions recorded in this workspace session yet.
           </div>
         ) : (
@@ -446,56 +358,33 @@ export function DashboardView({
                 key={tx.id}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "32px 1fr auto",
+                  gridTemplateColumns: "24px 1fr auto",
                   alignItems: "center",
                   gap: 12,
-                  padding: "11px 18px",
+                  minHeight: 52,
+                  padding: "0 16px",
                   borderBottom: isLast ? "none" : `1px solid ${border}`,
-                  transition: "background 0.12s ease",
+                  transition: "background-color 0.12s ease-out",
                 }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = subtle)}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
               >
-                {/* Transaction Type Indicator */}
-                <div
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: 7,
-                    background: isIncome
-                      ? (dark ? "rgba(16, 185, 129, 0.16)" : "rgba(16, 185, 129, 0.1)")
-                      : (dark ? "rgba(244, 63, 94, 0.16)" : "rgba(244, 63, 94, 0.1)"),
-                    color: isIncome ? "#10b981" : "#f43f5e",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  {isIncome ? <ArrowDownLeft size={15} /> : <ArrowUpRight size={15} />}
+                {/* Transaction Type Indicator (bare 16px icon per spec) */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {isIncome ? (
+                    <ArrowDownLeft size={16} style={{ color: "var(--positive)" }} />
+                  ) : (
+                    <ArrowUpRight size={16} style={{ color: "var(--negative)" }} />
+                  )}
                 </div>
 
                 {/* Description + Metadata */}
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: ink, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: ink, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
                     {tx.description || tx.category}
                   </div>
-                  <div style={{ fontSize: 11, color: muted, marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        height: 18,
-                        padding: "0 6px",
-                        borderRadius: 4,
-                        background: subtle,
-                        fontSize: 10,
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.04em",
-                        color: muted,
-                      }}
-                    >
+                  <div style={{ fontSize: 12, color: muted, marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
+                    <span className="chip">
                       {tx.category}
                     </span>
                     <span>·</span>
@@ -503,7 +392,7 @@ export function DashboardView({
                     {!tx.synced && (
                       <>
                         <span>·</span>
-                        <span style={{ color: "#f59e0b", fontWeight: 600 }}>offline</span>
+                        <span className="chip" style={{ color: "var(--warning)" }}>offline</span>
                       </>
                     )}
                   </div>
@@ -514,8 +403,8 @@ export function DashboardView({
                   <div
                     style={{
                       fontSize: 13,
-                      fontWeight: 700,
-                      color: isIncome ? "#10b981" : ink,
+                      fontWeight: 600,
+                      color: isIncome ? "var(--positive)" : ink,
                       fontVariantNumeric: "tabular-nums",
                     }}
                   >
@@ -534,3 +423,4 @@ export function DashboardView({
     </div>
   );
 }
+

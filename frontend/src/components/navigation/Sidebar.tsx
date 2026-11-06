@@ -123,10 +123,10 @@ export function Sidebar({
   const dark = theme === "dark";
   const sectorConfig = getSectorConfig(sector.id);
 
-  const bg = dark ? "var(--bg-canvas)" : "var(--bg-surface)";
-  const surface = dark ? "rgba(255, 255, 255, 0.05)" : "rgba(15, 23, 42, 0.04)";
+  const bg = "var(--bg-surface)";
+  const surface = "var(--bg-subtle)";
   const border = "var(--border-line)";
-  const text = dark ? "var(--text-primary)" : "#1e293b";
+  const text = "var(--text-secondary)";
   const muted = "var(--text-muted)";
 
   const isActive = (path: string) =>
@@ -185,23 +185,24 @@ export function Sidebar({
           width: "100%",
           display: "flex",
           alignItems: "center",
-          gap: collapsed ? 0 : 10,
-          padding: "0 10px",
+          gap: collapsed ? 0 : 8,
+          padding: "0 8px",
           justifyContent: collapsed ? "center" : "flex-start",
-          minHeight: 38,
+          height: 36,
+          minHeight: 36,
           border: 0,
-          borderRadius: 8,
+          borderRadius: 6,
           background: active
-            ? dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)"
+            ? "var(--accent-blue-subtle)"
             : "transparent",
           color: active
-            ? dark ? "#93c5fd" : "#2563eb"
-            : text,
-          fontWeight: active ? 600 : 500,
+            ? "var(--accent-blue)"
+            : "var(--text-secondary)",
+          fontWeight: 500,
           fontSize: 13,
           cursor: "pointer",
           position: "relative",
-          transition: "background 0.14s ease, color 0.14s ease",
+          transition: "background-color 0.12s ease-out, color 0.12s ease-out",
           textAlign: "left",
           flexShrink: 0,
         }}
@@ -217,8 +218,8 @@ export function Sidebar({
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 18,
-            color: active ? (dark ? "#60a5fa" : "#2563eb") : muted,
+            width: 16,
+            color: active ? "var(--accent-blue)" : "var(--text-muted)",
             flexShrink: 0,
           }}
         >
@@ -230,24 +231,14 @@ export function Sidebar({
           </span>
         )}
         {!collapsed && badge && badge > 0 ? (
-          <em
+          <span
+            className="chip"
             style={{
-              minWidth: 18,
-              height: 18,
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 99,
-              background: active ? "rgba(37, 99, 235, 0.2)" : border,
-              color: active ? (dark ? "#93c5fd" : "#2563eb") : muted,
-              fontSize: 10,
-              fontWeight: 700,
-              fontStyle: "normal",
               marginLeft: "auto",
             }}
           >
             {badge}
-          </em>
+          </span>
         ) : null}
       </button>
     );
@@ -284,18 +275,17 @@ export function Sidebar({
           <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0, flex: 1 }}>
             <div
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: 8,
-                background: sector?.color ? `linear-gradient(135deg, ${sector.color}, #1d4ed8)` : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                width: 28,
+                height: 28,
+                borderRadius: 6,
+                background: "var(--accent-blue)",
                 color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontWeight: 800,
-                fontSize: 14,
+                fontWeight: 600,
+                fontSize: 13,
                 flexShrink: 0,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
               }}
               title={companyName}
             >
@@ -305,9 +295,9 @@ export function Sidebar({
               <div
                 style={{
                   fontSize: 13,
-                  fontWeight: 700,
+                  fontWeight: 600,
                   lineHeight: 1.2,
-                  color: text,
+                  color: "var(--text-primary)",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
                   textOverflow: "ellipsis",
@@ -318,8 +308,8 @@ export function Sidebar({
               </div>
               <div
                 style={{
-                  fontSize: 10.5,
-                  color: muted,
+                  fontSize: 11,
+                  color: "var(--text-muted)",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
                   textOverflow: "ellipsis",
@@ -335,18 +325,17 @@ export function Sidebar({
         {collapsed && (
           <div
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              background: sector?.color ? `linear-gradient(135deg, ${sector.color}, #1d4ed8)` : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+              width: 28,
+              height: 28,
+              borderRadius: 6,
+              background: "var(--accent-blue)",
               color: "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontWeight: 800,
-              fontSize: 14,
+              fontWeight: 600,
+              fontSize: 13,
               flexShrink: 0,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
             }}
             title={companyName}
           >
@@ -357,19 +346,21 @@ export function Sidebar({
           onClick={onToggle}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           style={{
-            background: "none", border: "none", color: muted, cursor: "pointer",
-            padding: 4, borderRadius: 5, display: "flex", alignItems: "center",
+            background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer",
+            width: 32, height: 32, borderRadius: 6, display: "flex", alignItems: "center",
             justifyContent: "center", flexShrink: 0,
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = surface)}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
         >
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
       </div>
 
-      {/* Sector badge */}
+      {/* Sector row (plain row per spec: no card, no border, no background) */}
       <div
         style={{
-          padding: collapsed ? "8px 0" : "8px 10px",
+          padding: collapsed ? "8px 0" : "8px 12px",
           borderBottom: `1px solid ${border}`,
           display: "flex",
           justifyContent: collapsed ? "center" : "flex-start",
@@ -384,18 +375,19 @@ export function Sidebar({
             style={{
               width: 32,
               height: 32,
-              borderRadius: 7,
+              borderRadius: 6,
               border: "none",
               cursor: "pointer",
-              background: `${sector.color}22`,
-              color: sector.color,
+              background: "transparent",
+              color: "var(--text-muted)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 14,
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = surface)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
-            {renderNavIcon(sector.icon, 14)}
+            {renderNavIcon(sector.icon, 16)}
           </button>
         ) : (
           <button
@@ -405,40 +397,24 @@ export function Sidebar({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 9,
+              gap: 8,
               width: "100%",
-              padding: "7px 9px",
-              borderRadius: 8,
-              background: surface,
-              border: `1px solid ${border}`,
+              padding: "4px 0",
+              borderRadius: 6,
+              background: "transparent",
+              border: "none",
               cursor: "pointer",
               textAlign: "left",
-              transition: "all 0.15s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = sector.color)}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = border)}
           >
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 6,
-                flexShrink: 0,
-                background: `${sector.color}22`,
-                color: sector.color,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 13,
-              }}
-            >
-              {renderNavIcon(sector.icon, 14)}
-            </div>
+            <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", flexShrink: 0 }}>
+              {renderNavIcon(sector.icon, 16)}
+            </span>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 9.5, color: muted, textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 700 }}>Sector</div>
-              <div style={{ fontSize: 12, color: text, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sector.shortName}</div>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 500 }}>Sector</div>
+              <div style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sector.shortName}</div>
             </div>
-            <span style={{ fontSize: 10, color: muted, padding: "2px 5px", borderRadius: 4, background: "rgba(255,255,255,0.06)" }}>Switch ▾</span>
+            <span style={{ fontSize: 12, color: "var(--accent-blue)", fontWeight: 500 }}>Switch ▾</span>
           </button>
         )}
       </div>
@@ -448,10 +424,10 @@ export function Sidebar({
         className="sidebar-nav-scroll"
         style={{
           flex: 1,
-          padding: "6px 8px",
+          padding: "16px 12px",
           display: "flex",
           flexDirection: "column",
-          gap: 1,
+          gap: 4,
           overflowY: "auto",
           overflowX: "hidden",
         }}
@@ -471,12 +447,12 @@ export function Sidebar({
             {!collapsed ? (
               <div
                 style={{
-                  padding: "8px 10px 3px",
-                  fontSize: 9.5,
-                  fontWeight: 700,
+                  padding: "16px 8px 4px",
+                  fontSize: 11,
+                  fontWeight: 500,
                   textTransform: "uppercase",
-                  letterSpacing: "0.09em",
-                  color: muted,
+                  letterSpacing: "0.04em",
+                  color: "var(--text-muted)",
                 }}
               >
                 {sector.shortName} Modules
@@ -495,52 +471,37 @@ export function Sidebar({
                       onClick={() => setOpenGroups((prev) => ({ ...prev, [group.name]: !(prev[group.name] ?? false) }))}
                       style={{
                         width: "100%",
-                        minHeight: 30,
+                        height: 36,
                         display: "flex",
                         alignItems: "center",
                         gap: 8,
                         border: 0,
-                        borderRadius: 8,
-                        background: active ? surface : "transparent",
-                        color: active ? text : muted,
-                        padding: "0 9px",
-                        fontSize: 10.5,
-                        fontWeight: 800,
-                        letterSpacing: "0.07em",
-                        textTransform: "uppercase",
+                        borderRadius: 6,
+                        background: active ? "var(--accent-blue-subtle)" : "transparent",
+                        color: active ? "var(--accent-blue)" : "var(--text-secondary)",
+                        padding: "0 8px",
+                        fontSize: 13,
+                        fontWeight: 500,
                         cursor: "pointer",
                         textAlign: "left"
                       }}
                       aria-expanded={open}
                     >
                       <ChevronDown
-                        size={13}
+                        size={14}
                         style={{
                           transform: open ? "rotate(0deg)" : "rotate(-90deg)",
-                          transition: "transform 0.14s ease",
+                          transition: "transform 0.12s ease",
                           flexShrink: 0
                         }}
                       />
                       <span style={{ flex: 1, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{group.name}</span>
-                      <span
-                        style={{
-                          minWidth: 18,
-                          height: 18,
-                          borderRadius: 99,
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          background: active ? "#2563eb" : border,
-                          color: active ? "#fff" : muted,
-                          fontSize: 10,
-                          letterSpacing: 0
-                        }}
-                      >
+                      <span className="chip">
                         {group.items.length}
                       </span>
                     </button>
                     {open ? (
-                      <div style={{ display: "grid", gap: 1, paddingLeft: 8 }}>
+                      <div style={{ display: "grid", gap: 2, paddingLeft: 16 }}>
                         {group.items.map((item) => (
                           <NavItem key={item.key} path={`/m/${item.key}`} icon={item.icon} label={item.label} />
                         ))}
@@ -564,7 +525,7 @@ export function Sidebar({
           </>
         )}
 
-        <div style={{ height: 1, background: border, margin: "4px 6px" }} />
+        <div style={{ height: 1, background: border, margin: "4px 0" }} />
         {UNIVERSAL_BOTTOM.map((item) => (
           <NavItem
             key={item.path}
@@ -587,8 +548,8 @@ export function Sidebar({
         }}
       >
         {!collapsed && (
-          <div style={{ display: "flex", alignItems: "center", gap: 7, color: muted, fontSize: 11 }}>
-            <Wifi size={13} style={{ color: "var(--accent-blue)" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 7, color: "var(--text-muted)", fontSize: 12 }}>
+            <Wifi size={13} style={{ color: "var(--text-muted)" }} />
             <span>Offline-first</span>
           </div>
         )}

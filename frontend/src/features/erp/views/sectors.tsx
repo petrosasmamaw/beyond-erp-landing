@@ -7,7 +7,6 @@ import { api } from "@/lib/api";
 import { formatCurrency, getInitials } from "@/lib/format";
 import type { DomainWorkflow, Sector, TeamMember } from "@/lib/types";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { StatCard } from "@/components/ui/StatCard";
 import { iconMap, sectorWorkflowTemplates, t } from "../config";
 import { useApp } from "@/contexts/AppContext";
 
@@ -22,41 +21,83 @@ export function SectorsView({
   const { openTransactionModal, openAdminModal } = useApp();
 
   return (
-    <div className="screen stack">
-      <div className="section-title">
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
         <div>
-          <p className="eyebrow">12 {t("sectors", language)}</p>
-          <h2>{t("sectors", language)}</h2>
+          <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            12 {t("sectors", language)}
+          </p>
+          <h2 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.01em", lineHeight: "28px" }}>
+            {t("sectors", language)}
+          </h2>
         </div>
-        <button className="icon-button plain" onClick={() => openTransactionModal()} aria-label="Add transaction">
-          <Plus size={18} />
+        <button
+          className="icon-button"
+          onClick={() => openTransactionModal()}
+          aria-label="Add transaction"
+          type="button"
+        >
+          <Plus size={16} />
         </button>
       </div>
-      <div className="sector-list">
+
+      {/* Sectors Grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: 12,
+        }}
+      >
         {sectors.map((sector) => {
           const Icon = iconMap[sector.icon as keyof typeof iconMap] ?? BriefcaseBusiness;
           return (
-            <article className="sector-card" key={sector.id} onClick={() => router.push(`/sectors/${sector.id}`)}>
-              <div className="sector-icon" style={{ background: sector.lightColor, color: sector.textColor }}>
-                <Icon size={22} />
-              </div>
-              <div>
-                <h3>{sector.name}</h3>
-                <p>{sector.description}</p>
-                <div className="tiny-row">
-                  <span>{sector.features.length} features</span>
-                  <span>{sector.teamMembers.length} members</span>
+            <div
+              key={sector.id}
+              onClick={() => router.push(`/sectors/${sector.id}`)}
+              className="ui-surface"
+              style={{
+                padding: 16,
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                gap: 12,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ color: "var(--text-muted)", flexShrink: 0 }}>
+                    <Icon size={18} />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>
+                      {sector.name}
+                    </h3>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <button
+                    className="icon-button"
+                    onClick={(e) => { e.stopPropagation(); openAdminModal(sector); }}
+                    aria-label={`Add admin to ${sector.name}`}
+                    type="button"
+                  >
+                    <UserPlus size={14} />
+                  </button>
+                  <ChevronRight size={14} style={{ color: "var(--text-muted)" }} />
                 </div>
               </div>
-              <button
-                className="icon-button small"
-                onClick={(e) => { e.stopPropagation(); openAdminModal(sector); }}
-                aria-label={`Add admin to ${sector.name}`}
-              >
-                <UserPlus size={16} />
-              </button>
-              <ChevronRight size={18} />
-            </article>
+
+              <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)", lineHeight: "16px" }}>
+                {sector.description}
+              </p>
+
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: "auto" }}>
+                <span className="chip">{sector.features.length} features</span>
+                <span className="chip">{sector.teamMembers.length} members</span>
+              </div>
+            </div>
           );
         })}
       </div>
@@ -102,154 +143,315 @@ export function SectorDetail({
   const sectorRevenue = 0;
 
   return (
-    <div className="screen stack">
-      <button className="back-button" onClick={() => router.push("/sectors")}>
-        <ArrowLeft size={18} />
-        Sectors
-      </button>
-      <section className="sector-hero" style={{ background: sector.lightColor }}>
-        <div className="sector-icon large" style={{ color: sector.textColor }}>
-          <Icon size={32} />
-        </div>
-        <h2>{sector.name}</h2>
-        <p>{sector.description}</p>
-      </section>
-      <div className="quick-actions">
-        <button className="primary-button purple" onClick={() => openAdminModal(sector)}>
-          <ShieldCheck size={18} />
-          {t("manageAdmins", language)}
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      {/* Top back button */}
+      <div>
+        <button
+          type="button"
+          onClick={() => router.push("/sectors")}
+          className="secondary-button"
+          style={{ height: 32, padding: "0 10px", gap: 6, fontSize: 12 }}
+        >
+          <ArrowLeft size={14} />
+          Sectors
         </button>
-        <button className="secondary-button" onClick={() => openTransactionModal()}>
-          <Plus size={18} />
-          {t("addTransaction", language)}
-        </button>
-        {sector.id === "retail-trading" ? (
-          <button className="secondary-button compact" onClick={openBarcodeModal} style={{ gridColumn: "1 / -1" }}>
-            <Barcode size={18} />
-            Generate Barcode
-          </button>
-        ) : null}
       </div>
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <p className="eyebrow">{t("workflow", language)}</p>
-            <h2>{sector.workItems?.length ?? 0} {t("activeTask", language).toLowerCase()}</h2>
+
+      {/* Sector Hero */}
+      <div
+        className="ui-surface"
+        style={{
+          padding: 20,
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 16,
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+          <div style={{ color: "var(--text-muted)", flexShrink: 0, marginTop: 2 }}>
+            <Icon size={24} />
           </div>
-          <button className="icon-button plain" onClick={() => openWorkItemModal(sector)} aria-label="Add task">
-            <Plus size={18} />
+          <div>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.01em", lineHeight: "28px" }}>
+              {sector.name}
+            </h2>
+            <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--text-secondary)", lineHeight: "20px", maxWidth: 640 }}>
+              {sector.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Quick actions */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <button className="primary-button" onClick={() => openAdminModal(sector)} style={{ height: 36, padding: "0 14px" }}>
+            <ShieldCheck size={14} />
+            {t("manageAdmins", language)}
+          </button>
+          <button className="secondary-button" onClick={() => openTransactionModal()} style={{ height: 36, padding: "0 14px" }}>
+            <Plus size={14} />
+            {t("addTransaction", language)}
+          </button>
+          {sector.id === "retail-trading" && (
+            <button className="secondary-button" onClick={openBarcodeModal} style={{ height: 36, padding: "0 14px" }}>
+              <Barcode size={14} />
+              Generate Barcode
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* KPI Strip */}
+      <div className="kpi-strip" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+        <div className="kpi-cell">
+          <span className="kpi-label">{t("activeTask", language)}</span>
+          <span className="kpi-value">{String(sector.workItems?.filter((i) => i.status !== "DONE").length ?? 0)}</span>
+        </div>
+        <div className="kpi-cell" style={{ borderLeft: "1px solid var(--border-line)" }}>
+          <span className="kpi-label">{t("sectorRevenue", language)}</span>
+          <span className="kpi-value">{sectorRevenue > 0 ? formatCurrency(sectorRevenue) : "ETB 0"}</span>
+        </div>
+        <div className="kpi-cell" style={{ borderLeft: "1px solid var(--border-line)" }}>
+          <span className="kpi-label">{t("pendingRecords", language)}</span>
+          <span className="kpi-value">{String(sector.sectorRecords?.filter((r) => r.status === "PENDING").length ?? 0)}</span>
+        </div>
+      </div>
+
+      {/* Tasks section */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              {t("workflow", language)}
+            </p>
+            <h3 style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>
+              {sector.workItems?.length ?? 0} {t("activeTask", language).toLowerCase()}
+            </h3>
+          </div>
+          <button className="icon-button" onClick={() => openWorkItemModal(sector)} aria-label="Add task" type="button">
+            <Plus size={16} />
           </button>
         </div>
-        <div className="workflow-list">
+
+        <div className="ui-surface" style={{ display: "flex", flexDirection: "column" }}>
           {(sector.workItems ?? []).length === 0 ? (
-            <EmptyState title="No sector tasks yet" action="Add Task" onAction={() => openWorkItemModal(sector)} />
+            <div style={{ padding: "32px 16px" }}>
+              <EmptyState title="No sector tasks yet" action="Add Task" onAction={() => openWorkItemModal(sector)} />
+            </div>
           ) : (
-            sector.workItems?.map((item) => (
-              <article className="workflow-card" key={item.id}>
+            sector.workItems?.map((item, idx) => (
+              <div
+                key={item.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  padding: "12px 16px",
+                  borderBottom: idx === (sector.workItems?.length ?? 0) - 1 ? "none" : "1px solid var(--border-line)",
+                }}
+              >
                 <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description ?? "Sector workflow item"}</p>
+                  <h4 style={{ margin: 0, fontSize: 13, fontWeight: 500, color: "var(--text-primary)" }}>{item.title}</h4>
+                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--text-muted)" }}>{item.description ?? "Sector workflow item"}</p>
                 </div>
-                <span className="badge">{item.status.toLowerCase().replace("_", " ")}</span>
-                <span className={`badge ${item.priority === "HIGH" || item.priority === "URGENT" ? "gold" : "green"}`}>
-                  {item.priority.toLowerCase()}
-                </span>
-              </article>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className="chip">{item.status.toLowerCase().replace(/_/g, " ")}</span>
+                  <span className="chip" style={{ color: item.priority === "HIGH" || item.priority === "URGENT" ? "var(--negative)" : "var(--text-secondary)" }}>
+                    {item.priority.toLowerCase()}
+                  </span>
+                </div>
+              </div>
             ))
           )}
         </div>
-      </section>
-      <section className="panel">
-        <div className="panel-heading">
+      </div>
+
+      {/* Sector Records Section */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <p className="eyebrow">Sector Records</p>
-            <h2>{sector.sectorRecords?.length ?? 0} module records</h2>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Sector Records
+            </p>
+            <h3 style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>
+              {sector.sectorRecords?.length ?? 0} module records
+            </h3>
           </div>
-          <button className="icon-button plain" onClick={() => openSectorRecordModal(sector)} aria-label="Add record">
-            <Plus size={18} />
+          <button className="icon-button" onClick={() => openSectorRecordModal(sector)} aria-label="Add record" type="button">
+            <Plus size={16} />
           </button>
         </div>
-        <div className="template-grid">
+
+        {/* Templates row */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {templates.map((template) => (
-            <button className="secondary-button compact" key={template.recordType} onClick={() => openSectorRecordModal(sector, template)}>
+            <button
+              key={template.recordType}
+              type="button"
+              className="chip"
+              style={{ height: 28, padding: "0 12px", cursor: "pointer", textTransform: "none", fontSize: 12 }}
+              onClick={() => openSectorRecordModal(sector, template)}
+            >
               {template.recordType}
             </button>
           ))}
         </div>
-        <div className="domain-grid">
-          {domainWorkflows.map((workflow) => (
-            <button className="domain-button" key={workflow.key} onClick={() => openDomainWorkflowModal(sector, workflow)}>
-              <strong>{workflow.recordType}</strong>
-              <span>{workflow.description}</span>
-            </button>
-          ))}
-        </div>
-        <div className="compact-list">
-          {(sector.sectorRecords ?? []).length === 0 ? (
-            <EmptyState title="No module records yet" action="Add Record" onAction={() => openSectorRecordModal(sector)} />
-          ) : (
-            sector.sectorRecords?.slice(0, 6).map((record) => (
-              <article className="compact-row" key={record.id}>
-                <div>
-                  <strong>{record.title}</strong>
-                  <span>{record.recordType} - {record.ownerName ?? "Unassigned"}</span>
-                </div>
-                {record.value ? <b>{formatCurrency(record.value)}</b> : null}
-                <span className="badge green">{record.status.toLowerCase()}</span>
-              </article>
-            ))
-          )}
-        </div>
-      </section>
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <p className="eyebrow">{t("features", language)}</p>
-            <h2>Operational modules</h2>
-          </div>
-          <Check size={20} />
-        </div>
-        <div className="feature-grid">
-          {sector.features.map((feature) => (
-            <span key={feature}><Check size={14} />{feature}</span>
-          ))}
-        </div>
-      </section>
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <p className="eyebrow">Team</p>
-            <h2>{sector.teamMembers.length} members</h2>
-          </div>
-          <button className="icon-button plain" onClick={() => openManagerModal(sector)} aria-label="Add manager">
-            <UserPlus size={18} />
-          </button>
-        </div>
-        {sector.teamMembers.length === 0 ? (
-          <EmptyState title="No members added yet" action="Add Manager" onAction={() => openManagerModal(sector)} />
-        ) : (
-          <div className="member-list">
-            {[...admins, ...managers].map((member) => (
-              <article className={`member-card ${member.type === "ADMIN" ? "admin" : "manager"}`} key={member.id}>
-                <div className="avatar">{getInitials(member.fullName)}</div>
-                <div>
-                  <h3>{member.fullName}</h3>
-                  <p>{member.department ?? member.contact ?? "Team member"}</p>
-                </div>
-                <span className="badge">{member.type.toLowerCase()}</span>
-                <button className="icon-button small danger" onClick={() => removeMember(member)} aria-label="Remove">
-                  <Trash2 size={15} />
-                </button>
-              </article>
+
+        {/* Domain workflows */}
+        {domainWorkflows.length > 0 && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 8 }}>
+            {domainWorkflows.map((workflow) => (
+              <button
+                key={workflow.key}
+                type="button"
+                className="ui-surface"
+                onClick={() => openDomainWorkflowModal(sector, workflow)}
+                style={{
+                  padding: "10px 14px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                }}
+              >
+                <strong style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{workflow.recordType}</strong>
+                <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{workflow.description}</span>
+              </button>
             ))}
           </div>
         )}
-      </section>
-      <section className="stat-grid three">
-        <StatCard label={t("activeTask", language)} value={String(sector.workItems?.filter((i) => i.status !== "DONE").length ?? 0)} tone="green" />
-        <StatCard label={t("sectorRevenue", language)} value={sectorRevenue > 0 ? formatCurrency(sectorRevenue) : "ETB 0"} tone="gold" />
-        <StatCard label={t("pendingRecords", language)} value={String(sector.sectorRecords?.filter((r) => r.status === "PENDING").length ?? 0)} tone="red" />
-      </section>
+
+        {/* Compact List */}
+        <div className="ui-surface" style={{ display: "flex", flexDirection: "column" }}>
+          {(sector.sectorRecords ?? []).length === 0 ? (
+            <div style={{ padding: "32px 16px" }}>
+              <EmptyState title="No module records yet" action="Add Record" onAction={() => openSectorRecordModal(sector)} />
+            </div>
+          ) : (
+            sector.sectorRecords?.slice(0, 6).map((record, idx) => (
+              <div
+                key={record.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  padding: "10px 16px",
+                  borderBottom: idx === Math.min((sector.sectorRecords?.length ?? 0), 6) - 1 ? "none" : "1px solid var(--border-line)",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)" }}>{record.title}</div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 1 }}>{record.recordType} - {record.ownerName ?? "Unassigned"}</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {record.value ? <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", fontVariantNumeric: "tabular-nums" }}>{formatCurrency(record.value)}</span> : null}
+                  <span className="chip">{record.status.toLowerCase()}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Operational modules features */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+          {t("features", language)}
+        </p>
+        <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>
+          Operational modules
+        </h3>
+        <div
+          className="ui-surface"
+          style={{
+            padding: 16,
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: 10,
+          }}
+        >
+          {sector.features.map((feature) => (
+            <div key={feature} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-primary)" }}>
+              <Check size={14} style={{ color: "var(--positive)", flexShrink: 0 }} />
+              <span>{feature}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Team section */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Team
+            </p>
+            <h3 style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>
+              {sector.teamMembers.length} members
+            </h3>
+          </div>
+          <button className="icon-button" onClick={() => openManagerModal(sector)} aria-label="Add manager" type="button">
+            <UserPlus size={16} />
+          </button>
+        </div>
+
+        <div className="ui-surface" style={{ display: "flex", flexDirection: "column" }}>
+          {sector.teamMembers.length === 0 ? (
+            <div style={{ padding: "32px 16px" }}>
+              <EmptyState title="No members added yet" action="Add Manager" onAction={() => openManagerModal(sector)} />
+            </div>
+          ) : (
+            [...admins, ...managers].map((member, idx) => (
+              <div
+                key={member.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  padding: "10px 16px",
+                  borderBottom: idx === (admins.length + managers.length - 1) ? "none" : "1px solid var(--border-line)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      background: "var(--bg-subtle)",
+                      color: "var(--text-secondary)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {getInitials(member.fullName)}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)" }}>{member.fullName}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 1 }}>{member.department ?? member.contact ?? "Team member"}</div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className="chip">{member.type.toLowerCase()}</span>
+                  <button className="icon-button" onClick={() => removeMember(member)} aria-label="Remove" type="button">
+                    <Trash2 size={14} style={{ color: "var(--negative)" }} />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }

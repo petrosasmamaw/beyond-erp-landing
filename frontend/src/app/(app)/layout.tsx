@@ -145,7 +145,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Clean top bar */}
           <header className="app-topbar">
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 10.5, color: "var(--muted)", fontWeight: 600, lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 500, lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap" }}>
                 {getTimeOfDay()} · {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" })}
               </div>
               {isDemoActive ? (
@@ -157,37 +157,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 7,
-                    marginTop: 3,
-                    padding: "4px 10px 4px 7px",
-                    borderRadius: 8,
-                    background: dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)",
-                    border: `1px solid ${dark ? "rgba(37, 99, 235, 0.35)" : "rgba(37, 99, 235, 0.22)"}`,
-                    color: dark ? "#f8fafc" : "#0f172a",
+                    marginTop: 4,
+                    height: 32,
+                    padding: "0 10px",
+                    borderRadius: 6,
+                    background: "var(--accent-blue-subtle)",
+                    border: "none",
+                    color: "var(--accent-blue)",
                     cursor: "pointer",
-                    fontSize: 13.5,
-                    fontWeight: 700,
+                    fontSize: 13,
+                    fontWeight: 500,
                     maxWidth: "100%",
-                    transition: "all 0.15s ease",
+                    transition: "background-color 0.12s ease-out",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = dark ? "rgba(37, 99, 235, 0.25)" : "rgba(37, 99, 235, 0.15)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)")}
                 >
-                  <span
-                    style={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: 5,
-                      background: companySector?.color ? `${companySector.color}25` : "rgba(37, 99, 235, 0.2)",
-                      color: companySector?.color || "#3b82f6",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 11,
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Building2 size={12} />
-                  </span>
+                  <Building2 size={16} style={{ color: "var(--accent-blue)", flexShrink: 0 }} />
                   <span
                     style={{
                       overflow: "hidden",
@@ -198,15 +182,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   >
                     {companyName}
                   </span>
-                  <ChevronDown size={14} style={{ color: dark ? "#94a3b8" : "#64748b", marginLeft: 1, flexShrink: 0 }} />
+                  <ChevronDown size={14} style={{ color: "var(--accent-blue)", marginLeft: 1, flexShrink: 0 }} />
                 </button>
               ) : (
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3 }}>
-                  <strong style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", lineHeight: 1.25 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+                  <strong style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.25 }}>
                     {companyName}
                   </strong>
                   {settings?.tinNumber && (
-                    <span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 4, background: "var(--border)", color: "var(--muted)", fontWeight: 600 }}>
+                    <span className="chip">
                       TIN: {settings.tinNumber}
                     </span>
                   )}
@@ -214,22 +198,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               )}
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
               {isDemoActive && (
                 <span
                   style={{
-                    padding: "3px 9px",
-                    borderRadius: 20,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    background: "rgba(245, 158, 11, 0.12)",
-                    color: dark ? "#fbbf24" : "#d97706",
-                    border: `1px solid ${dark ? "rgba(245, 158, 11, 0.3)" : "rgba(245, 158, 11, 0.25)"}`,
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontSize: 12,
+                    fontWeight: 400,
+                    color: "var(--text-secondary)",
+                    background: "transparent",
+                    border: "none",
                     whiteSpace: "nowrap",
                   }}
                 >
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--warning)", flexShrink: 0 }} />
                   <span className="demo-badge-long">DEMO MODE · IN-MEMORY</span>
                   <span className="demo-badge-short">DEMO</span>
                 </span>
@@ -242,44 +226,66 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => dispatch(toggleAiAssistant())}
                 title="Open Beyond AI Assistant"
                 style={{
+                  width: "auto",
+                  height: 32,
+                  padding: "0 10px",
+                  borderRadius: 6,
+                  border: "1px solid var(--border-line)",
+                  background: "transparent",
+                  color: "var(--text-primary)",
+                  fontSize: 13,
+                  fontWeight: 500,
                   display: "inline-flex",
                   alignItems: "center",
                   gap: 6,
-                  padding: "4px 10px",
-                  borderRadius: 20,
-                  background: dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)",
-                  color: dark ? "#93c5fd" : "#1d4ed8",
-                  border: `1px solid ${dark ? "rgba(37, 99, 235, 0.35)" : "rgba(37, 99, 235, 0.22)"}`,
-                  fontSize: 11.5,
-                  fontWeight: 700,
                   cursor: "pointer",
-                  transition: "all 0.15s ease",
                   whiteSpace: "nowrap",
                 }}
               >
-                <Sparkles size={13} style={{ color: "#2563eb" }} />
+                <Sparkles size={13} style={{ color: "var(--text-muted)" }} />
                 <span className="demo-badge-long">AI Assistant</span>
               </button>
 
               <ThemeToggle />
 
               <button
-                className="icon-button topbar-btn"
+                className="topbar-btn"
                 onClick={() => void syncPending()}
                 aria-label="Sync data"
+                style={{ position: "relative" }}
               >
                 {isSyncing ? <Loader2 className="spin" size={16} /> : <RefreshCcw size={16} />}
-                {pendingCount > 0 ? <span>{pendingCount}</span> : null}
+                {pendingCount > 0 ? (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -4,
+                      right: -4,
+                      width: 16,
+                      height: 16,
+                      borderRadius: "50%",
+                      background: "var(--accent-blue)",
+                      color: "#ffffff",
+                      fontSize: 10,
+                      fontWeight: 600,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {pendingCount}
+                  </span>
+                ) : null}
               </button>
 
               {pendingCount > 0 && !isSyncing ? (
-                <button className="icon-button topbar-btn" onClick={openFailedOpsModal} aria-label="Review pending">
+                <button className="topbar-btn" onClick={openFailedOpsModal} aria-label="Review pending">
                   <FileText size={16} />
                 </button>
               ) : null}
 
               {installPrompt ? (
-                <button className="icon-button topbar-btn" onClick={() => void handleInstall()} aria-label="Install app">
+                <button className="topbar-btn" onClick={() => void handleInstall()} aria-label="Install app">
                   <Download size={16} />
                 </button>
               ) : null}
@@ -287,21 +293,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               {/* User chip */}
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 2 }}>
                 <div style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                  color: "white", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 12, fontWeight: 700, flexShrink: 0,
+                  width: 32, height: 32, borderRadius: "50%",
+                  background: "var(--accent-blue)",
+                  color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 12, fontWeight: 600, flexShrink: 0,
                 }}>
                   {getInitials(activeUser.fullName)}
                 </div>
-                <div className="topbar-user-info">
-                  <strong>{activeUser.fullName.split(" ")[0]}</strong>
-                  <span>{activeUser.role.toLowerCase()}</span>
+                <div className="topbar-user-info" style={{ display: "flex", flexDirection: "column" }}>
+                  <strong style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)", lineHeight: 1.2 }}>{activeUser.fullName.split(" ")[0]}</strong>
+                  <span style={{ fontSize: 11, fontWeight: 400, color: "var(--text-muted)", lineHeight: 1.2 }}>{activeUser.role.toLowerCase()}</span>
                 </div>
               </div>
 
               <button
-                className="icon-button topbar-btn"
+                className="topbar-btn"
                 onClick={() => {
                   dispatch(reduxLogout());
                   logout();
@@ -317,13 +323,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Ethiopian date strip — subtle */}
           <div className="calendar-strip">
-            <Calendar size={13} style={{ flexShrink: 0, color: "var(--accent-blue)" }} />
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-              <strong style={{ fontSize: 13 }}>{ethiopianDate}</strong>
+            <Calendar size={13} style={{ flexShrink: 0, color: "var(--text-muted)" }} />
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", color: "var(--text-muted)" }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: "var(--text-primary)" }}>{ethiopianDate}</span>
               <span style={{ fontSize: 12 }}>· VAT 15% · ETB · NBE Compliant</span>
               {holidayToday ? (
-                <span className="holiday-badge">
-                  <Sparkles size={11} style={{ display: "inline-block", verticalAlign: "middle", marginRight: 4 }} />
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--text-muted)" }}>
+                  <Sparkles size={11} style={{ display: "inline-block", verticalAlign: "middle" }} />
                   {holidayToday}
                 </span>
               ) : null}

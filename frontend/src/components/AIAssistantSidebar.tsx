@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { X, Sparkles, Send, Trash2, Bot, User, CheckCircle2 } from "lucide-react";
+import { X, Sparkles, Send, Trash2, Bot, Building2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { closeAiAssistant, sendAiMessage, receiveAiReply, clearAiChat } from "@/store/slices/uiSlice";
 import { SECTORS_CATALOG } from "@/store/initialData";
-import { useTheme } from "@/contexts/ThemeContext";
 import type { Transaction, Employee } from "@/types/erp";
 
 export function AIAssistantSidebar() {
@@ -17,8 +16,6 @@ export function AIAssistantSidebar() {
   const employees: Employee[] = useAppSelector((state) => state.employees.items);
   const deals = useAppSelector((state) => state.crm.deals);
   const companyName = useAppSelector((state) => state.auth.user?.companyName ?? "Beyond ERP Enterprise");
-  const { theme } = useTheme();
-  const dark = theme === "dark";
 
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -124,20 +121,6 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
     "Show top revenue opportunities in CRM pipeline",
   ];
 
-  const colors = {
-    bg: "var(--bg-surface)",
-    border: "var(--border-line)",
-    headerBg: "var(--bg-subtle)",
-    ink: "var(--text-primary)",
-    muted: "var(--text-muted)",
-    userBubble: dark ? "#1d4ed8" : "#2563eb",
-    aiBubble: "var(--bg-subtle)",
-    aiBubbleBorder: "var(--border-line)",
-    chipBg: dark ? "rgba(37, 99, 235, 0.12)" : "rgba(37, 99, 235, 0.08)",
-    chipBorder: dark ? "rgba(37, 99, 235, 0.3)" : "rgba(37, 99, 235, 0.2)",
-    inputBg: "var(--bg-surface)",
-  };
-
   return (
     <>
       <style>{`
@@ -146,17 +129,16 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
           to { transform: translateX(0); }
         }
         .ai-drawer-enter {
-          animation: slideInDrawer 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: slideInDrawer 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
 
-      {/* Backdrop */}
+      {/* Scrim Backdrop */}
       <div
         style={{
           position: "fixed",
           inset: 0,
-          backgroundColor: dark ? "rgba(0,0,0,0.65)" : "rgba(15,23,42,0.35)",
-          backdropFilter: "blur(4px)",
+          backgroundColor: "rgba(9, 13, 22, 0.5)",
           zIndex: 9998,
         }}
         onClick={() => dispatch(closeAiAssistant())}
@@ -171,21 +153,20 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
           right: 0,
           bottom: 0,
           width: "min(440px, 94vw)",
-          backgroundColor: colors.bg,
-          borderLeft: `1px solid ${colors.border}`,
-          boxShadow: "-8px 0 32px rgba(0,0,0,0.4)",
+          backgroundColor: "var(--bg-surface)",
+          borderLeft: "1px solid var(--border-line)",
           zIndex: 9999,
           display: "flex",
           flexDirection: "column",
-          color: colors.ink,
+          color: "var(--text-primary)",
         }}
       >
         {/* Drawer Header */}
         <div
           style={{
-            padding: "16px 20px",
-            borderBottom: `1px solid ${colors.border}`,
-            backgroundColor: colors.headerBg,
+            padding: "14px 20px",
+            borderBottom: "1px solid var(--border-line)",
+            backgroundColor: "var(--bg-surface)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -194,38 +175,29 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: 10,
-                background: "linear-gradient(135deg, #2563eb, #0284c7)",
-                color: "white",
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: "var(--accent-blue)",
+                color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 16,
+                flexShrink: 0,
               }}
             >
-              <Sparkles size={18} />
+              <Sparkles size={16} />
             </div>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>Beyond AI Assistant</h3>
-                <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    padding: "2px 6px",
-                    borderRadius: 10,
-                    backgroundColor: "rgba(16, 185, 129, 0.15)",
-                    color: "#10b981",
-                  }}
-                >
-                  LIVE
+              <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--text-primary)", lineHeight: "20px" }}>
+                Beyond AI Assistant
+              </h3>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                <span className="status-dot positive" />
+                <span style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: "16px" }}>
+                  Online · Active Context
                 </span>
               </div>
-              <p style={{ margin: "2px 0 0", fontSize: 11.5, color: colors.muted }}>
-                Trained on Ethiopian Tax &amp; {activeSector.shortName}
-              </p>
             </div>
           </div>
 
@@ -233,53 +205,50 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
             <button
               onClick={() => dispatch(clearAiChat())}
               title="Clear chat history"
-              style={{
-                background: "none",
-                border: "none",
-                color: colors.muted,
-                cursor: "pointer",
-                padding: 6,
-                borderRadius: 6,
-              }}
+              className="icon-button"
+              type="button"
             >
-              <Trash2 size={16} />
+              <Trash2 size={15} />
             </button>
             <button
               onClick={() => dispatch(closeAiAssistant())}
               aria-label="Close"
-              style={{
-                background: "none",
-                border: "none",
-                color: colors.muted,
-                cursor: "pointer",
-                padding: 6,
-                borderRadius: 6,
-              }}
+              className="icon-button"
+              type="button"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
         </div>
 
-        {/* Sector context banner */}
+        {/* Sector context banner (2-column key/value list) */}
         <div
           style={{
             padding: "8px 20px",
-            backgroundColor: dark ? "rgba(37,99,235,0.12)" : "rgba(37,99,235,0.06)",
-            borderBottom: `1px solid ${colors.border}`,
-            fontSize: 11.5,
-            display: "flex",
+            borderBottom: "1px solid var(--border-line)",
+            backgroundColor: "var(--bg-canvas)",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 12,
             alignItems: "center",
-            justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span>🏢</span>
-            <span>
-              Context: <strong>{companyName}</strong> ({activeSector.name})
+          <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+            <span style={{ fontSize: 10, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Workspace
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {companyName} ({activeSector.shortName})
             </span>
           </div>
-          <span style={{ color: "#2563eb", fontWeight: 700 }}>TIN: {activeSector.defaultTin}</span>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <span style={{ fontSize: 10, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              TIN
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-primary)", fontVariantNumeric: "tabular-nums" }}>
+              {activeSector.defaultTin}
+            </span>
+          </div>
         </div>
 
         {/* Messages Body */}
@@ -291,11 +260,33 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
             padding: "16px 20px",
             display: "flex",
             flexDirection: "column",
-            gap: 12,
+            gap: 16,
           }}
         >
           {messages.map((m) => {
             const isAi = m.sender === "ai";
+            if (!isAi) {
+              return (
+                <div
+                  key={m.id}
+                  style={{
+                    alignSelf: "flex-end",
+                    maxWidth: "88%",
+                    backgroundColor: "var(--accent-blue)",
+                    color: "#ffffff",
+                    borderRadius: 8,
+                    padding: "8px 12px",
+                    fontSize: 13,
+                    lineHeight: "20px",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {m.text}
+                </div>
+              );
+            }
+
+            // AI message - text directly on the surface, no box
             return (
               <div
                 key={m.id}
@@ -303,91 +294,37 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
                   display: "flex",
                   gap: 10,
                   alignItems: "flex-start",
-                  alignSelf: isAi ? "flex-start" : "flex-end",
-                  maxWidth: "92%",
+                  alignSelf: "flex-start",
+                  maxWidth: "96%",
                 }}
               >
-                {isAi && (
-                  <div
-                    style={{
-                      width: 26,
-                      height: 26,
-                      borderRadius: 6,
-                      background: "linear-gradient(135deg, #2563eb, #0284c7)",
-                      color: "white",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 12,
-                      flexShrink: 0,
-                      marginTop: 2,
-                    }}
-                  >
-                    <Bot size={14} />
-                  </div>
-                )}
+                <div style={{ color: "var(--text-muted)", flexShrink: 0, marginTop: 2 }}>
+                  <Bot size={16} />
+                </div>
                 <div
                   style={{
-                    backgroundColor: isAi ? colors.aiBubble : colors.userBubble,
-                    color: isAi ? colors.ink : "#ffffff",
-                    border: isAi ? `1px solid ${colors.aiBubbleBorder}` : "none",
-                    borderRadius: 14,
-                    padding: "10px 14px",
+                    color: "var(--text-primary)",
                     fontSize: 13,
-                    lineHeight: 1.5,
+                    lineHeight: "20px",
                     whiteSpace: "pre-line",
                     wordBreak: "break-word",
                   }}
                 >
                   {m.text}
                 </div>
-                {!isAi && (
-                  <div
-                    style={{
-                      width: 26,
-                      height: 26,
-                      borderRadius: 6,
-                      backgroundColor: colors.userBubble,
-                      color: "white",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 12,
-                      flexShrink: 0,
-                      marginTop: 2,
-                    }}
-                  >
-                    <User size={14} />
-                  </div>
-                )}
               </div>
             );
           })}
 
           {isTyping && (
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <div
-                style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: 6,
-                  background: "linear-gradient(135deg, #2563eb, #0284c7)",
-                  color: "white",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 12,
-                }}
-              >
-                <Bot size={14} />
+              <div style={{ color: "var(--text-muted)", flexShrink: 0 }}>
+                <Bot size={16} />
               </div>
               <div
                 style={{
-                  backgroundColor: colors.aiBubble,
-                  padding: "8px 14px",
-                  borderRadius: 14,
                   fontSize: 12,
-                  color: colors.muted,
+                  color: "var(--text-muted)",
                   fontStyle: "italic",
                 }}
               >
@@ -401,8 +338,8 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
         <div
           style={{
             padding: "8px 16px",
-            borderTop: `1px solid ${colors.border}`,
-            backgroundColor: colors.headerBg,
+            borderTop: "1px solid var(--border-line)",
+            backgroundColor: "var(--bg-canvas)",
             display: "flex",
             gap: 6,
             overflowX: "auto",
@@ -414,18 +351,15 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
               key={chip}
               onClick={() => handleSend(chip)}
               type="button"
+              className="chip"
               style={{
+                height: 28,
+                padding: "0 10px",
                 whiteSpace: "nowrap",
-                fontSize: 11,
-                padding: "5px 10px",
-                borderRadius: 8,
-                backgroundColor: colors.chipBg,
-                border: `1px solid ${colors.chipBorder}`,
-                color: "#2563eb",
                 cursor: "pointer",
-                fontWeight: 600,
                 flexShrink: 0,
-                transition: "all 0.15s ease",
+                textTransform: "none",
+                fontSize: 12,
               }}
             >
               {chip}
@@ -433,12 +367,12 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
           ))}
         </div>
 
-        {/* Input area */}
+        {/* Composer Input area */}
         <div
           style={{
             padding: "12px 16px",
-            borderTop: `1px solid ${colors.border}`,
-            backgroundColor: colors.headerBg,
+            borderTop: "1px solid var(--border-line)",
+            backgroundColor: "var(--bg-surface)",
             display: "flex",
             gap: 8,
             alignItems: "center",
@@ -457,37 +391,34 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
             placeholder="Ask about ERCA VAT, payroll pension, CRM deals..."
             style={{
               flex: 1,
-              padding: "10px 14px",
-              borderRadius: 10,
-              backgroundColor: colors.inputBg,
-              border: `1px solid ${colors.border}`,
-              color: colors.ink,
+              height: 36,
+              padding: "0 12px",
+              borderRadius: 6,
+              backgroundColor: "var(--bg-surface)",
+              border: "1px solid var(--border-line)",
+              color: "var(--text-primary)",
               fontSize: 13,
               outline: "none",
             }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent-blue)")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-line)")}
           />
           <button
             onClick={() => handleSend()}
             disabled={!input.trim()}
             type="button"
+            className="primary-button"
             style={{
-              padding: "10px 14px",
-              borderRadius: 10,
-              background: input.trim() ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : colors.aiBubble,
-              color: input.trim() ? "#ffffff" : colors.muted,
-              border: "none",
-              cursor: input.trim() ? "pointer" : "default",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.15s ease",
+              height: 36,
+              padding: "0 12px",
+              opacity: input.trim() ? 1 : 0.4,
+              cursor: input.trim() ? "pointer" : "not-allowed",
             }}
           >
-            <Send size={16} />
+            <Send size={14} />
           </button>
         </div>
       </div>
     </>
   );
 }
-

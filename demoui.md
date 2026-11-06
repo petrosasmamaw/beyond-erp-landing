@@ -560,3 +560,4 @@ Generic confirmation modal:
 | `frontend/src/features/erp/views/settings.tsx` | Settings view, business profile, integration switches, local storage meter. |
 | `frontend/src/components/AIAssistantSidebar.tsx` | Beyond AI Assistant slide-out drawer, live context calculation, prompt pills. |
 | `frontend/src/features/sectors/` | Sector configurations, module routing, operational domain components. |
+

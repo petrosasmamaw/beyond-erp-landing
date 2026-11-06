@@ -8,27 +8,10 @@ import { validateEthiopianPhone } from "@/lib/format";
 import { defaultEmployee } from "@/features/erp/helpers";
 import { queueOperation, readQueue } from "@/features/erp/offline";
 import { useApp } from "@/contexts/AppContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { Modal } from "@/components/ui/Modal";
-
-function useColors() {
-  const { theme } = useTheme();
-  const dark = theme === "dark";
-  return {
-    dark,
-    surface: dark ? "#111827" : "#ffffff",
-    alt:     dark ? "#0d1828" : "#f8fafc",
-    border:  dark ? "#1a2d3d" : "#e8edf5",
-    ink:     dark ? "#e2e8f0" : "#0f172a",
-    muted:   dark ? "#566070" : "#64748b",
-    inputBg: dark ? "#0f172a" : "#f8fafc",
-    inputBorder: dark ? "#1e2d3d" : "#dbe3ee",
-  };
-}
 
 export function EmployeeModal() {
   const { modal, closeModal, showToast, triggerRefresh, setPendingCount } = useApp();
-  const c = useColors();
   const isOpen = modal?.type === "employee";
   const editing = isOpen ? modal.employee : undefined;
 
@@ -89,21 +72,36 @@ export function EmployeeModal() {
     }
   };
 
-  const inp = (hasErr?: boolean) => ({
-    height: 42, width: "100%", borderRadius: 9,
-    border: `1.5px solid ${hasErr ? "#f43f5e" : c.inputBorder}`,
-    background: c.inputBg, padding: "0 12px", color: c.ink, fontSize: 14,
-    outline: "none", boxSizing: "border-box" as const, transition: "border-color 0.15s",
+  const inp = (hasErr?: boolean): React.CSSProperties => ({
+    height: 36,
+    width: "100%",
+    borderRadius: 6,
+    border: `1px solid ${hasErr ? "var(--negative)" : "var(--border-line)"}`,
+    background: "var(--bg-surface)",
+    padding: "0 12px",
+    color: "var(--text-primary)",
+    fontSize: 13,
+    outline: "none",
+    boxSizing: "border-box",
   });
 
-  const lbl = { display: "flex" as const, flexDirection: "column" as const, gap: 5, fontSize: 12, fontWeight: 600 as const, color: c.muted };
+  const lbl: React.CSSProperties = {
+    display: "flex",
+    flexDirection: "column",
+    gap: 6,
+    fontSize: 11,
+    fontWeight: 500,
+    color: "var(--text-muted)",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+  };
 
-  const focus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.currentTarget.style.borderColor = "#2563eb");
-  const blur = (key: string) => (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.currentTarget.style.borderColor = errors[key] ? "#f43f5e" : c.inputBorder);
+  const focus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.currentTarget.style.borderColor = "var(--accent-blue)");
+  const blur = (key: string) => (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.currentTarget.style.borderColor = errors[key] ? "var(--negative)" : "var(--border-line)");
 
   return (
     <Modal title={editing ? "Edit Employee" : "Add Employee"} isOpen={isOpen} onClose={closeModal}>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
         {/* Full name */}
         <label style={lbl}>
@@ -115,7 +113,7 @@ export function EmployeeModal() {
             onFocus={focus} onBlur={blur("fullName")}
             placeholder="Abebe Kebede"
           />
-          {errors.fullName && <span style={{ color: "#f43f5e", fontSize: 11 }}>{errors.fullName}</span>}
+          {errors.fullName && <span style={{ color: "var(--negative)", fontSize: 11, textTransform: "none" }}>{errors.fullName}</span>}
         </label>
 
         {/* Position + Department */}
@@ -129,7 +127,7 @@ export function EmployeeModal() {
               onFocus={focus} onBlur={blur("position")}
               placeholder="Sales Manager"
             />
-            {errors.position && <span style={{ color: "#f43f5e", fontSize: 11 }}>{errors.position}</span>}
+            {errors.position && <span style={{ color: "var(--negative)", fontSize: 11, textTransform: "none" }}>{errors.position}</span>}
           </label>
           <label style={lbl}>
             Department *
@@ -140,7 +138,7 @@ export function EmployeeModal() {
               onFocus={focus} onBlur={blur("department")}
               placeholder="Retail"
             />
-            {errors.department && <span style={{ color: "#f43f5e", fontSize: 11 }}>{errors.department}</span>}
+            {errors.department && <span style={{ color: "var(--negative)", fontSize: 11, textTransform: "none" }}>{errors.department}</span>}
           </label>
         </div>
 
@@ -155,7 +153,7 @@ export function EmployeeModal() {
               onFocus={focus} onBlur={blur("phone")}
               placeholder="+251 911 234 567"
             />
-            {errors.phone && <span style={{ color: "#f43f5e", fontSize: 11 }}>{errors.phone}</span>}
+            {errors.phone && <span style={{ color: "var(--negative)", fontSize: 11, textTransform: "none" }}>{errors.phone}</span>}
           </label>
           <label style={lbl}>
             Email
@@ -164,7 +162,7 @@ export function EmployeeModal() {
               value={form.email ?? ""}
               style={inp()}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              onFocus={focus} onBlur={(e) => (e.currentTarget.style.borderColor = c.inputBorder)}
+              onFocus={focus} onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-line)")}
               placeholder="name@company.et"
             />
           </label>
@@ -180,7 +178,7 @@ export function EmployeeModal() {
               value={form.salary || ""}
               style={inp()}
               onChange={(e) => setForm((f) => ({ ...f, salary: Number(e.target.value) }))}
-              onFocus={focus} onBlur={(e) => (e.currentTarget.style.borderColor = c.inputBorder)}
+              onFocus={focus} onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-line)")}
               placeholder="15000"
             />
           </label>
@@ -191,29 +189,30 @@ export function EmployeeModal() {
               value={form.hiredDate.slice(0, 10)}
               style={inp()}
               onChange={(e) => setForm((f) => ({ ...f, hiredDate: e.target.value }))}
-              onFocus={focus} onBlur={(e) => (e.currentTarget.style.borderColor = c.inputBorder)}
+              onFocus={focus} onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-line)")}
             />
           </label>
         </div>
 
         {/* Status */}
         <div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: c.muted, marginBottom: 8 }}>Status</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8 }}>
+            Status
+          </div>
+          <div className="seg-control" style={{ width: "100%", height: 36 }}>
             {(["ACTIVE", "INACTIVE"] as const).map((s) => {
               const active = form.status === s;
-              const accent = s === "ACTIVE" ? "#10b981" : "#f43f5e";
               return (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, status: s }))}
+                  className={`seg-button ${active ? "active" : ""}`}
                   style={{
-                    height: 40, borderRadius: 9, fontWeight: 600, fontSize: 12, cursor: "pointer",
-                    border: `1.5px solid ${active ? accent : c.border}`,
-                    background: active ? `${accent}18` : c.alt,
-                    color: active ? accent : c.muted,
-                    transition: "all 0.14s",
+                    color: active
+                      ? s === "ACTIVE" ? "var(--positive)" : "var(--negative)"
+                      : "var(--text-secondary)",
+                    fontWeight: active ? 600 : 500,
                   }}
                 >
                   {s === "ACTIVE" ? "Active" : "Inactive"}
@@ -223,20 +222,34 @@ export function EmployeeModal() {
           </div>
         </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
+        {/* Footer actions */}
+        <div
           style={{
-            height: 46, borderRadius: 10, border: 0, marginTop: 2,
-            background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-            color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            boxShadow: "0 4px 14px rgba(37,99,235,0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: 8,
+            paddingTop: 12,
+            borderTop: "1px solid var(--border-line)",
           }}
         >
-          <UserPlus size={16} />
-          {editing ? "Update Employee" : "Add Employee"}
-        </button>
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={closeModal}
+            style={{ height: 36, padding: "0 16px" }}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="primary-button"
+            style={{ height: 36, padding: "0 16px" }}
+          >
+            <UserPlus size={14} />
+            {editing ? "Update Employee" : "Add Employee"}
+          </button>
+        </div>
       </form>
     </Modal>
   );

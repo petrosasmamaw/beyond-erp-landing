@@ -27,14 +27,20 @@ import {
 import { SECTORS_CATALOG } from "@/store/initialData";
 import { useTheme } from "@/contexts/ThemeContext";
 
-const STAGES: { key: DealStage; label: string; color: string }[] = [
-  { key: "PROSPECT", label: "Prospect", color: "#64748b" },
-  { key: "CONTACTED", label: "Contacted", color: "#0284c7" },
-  { key: "PROPOSAL", label: "Proposal", color: "#f59e0b" },
-  { key: "NEGOTIATION", label: "Negotiation", color: "#0891b2" },
-  { key: "WON", label: "Closed Won", color: "#10b981" },
-  { key: "LOST", label: "Closed Lost", color: "#ef4444" },
+const STAGES: { key: DealStage; label: string }[] = [
+  { key: "PROSPECT", label: "Prospect" },
+  { key: "CONTACTED", label: "Contacted" },
+  { key: "PROPOSAL", label: "Proposal" },
+  { key: "NEGOTIATION", label: "Negotiation" },
+  { key: "WON", label: "Closed Won" },
+  { key: "LOST", label: "Closed Lost" },
 ];
+
+function getStageDotColor(stage: DealStage): string {
+  if (stage === "WON") return "var(--positive)";
+  if (stage === "LOST") return "var(--negative)";
+  return "var(--text-muted)";
+}
 
 export default function CrmPage() {
   const dispatch = useAppDispatch();
@@ -118,7 +124,7 @@ export default function CrmPage() {
   };
 
   return (
-    <div style={{ padding: "20px 24px", color: colors.ink }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, color: "var(--text-primary)" }}>
       {/* Page Header */}
       <div
         style={{
@@ -127,52 +133,36 @@ export default function CrmPage() {
           alignItems: "center",
           justifyContent: "space-between",
           gap: 16,
-          marginBottom: 20,
         }}
       >
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-            <span
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 8,
-                backgroundColor: "rgba(37, 99, 235, 0.15)",
-                color: "#2563eb",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Briefcase size={16} />
-            </span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#2563eb", textTransform: "uppercase" }}>
-              Commercial Operations
-            </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            <Briefcase size={16} />
+            <span>Commercial Operations</span>
           </div>
-          <h1 style={{ margin: 0, fontSize: "clamp(20px, 3vw, 24px)", fontWeight: 800, letterSpacing: "-0.01em" }}>
+          <h1 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 600, lineHeight: "28px", letterSpacing: "-0.01em", color: "var(--text-primary)" }}>
             CRM &amp; Sales Pipeline
           </h1>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: colors.muted }}>
+          <p style={{ margin: "4px 0 0", fontSize: 13, lineHeight: "20px", color: "var(--text-secondary)", maxWidth: 640 }}>
             Track client opportunities, institutional contracts, and B2B deals across Ethiopian sectors.
           </p>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           {/* Sector filter */}
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <Filter size={14} style={{ color: colors.muted }} />
+            <Filter size={14} style={{ color: "var(--text-muted)" }} />
             <select
               value={filterSector}
               onChange={(e) => setFilterSector(e.target.value)}
               style={{
-                padding: "8px 12px",
-                borderRadius: 9,
-                border: `1px solid ${colors.cardBorder}`,
-                backgroundColor: colors.cardBg,
-                color: colors.ink,
-                fontSize: 12.5,
-                fontWeight: 600,
+                height: 36,
+                padding: "0 12px",
+                borderRadius: 6,
+                border: "1px solid var(--border-line)",
+                backgroundColor: "var(--bg-surface)",
+                color: "var(--text-primary)",
+                fontSize: 13,
                 outline: "none",
                 cursor: "pointer",
               }}
@@ -190,21 +180,7 @@ export default function CrmPage() {
           <button
             type="button"
             onClick={() => setIsNewDealOpen(true)}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "8px 16px",
-              borderRadius: 10,
-              backgroundColor: "#2563eb",
-              color: "#ffffff",
-              border: "none",
-              fontWeight: 700,
-              fontSize: 13,
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
-              transition: "all 0.15s ease",
-            }}
+            className="btn-primary"
           >
             <Plus size={16} />
             <span>New Deal</span>
@@ -212,85 +188,62 @@ export default function CrmPage() {
         </div>
       </div>
 
-      {/* KPI Stats Strip */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: 12,
-          marginBottom: 24,
-        }}
-      >
-        <div
-          style={{
-            padding: "14px 16px",
-            borderRadius: 12,
-            border: `1px solid ${colors.cardBorder}`,
-            backgroundColor: colors.cardBg,
-          }}
-        >
-          <div style={{ fontSize: 11, fontWeight: 700, color: colors.muted, textTransform: "uppercase" }}>
-            Total Pipeline
+      {/* KPI Stats Strip (Single-Surface 4-Cell Pattern) */}
+      <div className="kpi-strip" style={{ marginBottom: 0 }}>
+        <div className="kpi-cell">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Total Pipeline
+            </span>
+            <DollarSign size={16} style={{ color: "var(--text-muted)" }} />
           </div>
-          <div style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#2563eb" }}>
+          <div style={{ fontSize: 20, fontWeight: 600, lineHeight: "28px", color: "var(--text-primary)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em" }}>
             {totalPipeline.toLocaleString()} ETB
           </div>
-          <div style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
             {filteredDeals.length} total opportunities
           </div>
         </div>
 
-        <div
-          style={{
-            padding: "14px 16px",
-            borderRadius: 12,
-            border: `1px solid ${colors.cardBorder}`,
-            backgroundColor: colors.cardBg,
-          }}
-        >
-          <div style={{ fontSize: 11, fontWeight: 700, color: colors.muted, textTransform: "uppercase" }}>
-            Closed Won Revenue
+        <div className="kpi-cell">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Closed Won Revenue
+            </span>
+            <CheckCircle2 size={16} style={{ color: "var(--text-muted)" }} />
           </div>
-          <div style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#10b981" }}>
+          <div style={{ fontSize: 20, fontWeight: 600, lineHeight: "28px", color: "var(--text-primary)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em" }}>
             {wonTotal.toLocaleString()} ETB
           </div>
-          <div style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
             {wonDeals.length} won contracts
           </div>
         </div>
 
-        <div
-          style={{
-            padding: "14px 16px",
-            borderRadius: 12,
-            border: `1px solid ${colors.cardBorder}`,
-            backgroundColor: colors.cardBg,
-          }}
-        >
-          <div style={{ fontSize: 11, fontWeight: 700, color: colors.muted, textTransform: "uppercase" }}>
-            Active Negotiations
+        <div className="kpi-cell">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Active Negotiations
+            </span>
+            <Briefcase size={16} style={{ color: "var(--text-muted)" }} />
           </div>
-          <div style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#f59e0b" }}>
+          <div style={{ fontSize: 20, fontWeight: 600, lineHeight: "28px", color: "var(--text-primary)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em" }}>
             {activeCount} deals
           </div>
-          <div style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>In progress</div>
+          <div style={{ fontSize: 12, color: "var(--text-muted)" }}>In progress</div>
         </div>
 
-        <div
-          style={{
-            padding: "14px 16px",
-            borderRadius: 12,
-            border: `1px solid ${colors.cardBorder}`,
-            backgroundColor: colors.cardBg,
-          }}
-        >
-          <div style={{ fontSize: 11, fontWeight: 700, color: colors.muted, textTransform: "uppercase" }}>
-            Win Rate
+        <div className="kpi-cell">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Win Rate
+            </span>
+            <TrendingUp size={16} style={{ color: "var(--text-muted)" }} />
           </div>
-          <div style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#2563eb" }}>
+          <div style={{ fontSize: 20, fontWeight: 600, lineHeight: "28px", color: "var(--text-primary)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em" }}>
             {winRate}%
           </div>
-          <div style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>Conversion efficiency</div>
+          <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Conversion efficiency</div>
         </div>
       </div>
 
@@ -298,8 +251,8 @@ export default function CrmPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: 14,
+          gridTemplateColumns: "repeat(6, minmax(240px, 1fr))",
+          gap: 16,
           alignItems: "flex-start",
           overflowX: "auto",
           paddingBottom: 20,
@@ -313,10 +266,10 @@ export default function CrmPage() {
             <div
               key={stg.key}
               style={{
-                backgroundColor: colors.columnBg,
-                borderRadius: 14,
-                padding: "12px 10px",
-                border: `1px solid ${colors.cardBorder}`,
+                backgroundColor: "transparent",
+                borderRadius: 0,
+                padding: 0,
+                border: "none",
                 minHeight: 380,
                 display: "flex",
                 flexDirection: "column",
@@ -329,35 +282,27 @@ export default function CrmPage() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  padding: "4px 8px 8px",
-                  borderBottom: `1px solid ${colors.cardBorder}`,
+                  padding: "4px 0 8px",
+                  borderBottom: "1px solid var(--border-line)",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <span
                     style={{
-                      width: 9,
-                      height: 9,
+                      width: 6,
+                      height: 6,
                       borderRadius: "50%",
-                      backgroundColor: stg.color,
+                      backgroundColor: getStageDotColor(stg.key),
                       display: "inline-block",
+                      flexShrink: 0,
                     }}
                   />
-                  <span style={{ fontSize: 13, fontWeight: 700 }}>{stg.label}</span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      padding: "1px 6px",
-                      borderRadius: 10,
-                      backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
-                      color: colors.muted,
-                    }}
-                  >
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{stg.label}</span>
+                  <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
                     {stageDeals.length}
                   </span>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: colors.muted }}>
+                <span style={{ fontSize: 12, color: "var(--text-muted)", fontVariantNumeric: "tabular-nums" }}>
                   {(stageValue / 1000).toFixed(0)}k ETB
                 </span>
               </div>
@@ -369,7 +314,7 @@ export default function CrmPage() {
                     style={{
                       textAlign: "center",
                       padding: "30px 10px",
-                      color: colors.muted,
+                      color: "var(--text-muted)",
                       fontSize: 12,
                       fontStyle: "italic",
                     }}
@@ -383,30 +328,18 @@ export default function CrmPage() {
                     return (
                       <div
                         key={deal.id}
+                        className="ui-surface"
                         style={{
-                          backgroundColor: colors.dealBg,
-                          border: `1px solid ${colors.dealBorder}`,
-                          borderRadius: 12,
-                          padding: "12px 14px",
-                          boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
+                          padding: 12,
                           display: "flex",
                           flexDirection: "column",
-                          gap: 8,
-                          transition: "all 0.15s ease",
+                          gap: 4,
+                          marginBottom: 8,
                         }}
                       >
                         {/* Top: Sector tag & Delete */}
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                          <span
-                            style={{
-                              fontSize: 10,
-                              fontWeight: 700,
-                              padding: "2px 6px",
-                              borderRadius: 5,
-                              backgroundColor: `${sec?.color || "#2563eb"}1c`,
-                              color: sec?.color || "#2563eb",
-                            }}
-                          >
+                          <span className="chip">
                             {sec?.shortName || deal.sectorId}
                           </span>
 
@@ -417,9 +350,15 @@ export default function CrmPage() {
                             style={{
                               background: "none",
                               border: "none",
-                              color: colors.muted,
+                              color: "var(--negative)",
                               cursor: "pointer",
-                              padding: 2,
+                              padding: 4,
+                              width: 28,
+                              height: 28,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderRadius: 4,
                             }}
                           >
                             <Trash2 size={13} />
@@ -428,22 +367,22 @@ export default function CrmPage() {
 
                         {/* Title & Company */}
                         <div>
-                          <h4 style={{ margin: "0 0 3px", fontSize: 13, fontWeight: 700, lineHeight: 1.3 }}>
+                          <h4 style={{ margin: "2px 0 2px", fontSize: 13, fontWeight: 500, lineHeight: 1.3, color: "var(--text-primary)" }}>
                             {deal.title}
                           </h4>
-                          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11.5, color: colors.muted }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--text-muted)" }}>
                             <Building size={12} />
                             <span>{deal.company}</span>
                           </div>
                         </div>
 
                         {/* Value ETB */}
-                        <div style={{ fontSize: 14, fontWeight: 800, color: "#2563eb" }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", fontVariantNumeric: "tabular-nums" }}>
                           {deal.valueETB.toLocaleString()} ETB
                         </div>
 
                         {/* Contact details */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 11, color: colors.muted }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "var(--text-muted)" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                             <Phone size={11} />
                             <span>{deal.phone}</span>
@@ -451,7 +390,7 @@ export default function CrmPage() {
                         </div>
 
                         {deal.notes && (
-                          <p style={{ margin: 0, fontSize: 11, color: colors.muted, lineHeight: 1.3, fontStyle: "italic" }}>
+                          <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)", lineHeight: 1.3, fontStyle: "italic" }}>
                             &ldquo;{deal.notes}&rdquo;
                           </p>
                         )}
@@ -462,9 +401,9 @@ export default function CrmPage() {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "space-between",
-                            borderTop: `1px solid ${colors.dealBorder}`,
+                            borderTop: "1px solid var(--border-line)",
                             paddingTop: 8,
-                            marginTop: 2,
+                            marginTop: 4,
                           }}
                         >
                           <button
@@ -475,12 +414,12 @@ export default function CrmPage() {
                               display: "flex",
                               alignItems: "center",
                               gap: 2,
-                              fontSize: 10.5,
-                              padding: "3px 6px",
-                              borderRadius: 6,
-                              border: `1px solid ${colors.dealBorder}`,
+                              fontSize: 11,
+                              padding: "2px 8px",
+                              borderRadius: 4,
+                              border: "1px solid var(--border-line)",
                               backgroundColor: "transparent",
-                              color: stageIdx === 0 ? colors.muted : colors.ink,
+                              color: stageIdx === 0 ? "var(--text-muted)" : "var(--text-primary)",
                               cursor: stageIdx === 0 ? "default" : "pointer",
                               opacity: stageIdx === 0 ? 0.4 : 1,
                             }}
@@ -496,13 +435,13 @@ export default function CrmPage() {
                               display: "flex",
                               alignItems: "center",
                               gap: 2,
-                              fontSize: 10.5,
-                              padding: "3px 6px",
-                              borderRadius: 6,
-                              border: `1px solid ${colors.dealBorder}`,
+                              fontSize: 11,
+                              padding: "2px 8px",
+                              borderRadius: 4,
+                              border: "1px solid var(--border-line)",
                               backgroundColor: "transparent",
-                              color: stageIdx === STAGES.length - 1 ? colors.muted : "#2563eb",
-                              fontWeight: 600,
+                              color: stageIdx === STAGES.length - 1 ? "var(--text-muted)" : "var(--accent-blue)",
+                              fontWeight: 500,
                               cursor: stageIdx === STAGES.length - 1 ? "default" : "pointer",
                               opacity: stageIdx === STAGES.length - 1 ? 0.4 : 1,
                             }}
@@ -533,54 +472,38 @@ export default function CrmPage() {
             alignItems: "center",
             justifyContent: "center",
             padding: 16,
-            backgroundColor: dark ? "rgba(0,0,0,0.7)" : "rgba(15,23,42,0.45)",
-            backdropFilter: "blur(4px)",
+            backgroundColor: "rgba(9, 13, 22, 0.5)",
           }}
           onClick={() => setIsNewDealOpen(false)}
         >
           <div
+            className="ui-surface"
             style={{
-              width: "100%",
-              maxWidth: 480,
-              backgroundColor: colors.cardBg,
-              border: `1px solid ${colors.cardBorder}`,
-              borderRadius: 16,
+              width: "min(520px, 92vw)",
+              borderRadius: 8,
               padding: 24,
-              boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
-              color: colors.ink,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+              color: "var(--text-primary)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 8,
-                    backgroundColor: "rgba(37,99,235,0.15)",
-                    color: "#2563eb",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Plus size={18} />
-                </div>
-                <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Capture New B2B Deal</h3>
+                <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>Capture New B2B Deal</h3>
               </div>
               <button
                 type="button"
+                className="btn-icon"
                 onClick={() => setIsNewDealOpen(false)}
-                style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", padding: 4 }}
+                style={{ width: 32, height: 32 }}
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateDeal} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <form onSubmit={handleCreateDeal} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div>
-                <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>
                   Opportunity Title *
                 </label>
                 <input
@@ -591,21 +514,21 @@ export default function CrmPage() {
                   onChange={(e) => setNewTitle(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "8px 12px",
-                    borderRadius: 8,
-                    border: `1px solid ${colors.cardBorder}`,
-                    backgroundColor: dark ? "#070c17" : "#ffffff",
-                    color: colors.ink,
+                    height: 36,
+                    padding: "0 12px",
+                    borderRadius: 6,
+                    border: "1px solid var(--border-line)",
+                    backgroundColor: "var(--bg-surface)",
+                    color: "var(--text-primary)",
                     fontSize: 13,
                     outline: "none",
-                    boxSizing: "border-box",
                   }}
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div>
-                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>
                     Client Company *
                   </label>
                   <input
@@ -616,20 +539,20 @@ export default function CrmPage() {
                     onChange={(e) => setNewCompany(e.target.value)}
                     style={{
                       width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      border: `1px solid ${colors.cardBorder}`,
-                      backgroundColor: dark ? "#070c17" : "#ffffff",
-                      color: colors.ink,
+                      height: 36,
+                      padding: "0 12px",
+                      borderRadius: 6,
+                      border: "1px solid var(--border-line)",
+                      backgroundColor: "var(--bg-surface)",
+                      color: "var(--text-primary)",
                       fontSize: 13,
                       outline: "none",
-                      boxSizing: "border-box",
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>
                     Estimated Value (ETB) *
                   </label>
                   <input
@@ -640,22 +563,22 @@ export default function CrmPage() {
                     onChange={(e) => setNewValue(e.target.value)}
                     style={{
                       width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      border: `1px solid ${colors.cardBorder}`,
-                      backgroundColor: dark ? "#070c17" : "#ffffff",
-                      color: colors.ink,
+                      height: 36,
+                      padding: "0 12px",
+                      borderRadius: 6,
+                      border: "1px solid var(--border-line)",
+                      backgroundColor: "var(--bg-surface)",
+                      color: "var(--text-primary)",
                       fontSize: 13,
                       outline: "none",
-                      boxSizing: "border-box",
                     }}
                   />
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div>
-                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>
                     Contact Person
                   </label>
                   <input
@@ -665,20 +588,20 @@ export default function CrmPage() {
                     onChange={(e) => setNewContact(e.target.value)}
                     style={{
                       width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      border: `1px solid ${colors.cardBorder}`,
-                      backgroundColor: dark ? "#070c17" : "#ffffff",
-                      color: colors.ink,
+                      height: 36,
+                      padding: "0 12px",
+                      borderRadius: 6,
+                      border: "1px solid var(--border-line)",
+                      backgroundColor: "var(--bg-surface)",
+                      color: "var(--text-primary)",
                       fontSize: 13,
                       outline: "none",
-                      boxSizing: "border-box",
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>
                     Contact Phone
                   </label>
                   <input
@@ -688,22 +611,22 @@ export default function CrmPage() {
                     onChange={(e) => setNewPhone(e.target.value)}
                     style={{
                       width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      border: `1px solid ${colors.cardBorder}`,
-                      backgroundColor: dark ? "#070c17" : "#ffffff",
-                      color: colors.ink,
+                      height: 36,
+                      padding: "0 12px",
+                      borderRadius: 6,
+                      border: "1px solid var(--border-line)",
+                      backgroundColor: "var(--bg-surface)",
+                      color: "var(--text-primary)",
                       fontSize: 13,
                       outline: "none",
-                      boxSizing: "border-box",
                     }}
                   />
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div>
-                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>
                     Target Sector
                   </label>
                   <select
@@ -711,14 +634,14 @@ export default function CrmPage() {
                     onChange={(e) => setNewSector(e.target.value)}
                     style={{
                       width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      border: `1px solid ${colors.cardBorder}`,
-                      backgroundColor: dark ? "#070c17" : "#ffffff",
-                      color: colors.ink,
+                      height: 36,
+                      padding: "0 12px",
+                      borderRadius: 6,
+                      border: "1px solid var(--border-line)",
+                      backgroundColor: "var(--bg-surface)",
+                      color: "var(--text-primary)",
                       fontSize: 13,
                       outline: "none",
-                      boxSizing: "border-box",
                     }}
                   >
                     {SECTORS_CATALOG.map((sec) => (
@@ -730,7 +653,7 @@ export default function CrmPage() {
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>
                     Initial Stage
                   </label>
                   <select
@@ -738,14 +661,14 @@ export default function CrmPage() {
                     onChange={(e) => setNewStage(e.target.value as DealStage)}
                     style={{
                       width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      border: `1px solid ${colors.cardBorder}`,
-                      backgroundColor: dark ? "#070c17" : "#ffffff",
-                      color: colors.ink,
+                      height: 36,
+                      padding: "0 12px",
+                      borderRadius: 6,
+                      border: "1px solid var(--border-line)",
+                      backgroundColor: "var(--bg-surface)",
+                      color: "var(--text-primary)",
                       fontSize: 13,
                       outline: "none",
-                      boxSizing: "border-box",
                     }}
                   >
                     {STAGES.map((s) => (
@@ -758,7 +681,7 @@ export default function CrmPage() {
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>
                   Notes &amp; Deal Brief
                 </label>
                 <textarea
@@ -768,45 +691,29 @@ export default function CrmPage() {
                   onChange={(e) => setNewNotes(e.target.value)}
                   style={{
                     width: "100%",
+                    minHeight: 88,
                     padding: "8px 12px",
-                    borderRadius: 8,
-                    border: `1px solid ${colors.cardBorder}`,
-                    backgroundColor: dark ? "#070c17" : "#ffffff",
-                    color: colors.ink,
+                    borderRadius: 6,
+                    border: "1px solid var(--border-line)",
+                    backgroundColor: "var(--bg-surface)",
+                    color: "var(--text-primary)",
                     fontSize: 13,
                     outline: "none",
-                    boxSizing: "border-box",
                   }}
                 />
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 10 }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 8, paddingTop: 16, borderTop: "1px solid var(--border-line)" }}>
                 <button
                   type="button"
                   onClick={() => setIsNewDealOpen(false)}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: 8,
-                    border: `1px solid ${colors.cardBorder}`,
-                    backgroundColor: "transparent",
-                    color: colors.ink,
-                    cursor: "pointer",
-                    fontWeight: 600,
-                  }}
+                  className="btn-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    padding: "8px 20px",
-                    borderRadius: 8,
-                    border: "none",
-                    backgroundColor: "#2563eb",
-                    color: "#ffffff",
-                    cursor: "pointer",
-                    fontWeight: 700,
-                  }}
+                  className="btn-primary"
                 >
                   Save Opportunity
                 </button>

@@ -7,11 +7,10 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { closeModal, showToast } from "@/store/slices/uiSlice";
 import { switchSector } from "@/store/slices/sectorsSlice";
 import { loginAsDemo } from "@/store/slices/authSlice";
-import { SECTORS_CATALOG, INITIAL_USER } from "@/store/initialData";
+import { SECTORS_CATALOG } from "@/store/initialData";
 import type { SectorMeta } from "@/types/erp";
 import { useApp } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { setMockProfile } from "@/lib/mock";
 
 export function SectorSelectModal({
@@ -24,8 +23,6 @@ export function SectorSelectModal({
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
-  const { theme } = useTheme();
-  const dark = theme === "dark";
 
   const reduxActiveModal = useAppSelector((state) => state.ui.activeModal);
   const activeSectorId = useAppSelector((state) => state.sectors.activeSectorId);
@@ -109,34 +106,6 @@ export function SectorSelectModal({
     }
   };
 
-  // Dynamic Theme Colors
-  const colors = {
-    overlayBg: dark ? "rgba(3, 7, 18, 0.78)" : "rgba(15, 23, 42, 0.48)",
-    modalBg: dark ? "#0c1527" : "#ffffff",
-    modalBorder: dark ? "#1a2a42" : "#e2e8f0",
-    modalShadow: dark
-      ? "0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05)"
-      : "0 20px 50px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04)",
-    ink: dark ? "#f8fafc" : "#0f172a",
-    muted: dark ? "#94a3b8" : "#64748b",
-    headerBg: dark ? "#0a1222" : "#ffffff",
-    searchAreaBg: dark ? "#070d18" : "#f8fafc",
-    inputBg: dark ? "#0f192b" : "#ffffff",
-    inputBorder: dark ? "#1e2e46" : "#cbd5e1",
-    cardBg: dark ? "#101c30" : "#ffffff",
-    cardBorder: dark ? "#1a2a40" : "#e2e8f0",
-    cardHoverBg: dark ? "#13233c" : "#f8fafc",
-    cardShadow: dark ? "0 4px 14px rgba(0,0,0,0.3)" : "0 2px 8px rgba(15,23,42,0.04)",
-    pillBg: dark ? "rgba(255, 255, 255, 0.06)" : "#f1f5f9",
-    pillBorder: dark ? "rgba(255, 255, 255, 0.05)" : "#e2e8f0",
-    pillText: dark ? "#cbd5e1" : "#475569",
-    footerBg: dark ? "#080e1a" : "#f8fafc",
-    footerBorder: dark ? "#1a2a42" : "#e2e8f0",
-    closeBtnBg: dark ? "#162236" : "#f1f5f9",
-    closeBtnBorder: dark ? "#223552" : "#cbd5e1",
-    closeBtnText: dark ? "#f8fafc" : "#1e293b",
-  };
-
   return (
     <>
       <style>{`
@@ -145,52 +114,24 @@ export function SectorSelectModal({
           to { opacity: 1; }
         }
         @keyframes sectorModalZoomIn {
-          from { opacity: 0; transform: scale(0.96) translateY(10px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
+          from { opacity: 0; transform: scale(0.98); }
+          to { opacity: 1; transform: scale(1); }
         }
         .sector-modal-overlay {
-          animation: sectorModalFadeIn 0.18s ease-out forwards;
+          animation: sectorModalFadeIn 0.16s ease-out forwards;
         }
         .sector-modal-window {
-          animation: sectorModalZoomIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: sectorModalZoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .sector-cards-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 10px;
+          gap: 12px;
         }
-        @media (min-width: 620px) {
-          .sector-cards-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-          }
-        }
-        @media (min-width: 940px) {
+        @media (min-width: 680px) {
           .sector-cards-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 12px;
-          }
-        }
-        @media (max-width: 600px) {
-          .sector-modal-header {
-            padding: 14px 16px 12px !important;
-          }
-          .sector-modal-search {
-            padding: 10px 16px !important;
-          }
-          .sector-modal-body {
-            padding: 12px 16px !important;
-          }
-          .sector-modal-footer {
-            padding: 10px 16px !important;
-            flex-direction: column !important;
-            align-items: stretch !important;
-            gap: 8px !important;
-          }
-          .sector-modal-footer button {
-            width: 100% !important;
-            text-align: center !important;
-            justify-content: center !important;
           }
         }
       `}</style>
@@ -207,10 +148,8 @@ export function SectorSelectModal({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "12px",
-          backgroundColor: colors.overlayBg,
-          backdropFilter: "blur(6px)",
-          WebkitBackdropFilter: "blur(6px)",
+          padding: "16px",
+          backgroundColor: "rgba(9, 13, 22, 0.5)",
         }}
         onClick={handleClose}
       >
@@ -219,26 +158,24 @@ export function SectorSelectModal({
           style={{
             width: "100%",
             maxWidth: "920px",
-            maxHeight: "92vh",
-            backgroundColor: colors.modalBg,
-            border: `1px solid ${colors.modalBorder}`,
-            borderRadius: "18px",
-            boxShadow: colors.modalShadow,
+            maxHeight: "90vh",
+            backgroundColor: "var(--bg-surface)",
+            border: "1px solid var(--border-line)",
+            borderRadius: "8px",
+            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            color: colors.ink,
-            transition: "background-color 0.2s ease, border-color 0.2s ease",
+            color: "var(--text-primary)",
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div
-            className="sector-modal-header"
             style={{
-              padding: "18px 24px 14px",
-              borderBottom: `1px solid ${colors.modalBorder}`,
-              backgroundColor: colors.headerBg,
+              padding: "16px 24px",
+              borderBottom: "1px solid var(--border-line)",
+              backgroundColor: "var(--bg-surface)",
               display: "flex",
               alignItems: "flex-start",
               justifyContent: "space-between",
@@ -252,35 +189,34 @@ export function SectorSelectModal({
                   alignItems: "center",
                   gap: "6px",
                   fontSize: "11px",
-                  fontWeight: 700,
-                  color: "#2563eb",
+                  fontWeight: 500,
+                  color: "var(--text-muted)",
                   textTransform: "uppercase",
-                  letterSpacing: "0.08em",
+                  letterSpacing: "0.04em",
                   marginBottom: "4px",
                 }}
               >
-                <Sparkles size={13} style={{ color: "#3b82f6" }} />
+                <Sparkles size={12} style={{ color: "var(--accent-blue)" }} />
                 <span>Beyond ERP • 12 Ethiopian Sectors</span>
               </div>
               <h2
                 id="sector-modal-title"
                 style={{
                   margin: 0,
-                  fontSize: "clamp(17px, 2.8vw, 21px)",
-                  fontWeight: 800,
-                  color: colors.ink,
-                  letterSpacing: "-0.01em",
-                  lineHeight: 1.25,
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  color: "var(--text-primary)",
+                  lineHeight: "24px",
                 }}
               >
                 Choose Your Industry Sector Demo
               </h2>
               <p
                 style={{
-                  margin: "4px 0 0",
-                  fontSize: "12.5px",
-                  color: colors.muted,
-                  lineHeight: 1.4,
+                  margin: "2px 0 0",
+                  fontSize: "12px",
+                  color: "var(--text-muted)",
+                  lineHeight: "18px",
                 }}
               >
                 Select an authentic Ethiopian enterprise sector to launch its pre-configured modules, tax rules, and domain records.
@@ -290,41 +226,19 @@ export function SectorSelectModal({
             <button
               onClick={handleClose}
               aria-label="Close modal"
-              style={{
-                background: "transparent",
-                border: `1px solid ${colors.modalBorder}`,
-                color: colors.muted,
-                cursor: "pointer",
-                padding: "6px",
-                width: "34px",
-                height: "34px",
-                borderRadius: "9px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                transition: "all 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = dark ? "rgba(255,255,255,0.08)" : "#f1f5f9";
-                e.currentTarget.style.color = colors.ink;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = colors.muted;
-              }}
+              className="icon-button"
+              type="button"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
 
           {/* Search Bar Area */}
           <div
-            className="sector-modal-search"
             style={{
-              padding: "11px 24px",
-              borderBottom: `1px solid ${colors.modalBorder}`,
-              backgroundColor: colors.searchAreaBg,
+              padding: "10px 24px",
+              borderBottom: "1px solid var(--border-line)",
+              backgroundColor: "var(--bg-canvas)",
             }}
           >
             <div
@@ -335,11 +249,11 @@ export function SectorSelectModal({
               }}
             >
               <Search
-                size={16}
+                size={15}
                 style={{
                   position: "absolute",
                   left: "12px",
-                  color: colors.muted,
+                  color: "var(--text-muted)",
                   pointerEvents: "none",
                 }}
               />
@@ -350,38 +264,32 @@ export function SectorSelectModal({
                 onChange={(e) => setQuery(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "9px 12px 9px 36px",
+                  height: 36,
+                  padding: "0 12px 0 36px",
                   fontSize: "13px",
-                  fontWeight: 500,
-                  borderRadius: "10px",
-                  border: `1px solid ${colors.inputBorder}`,
-                  backgroundColor: colors.inputBg,
-                  color: colors.ink,
+                  borderRadius: "6px",
+                  border: "1px solid var(--border-line)",
+                  backgroundColor: "var(--bg-surface)",
+                  color: "var(--text-primary)",
                   outline: "none",
-                  transition: "border-color 0.15s, box-shadow 0.15s",
                 }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "#2563eb";
-                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.18)";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = colors.inputBorder;
-                  e.currentTarget.style.boxShadow = "none";
-                }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent-blue)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-line)")}
                 autoFocus
               />
               {query && (
                 <button
                   onClick={() => setQuery("")}
+                  type="button"
                   style={{
                     position: "absolute",
                     right: "10px",
                     background: "none",
                     border: "none",
-                    color: colors.muted,
+                    color: "var(--text-muted)",
                     cursor: "pointer",
                     fontSize: "12px",
-                    fontWeight: 600,
+                    fontWeight: 500,
                     padding: "4px 6px",
                   }}
                 >
@@ -393,7 +301,6 @@ export function SectorSelectModal({
 
           {/* 12 Sectors Responsive Grid */}
           <div
-            className="sector-modal-body"
             style={{
               padding: "16px 24px",
               overflowY: "auto",
@@ -405,20 +312,20 @@ export function SectorSelectModal({
                 style={{
                   textAlign: "center",
                   padding: "40px 16px",
-                  color: colors.muted,
+                  color: "var(--text-muted)",
                 }}
               >
-                <p style={{ margin: "0 0 8px", fontSize: "15px", fontWeight: 600 }}>
+                <p style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: 500 }}>
                   No matching sectors found for &ldquo;{query}&rdquo;
                 </p>
                 <button
                   type="button"
                   onClick={() => setQuery("")}
                   style={{
-                    color: "#2563eb",
+                    color: "var(--accent-blue)",
                     background: "none",
                     border: "none",
-                    fontWeight: 700,
+                    fontWeight: 500,
                     cursor: "pointer",
                     fontSize: "13px",
                   }}
@@ -437,44 +344,31 @@ export function SectorSelectModal({
                       onClick={() => handleSelectSector(sec.id, sec.defaultCompanyName, sec.name)}
                       style={{
                         textAlign: "left",
-                        padding: "13px 14px",
-                        borderRadius: "14px",
+                        padding: "16px",
+                        borderRadius: "8px",
                         border: isCurrent
-                          ? `1.5px solid ${sec.color}`
-                          : `1px solid ${colors.cardBorder}`,
+                          ? "1px solid var(--accent-blue)"
+                          : "1px solid var(--border-line)",
                         backgroundColor: isCurrent
-                          ? (dark ? `${sec.color}15` : `${sec.color}0a`)
-                          : colors.cardBg,
-                        boxShadow: isCurrent
-                          ? `0 0 0 1px ${sec.color}, ${colors.cardShadow}`
-                          : colors.cardShadow,
+                          ? "var(--accent-blue-subtle)"
+                          : "var(--bg-surface)",
                         cursor: "pointer",
-                        transition: "all 0.16s ease",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between",
                         gap: "10px",
                         position: "relative",
+                        outline: "none",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = sec.color;
-                        e.currentTarget.style.backgroundColor = isCurrent
-                          ? (dark ? `${sec.color}20` : `${sec.color}12`)
-                          : colors.cardHoverBg;
-                        e.currentTarget.style.transform = "translateY(-2px)";
-                        e.currentTarget.style.boxShadow = `0 8px 20px -4px ${sec.color}30`;
+                        if (!isCurrent) {
+                          e.currentTarget.style.backgroundColor = "var(--bg-subtle)";
+                        }
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = isCurrent
-                          ? sec.color
-                          : colors.cardBorder;
-                        e.currentTarget.style.backgroundColor = isCurrent
-                          ? (dark ? `${sec.color}15` : `${sec.color}0a`)
-                          : colors.cardBg;
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = isCurrent
-                          ? `0 0 0 1px ${sec.color}, ${colors.cardShadow}`
-                          : colors.cardShadow;
+                        if (!isCurrent) {
+                          e.currentTarget.style.backgroundColor = "var(--bg-surface)";
+                        }
                       }}
                     >
                       {/* Top icon and active/launch badge */}
@@ -487,44 +381,33 @@ export function SectorSelectModal({
                             marginBottom: "8px",
                           }}
                         >
-                          <div
+                          <span
                             style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "9px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              backgroundColor: `${sec.color}1c`,
-                              color: sec.color,
-                              fontSize: "15px",
+                              color: isCurrent ? "var(--accent-blue)" : "var(--text-muted)",
+                              fontSize: "16px",
+                              lineHeight: 1,
                             }}
                           >
                             <i className={sec.icon} />
-                          </div>
+                          </span>
 
                           {isCurrent ? (
                             <span
+                              className="chip"
                               style={{
-                                fontSize: "10.5px",
-                                fontWeight: 700,
-                                padding: "2px 8px",
-                                borderRadius: "12px",
-                                backgroundColor: `${sec.color}25`,
-                                color: sec.color,
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "4px",
+                                color: "var(--accent-blue)",
+                                borderColor: "var(--accent-blue)",
+                                backgroundColor: "var(--accent-blue-subtle)",
                               }}
                             >
-                              <Check size={11} /> Current
+                              <Check size={10} /> Current
                             </span>
                           ) : (
                             <span
                               style={{
                                 fontSize: "11px",
-                                fontWeight: 600,
-                                color: colors.muted,
+                                fontWeight: 500,
+                                color: "var(--text-muted)",
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "3px",
@@ -539,10 +422,10 @@ export function SectorSelectModal({
                         <h3
                           style={{
                             margin: "0 0 2px",
-                            fontSize: "14px",
-                            fontWeight: 700,
-                            color: colors.ink,
-                            lineHeight: 1.25,
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "var(--text-primary)",
+                            lineHeight: "18px",
                           }}
                         >
                           {sec.name}
@@ -551,10 +434,10 @@ export function SectorSelectModal({
                         {/* Default Company Name */}
                         <div
                           style={{
-                            fontSize: "11px",
-                            fontWeight: 600,
-                            color: sec.color,
-                            marginBottom: "5px",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            color: "var(--text-secondary)",
+                            marginBottom: "6px",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
@@ -567,9 +450,9 @@ export function SectorSelectModal({
                         <p
                           style={{
                             margin: 0,
-                            fontSize: "11.5px",
-                            lineHeight: "1.4",
-                            color: colors.muted,
+                            fontSize: "12px",
+                            lineHeight: "16px",
+                            color: "var(--text-muted)",
                             display: "-webkit-box",
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: "vertical",
@@ -586,37 +469,16 @@ export function SectorSelectModal({
                           display: "flex",
                           flexWrap: "wrap",
                           gap: "4px",
-                          marginTop: "6px",
+                          marginTop: "4px",
                         }}
                       >
                         {sec.keyModules.slice(0, 3).map((mod: string) => (
-                          <span
-                            key={mod}
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: 600,
-                              padding: "2px 6px",
-                              borderRadius: "5px",
-                              backgroundColor: colors.pillBg,
-                              border: `1px solid ${colors.pillBorder}`,
-                              color: colors.pillText,
-                            }}
-                          >
+                          <span key={mod} className="chip">
                             {mod}
                           </span>
                         ))}
                         {sec.keyModules.length > 3 && (
-                          <span
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: 600,
-                              padding: "2px 5px",
-                              borderRadius: "5px",
-                              backgroundColor: colors.pillBg,
-                              border: `1px solid ${colors.pillBorder}`,
-                              color: colors.muted,
-                            }}
-                          >
+                          <span className="chip">
                             +{sec.keyModules.length - 3}
                           </span>
                         )}
@@ -630,16 +492,15 @@ export function SectorSelectModal({
 
           {/* Footer Area */}
           <div
-            className="sector-modal-footer"
             style={{
-              padding: "11px 24px",
-              borderTop: `1px solid ${colors.footerBorder}`,
-              backgroundColor: colors.footerBg,
+              padding: "12px 24px",
+              borderTop: "1px solid var(--border-line)",
+              backgroundColor: "var(--bg-surface)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               fontSize: "12px",
-              color: colors.muted,
+              color: "var(--text-muted)",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -651,23 +512,8 @@ export function SectorSelectModal({
             <button
               type="button"
               onClick={handleClose}
-              style={{
-                padding: "6px 16px",
-                borderRadius: "8px",
-                border: `1px solid ${colors.closeBtnBorder}`,
-                backgroundColor: colors.closeBtnBg,
-                color: colors.closeBtnText,
-                fontWeight: 700,
-                fontSize: "12.5px",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = dark ? "#223552" : "#e2e8f0";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = colors.closeBtnBg;
-              }}
+              className="secondary-button"
+              style={{ height: 36, padding: "0 16px" }}
             >
               Close
             </button>

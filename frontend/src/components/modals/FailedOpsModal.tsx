@@ -3,6 +3,7 @@
 import { FileText, X } from "lucide-react";
 import { writeOperationQueue, readOperationQueue, readQueue } from "@/features/erp/offline";
 import { useApp } from "@/contexts/AppContext";
+import { Modal } from "@/components/ui/Modal";
 
 export function FailedOpsModal() {
   const { modal, closeModal, setPendingCount } = useApp();
@@ -26,40 +27,61 @@ export function FailedOpsModal() {
   };
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true">
-      <section className="modal">
-        <div className="modal-header">
-          <h2>Pending Sync Queue</h2>
-          <button className="icon-button plain" onClick={closeModal} aria-label="Close">
-            <X size={18} />
-          </button>
-        </div>
-        {opQueue.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon"><FileText size={26} /></div>
-            <span>No pending operations</span>
+    <Modal title="Pending Sync Queue" isOpen={isOpen} onClose={closeModal}>
+      {opQueue.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "32px 16px", color: "var(--text-muted)" }}>
+          <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}>
+            <FileText size={24} style={{ color: "var(--text-muted)" }} />
           </div>
-        ) : (
-          <div className="stack" style={{ gap: 8 }}>
-            {opQueue.map((op) => (
-              <div key={op.localId} className="card" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ flex: 1 }}>
-                  <strong style={{ fontSize: 13 }}>{op.label || op.action}</strong>
-                  <span style={{ display: "block", fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
+          <span style={{ fontSize: 13 }}>No pending operations</span>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="ui-surface" style={{ display: "flex", flexDirection: "column" }}>
+            {opQueue.map((op, idx) => (
+              <div
+                key={op.localId}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  padding: "10px 14px",
+                  borderBottom: idx === opQueue.length - 1 ? "none" : "1px solid var(--border-line)",
+                }}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)" }}>
+                    {op.label || op.action}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
                     {op.action.replace(/_/g, " ")}
-                  </span>
+                  </div>
                 </div>
-                <button className="icon-button plain" onClick={() => dismiss(op.localId)} aria-label="Dismiss">
-                  <X size={16} />
+                <button
+                  className="icon-button"
+                  type="button"
+                  onClick={() => dismiss(op.localId)}
+                  aria-label="Dismiss"
+                >
+                  <X size={14} />
                 </button>
               </div>
             ))}
-            <button className="secondary-button" onClick={clearAll} style={{ marginTop: 4 }}>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={clearAll}
+              style={{ height: 36, padding: "0 16px" }}
+            >
               Clear All
             </button>
           </div>
-        )}
-      </section>
-    </div>
+        </div>
+      )}
+    </Modal>
   );
 }

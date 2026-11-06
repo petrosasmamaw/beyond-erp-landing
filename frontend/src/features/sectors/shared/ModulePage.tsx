@@ -2,14 +2,14 @@
 
 import { type ReactNode } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
-
+import { Plus } from "lucide-react";
 
 type StatDef = { label: string; value?: number | string };
 
 type ModulePageProps = {
   title: string;
   icon: string;
-  color: string;
+  color?: string;
   description: string;
   stats: StatDef[];
   emptyMessage?: string;
@@ -19,40 +19,100 @@ type ModulePageProps = {
 };
 
 export function ModulePage({
-  title, icon, color, description, stats,
-  emptyMessage, addLabel, onAdd, children
+  title,
+  icon,
+  description,
+  stats,
+  emptyMessage,
+  addLabel,
+  onAdd,
+  children,
 }: ModulePageProps) {
   return (
-    <div className="screen-wrapper">
-      <div className="section-header">
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 16,
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
           <div
-            className="sector-pick-icon"
-            style={{ background: color + "18", color, flexShrink: 0, width: 40, height: 40, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}
+            style={{
+              color: "var(--text-muted)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 20,
+              lineHeight: 1,
+              marginTop: 4,
+            }}
           >
             <i className={icon} />
           </div>
           <div>
-            <h2 style={{ margin: 0 }}>{title}</h2>
-            <p className="subtle" style={{ margin: 0 }}>{description}</p>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: 20,
+                fontWeight: 600,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.01em",
+                lineHeight: "28px",
+              }}
+            >
+              {title}
+            </h2>
+            <p
+              style={{
+                margin: "2px 0 0",
+                fontSize: 13,
+                color: "var(--text-secondary)",
+                lineHeight: "20px",
+                maxWidth: 640,
+              }}
+            >
+              {description}
+            </p>
           </div>
         </div>
+
         {addLabel && onAdd ? (
-          <button className="primary-button" type="button" onClick={onAdd}>
-            <i className="fa-solid fa-plus" style={{ marginRight: 6 }} />{addLabel}
+          <button className="primary-button" type="button" onClick={onAdd} style={{ height: 36, padding: "0 16px" }}>
+            <Plus size={14} style={{ marginRight: 6 }} />
+            {addLabel}
           </button>
         ) : null}
       </div>
 
-      <div className="stats-row">
-        {stats.map((s) => (
-          <div className="stat-card" key={s.label}>
-            <span>{s.label}</span>
-            <strong>{s.value ?? 0}</strong>
-          </div>
-        ))}
-      </div>
+      {/* KPI Strip */}
+      {stats && stats.length > 0 && (
+        <div
+          className="kpi-strip"
+          style={{
+            gridTemplateColumns: `repeat(${stats.length}, 1fr)`,
+          }}
+        >
+          {stats.map((s, idx) => (
+            <div
+              key={s.label}
+              className="kpi-cell"
+              style={{
+                borderLeft: idx === 0 ? "none" : "1px solid var(--border-line)",
+              }}
+            >
+              <span className="kpi-label">{s.label}</span>
+              <span className="kpi-value">{s.value ?? 0}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
+      {/* Content */}
       {children ?? (
         <EmptyState
           title={emptyMessage ?? `No ${title.toLowerCase()} records yet`}

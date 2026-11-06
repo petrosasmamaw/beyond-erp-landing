@@ -1,34 +1,17 @@
 "use client";
 
 import { type FormEvent, useEffect, useState } from "react";
-import { DollarSign, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { api } from "@/lib/api";
-import type { NewTransactionInput, Transaction } from "@/lib/types";
+import type { NewTransactionInput } from "@/lib/types";
 import { paymentMethodsWithIcons } from "@/features/erp/config";
 import { defaultTransaction } from "@/features/erp/helpers";
 import { readQueue, writeQueue } from "@/features/erp/offline";
 import { useApp } from "@/contexts/AppContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { Modal } from "@/components/ui/Modal";
-
-function useColors() {
-  const { theme } = useTheme();
-  const dark = theme === "dark";
-  return {
-    dark,
-    surface: dark ? "#111827" : "#ffffff",
-    alt:     dark ? "#0d1828" : "#f8fafc",
-    border:  dark ? "#1a2d3d" : "#e8edf5",
-    ink:     dark ? "#e2e8f0" : "#0f172a",
-    muted:   dark ? "#566070" : "#64748b",
-    inputBg: dark ? "#0f172a" : "#f8fafc",
-    inputBorder: dark ? "#1e2d3d" : "#dbe3ee",
-  };
-}
 
 export function TransactionModal() {
   const { modal, closeModal, showToast, triggerRefresh, sectors, setPendingCount } = useApp();
-  const c = useColors();
   const isOpen = modal?.type === "transaction";
   const editing = isOpen ? modal.transaction : undefined;
 
@@ -96,39 +79,52 @@ export function TransactionModal() {
     }
   };
 
-  const inp = (hasErr?: boolean) => ({
-    height: 42, width: "100%", borderRadius: 9,
-    border: `1.5px solid ${hasErr ? "#f43f5e" : c.inputBorder}`,
-    background: c.inputBg, padding: "0 12px", color: c.ink, fontSize: 14,
-    outline: "none", boxSizing: "border-box" as const, transition: "border-color 0.15s",
+  const inp = (hasErr?: boolean): React.CSSProperties => ({
+    height: 36,
+    width: "100%",
+    borderRadius: 6,
+    border: `1px solid ${hasErr ? "var(--negative)" : "var(--border-line)"}`,
+    background: "var(--bg-surface)",
+    padding: "0 12px",
+    color: "var(--text-primary)",
+    fontSize: 13,
+    outline: "none",
+    boxSizing: "border-box",
   });
 
-  const lbl = { display: "flex" as const, flexDirection: "column" as const, gap: 5, fontSize: 12, fontWeight: 600 as const, color: c.muted };
+  const lbl: React.CSSProperties = {
+    display: "flex",
+    flexDirection: "column",
+    gap: 6,
+    fontSize: 11,
+    fontWeight: 500,
+    color: "var(--text-muted)",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+  };
 
   return (
     <Modal title={editing ? "Edit Transaction" : "New Transaction"} isOpen={isOpen} onClose={closeModal}>
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-        {/* Income / Expense toggle */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        {/* Income / Expense toggle using segmented control */}
+        <div className="seg-control" style={{ width: "100%", height: 36 }}>
           {(["INCOME", "EXPENSE"] as const).map((type) => {
             const active = form.type === type;
-            const accent = type === "INCOME" ? "#10b981" : "#f43f5e";
             return (
               <button
                 key={type}
                 type="button"
                 onClick={() => setForm((f) => ({ ...f, type }))}
+                className={`seg-button ${active ? "active" : ""}`}
                 style={{
-                  height: 42, borderRadius: 9, fontWeight: 700, fontSize: 13, cursor: "pointer",
-                  border: `1.5px solid ${active ? accent : c.border}`,
-                  background: active ? `${accent}18` : c.alt,
-                  color: active ? accent : c.muted,
-                  transition: "all 0.14s",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  color: active
+                    ? type === "INCOME" ? "var(--positive)" : "var(--negative)"
+                    : "var(--text-secondary)",
+                  fontWeight: active ? 600 : 500,
                 }}
               >
-                <span style={{ fontSize: 16, fontWeight: 800 }}>{type === "INCOME" ? "+" : "−"}</span>
+                <span style={{ fontSize: 14, marginRight: 4 }}>{type === "INCOME" ? "+" : "−"}</span>
                 {type === "INCOME" ? "Income" : "Expense"}
               </button>
             );
@@ -140,23 +136,35 @@ export function TransactionModal() {
           <label style={lbl}>
             Amount (ETB) *
             <div style={{ position: "relative" }}>
-              <DollarSign size={13} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: c.muted, pointerEvents: "none" }} />
+              <span
+                style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "var(--text-muted)",
+                  fontSize: 12,
+                  pointerEvents: "none",
+                }}
+              >
+                ETB
+              </span>
               <input
                 type="number"
                 min="1"
                 value={form.amount || ""}
-                style={{ ...inp(!!errors.amount), paddingLeft: 32 }}
+                style={{ ...inp(!!errors.amount), paddingLeft: 42 }}
                 onChange={(e) => {
                   const amount = Number(e.target.value);
                   setErrors((er) => { const n = { ...er }; delete n.amount; return n; });
                   setForm((f) => ({ ...f, amount, vatAmount: f.vatAmount > 0 ? amount * 0.15 : 0 }));
                 }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-                onBlur={(e) => (e.currentTarget.style.borderColor = errors.amount ? "#f43f5e" : c.inputBorder)}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent-blue)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = errors.amount ? "var(--negative)" : "var(--border-line)")}
                 placeholder="0"
               />
             </div>
-            {errors.amount && <span style={{ color: "#f43f5e", fontSize: 11 }}>{errors.amount}</span>}
+            {errors.amount && <span style={{ color: "var(--negative)", fontSize: 11, textTransform: "none" }}>{errors.amount}</span>}
           </label>
 
           <label style={lbl}>
@@ -167,8 +175,8 @@ export function TransactionModal() {
               max={new Date().toISOString().slice(0, 10)}
               style={inp()}
               onChange={(e) => setForm((f) => ({ ...f, occurredAt: new Date(e.target.value).toISOString() }))}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-              onBlur={(e) => (e.currentTarget.style.borderColor = c.inputBorder)}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent-blue)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-line)")}
             />
           </label>
         </div>
@@ -183,11 +191,11 @@ export function TransactionModal() {
               setErrors((er) => { const n = { ...er }; delete n.description; return n; });
               setForm((f) => ({ ...f, description: e.target.value }));
             }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-            onBlur={(e) => (e.currentTarget.style.borderColor = errors.description ? "#f43f5e" : c.inputBorder)}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent-blue)")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = errors.description ? "var(--negative)" : "var(--border-line)")}
             placeholder="Weekly branch sales…"
           />
-          {errors.description && <span style={{ color: "#f43f5e", fontSize: 11 }}>{errors.description}</span>}
+          {errors.description && <span style={{ color: "var(--negative)", fontSize: 11, textTransform: "none" }}>{errors.description}</span>}
         </label>
 
         {/* Sector / Category */}
@@ -207,8 +215,10 @@ export function TransactionModal() {
 
         {/* Payment method */}
         <div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: c.muted, marginBottom: 8 }}>Payment Method</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 7 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8 }}>
+            Payment Method
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
             {paymentMethodsWithIcons.map(({ method, icon }) => {
               const active = form.paymentMethod === method;
               return (
@@ -217,15 +227,20 @@ export function TransactionModal() {
                   key={method}
                   onClick={() => setForm((f) => ({ ...f, paymentMethod: method }))}
                   style={{
-                    height: 46, borderRadius: 9, cursor: "pointer", transition: "all 0.14s",
-                    border: `1.5px solid ${active ? "#2563eb" : c.border}`,
-                    background: active ? (c.dark ? "#08121e" : "#eff6ff") : c.alt,
-                    color: active ? "#2563eb" : c.muted,
-                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2,
+                    height: 40,
+                    borderRadius: 6,
+                    cursor: "pointer",
+                    border: `1px solid ${active ? "var(--accent-blue)" : "var(--border-line)"}`,
+                    background: active ? "var(--accent-blue-subtle)" : "var(--bg-surface)",
+                    color: active ? "var(--accent-blue)" : "var(--text-secondary)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
                   }}
                 >
-                  <span style={{ fontSize: 16, lineHeight: 1 }}>{icon}</span>
-                  <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>{method}</span>
+                  <span style={{ fontSize: 14 }}>{icon}</span>
+                  <span style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em" }}>{method}</span>
                 </button>
               );
             })}
@@ -233,35 +248,60 @@ export function TransactionModal() {
         </div>
 
         {/* VAT checkbox */}
-        <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "10px 12px", borderRadius: 9, border: `1px solid ${c.border}`, background: c.alt }}>
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            cursor: "pointer",
+            padding: "10px 12px",
+            borderRadius: 6,
+            border: "1px solid var(--border-line)",
+            background: "var(--bg-canvas)",
+          }}
+        >
           <input
             type="checkbox"
             checked={form.vatAmount > 0}
-            style={{ width: 16, height: 16, accentColor: "#2563eb", cursor: "pointer" }}
+            style={{ width: 16, height: 16, accentColor: "var(--accent-blue)", cursor: "pointer", borderRadius: 4 }}
             onChange={(e) => setForm((f) => ({ ...f, vatAmount: e.target.checked ? Number(f.amount) * 0.15 : 0 }))}
           />
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: c.ink }}>Include VAT 15%</div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)" }}>Include VAT 15%</div>
             {form.vatAmount > 0 && (
-              <div style={{ fontSize: 11, color: "#10b981", marginTop: 1 }}>ETB {form.vatAmount.toFixed(2)} will be added</div>
+              <div style={{ fontSize: 11, color: "var(--positive)", marginTop: 2 }}>ETB {form.vatAmount.toFixed(2)} will be added</div>
             )}
           </div>
         </label>
 
-        {/* Submit */}
-        <button
-          type="submit"
+        {/* Footer actions */}
+        <div
           style={{
-            height: 46, borderRadius: 10, border: 0, marginTop: 2,
-            background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-            color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            boxShadow: "0 4px 14px rgba(37,99,235,0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: 8,
+            paddingTop: 12,
+            borderTop: "1px solid var(--border-line)",
           }}
         >
-          <Save size={16} />
-          {editing ? "Update Transaction" : "Save Transaction"}
-        </button>
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={closeModal}
+            style={{ height: 36, padding: "0 16px" }}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="primary-button"
+            style={{ height: 36, padding: "0 16px" }}
+          >
+            <Save size={14} />
+            {editing ? "Update Transaction" : "Save Transaction"}
+          </button>
+        </div>
       </form>
     </Modal>
   );
