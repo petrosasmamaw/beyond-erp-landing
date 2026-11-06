@@ -1,8 +1,46 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  LayoutDashboard,
+  Briefcase,
+  ArrowLeftRight,
+  Users,
+  Landmark,
+  BarChart3,
+  ShieldCheck,
+  Settings,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Wifi,
+  Receipt,
+  Boxes,
+  Tag,
+  Truck,
+  TrendingUp,
+  Building2,
+  FileText,
+  CheckCircle2,
+  Clock,
+  Sprout,
+  HardHat,
+  Key,
+  Barcode,
+  Banknote,
+  Coins,
+  Scale,
+  HeartHandshake,
+  Workflow,
+  Layers,
+  ShoppingBag,
+  Wrench,
+  Stethoscope,
+  GraduationCap,
+  UtensilsCrossed,
+  type LucideIcon,
+} from "lucide-react";
 import { t, type LangKey, type SectorDefinition } from "@/features/erp/config";
 import { getSectorConfig } from "@/features/sectors";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -10,18 +48,55 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/slices/uiSlice";
 
-const UNIVERSAL_TOP: { path: string; labelKey: LangKey; icon: string }[] = [
-  { path: "/dashboard", labelKey: "home", icon: "fa-solid fa-chart-pie" },
-  { path: "/crm", labelKey: "crm", icon: "fa-solid fa-briefcase" },
-  { path: "/transactions", labelKey: "money", icon: "fa-solid fa-money-bill-transfer" },
-  { path: "/employees", labelKey: "team", icon: "fa-solid fa-users" },
+function renderNavIcon(icon: LucideIcon | string, size = 15) {
+  if (typeof icon !== "string") {
+    const IconComp = icon;
+    return <IconComp size={size} />;
+  }
+
+  const normalized = icon.toLowerCase();
+  if (normalized.includes("cash-register")) return <Receipt size={size} />;
+  if (normalized.includes("boxes-stacked") || normalized.includes("box") || normalized.includes("cubes")) return <Boxes size={size} />;
+  if (normalized.includes("tags") || normalized.includes("tag")) return <Tag size={size} />;
+  if (normalized.includes("users") || normalized.includes("people")) return <Users size={size} />;
+  if (normalized.includes("truck")) return <Truck size={size} />;
+  if (normalized.includes("chart")) return <BarChart3 size={size} />;
+  if (normalized.includes("store")) return <ShoppingBag size={size} />;
+  if (normalized.includes("industry") || normalized.includes("building") || normalized.includes("landmark")) return <Building2 size={size} />;
+  if (normalized.includes("diagram") || normalized.includes("network")) return <Workflow size={size} />;
+  if (normalized.includes("clipboard-check") || normalized.includes("circle-check")) return <CheckCircle2 size={size} />;
+  if (normalized.includes("clipboard") || normalized.includes("file") || normalized.includes("folder")) return <FileText size={size} />;
+  if (normalized.includes("clock")) return <Clock size={size} />;
+  if (normalized.includes("seedling") || normalized.includes("leaf") || normalized.includes("wheat")) return <Sprout size={size} />;
+  if (normalized.includes("helmet")) return <HardHat size={size} />;
+  if (normalized.includes("key")) return <Key size={size} />;
+  if (normalized.includes("barcode")) return <Barcode size={size} />;
+  if (normalized.includes("money") || normalized.includes("bill") || normalized.includes("check-dollar")) return <Banknote size={size} />;
+  if (normalized.includes("coin") || normalized.includes("sack")) return <Coins size={size} />;
+  if (normalized.includes("scale")) return <Scale size={size} />;
+  if (normalized.includes("shield")) return <ShieldCheck size={size} />;
+  if (normalized.includes("briefcase")) return <Briefcase size={size} />;
+  if (normalized.includes("hand-holding") || normalized.includes("hands")) return <HeartHandshake size={size} />;
+  if (normalized.includes("wrench") || normalized.includes("gear")) return <Wrench size={size} />;
+  if (normalized.includes("steth") || normalized.includes("hospital")) return <Stethoscope size={size} />;
+  if (normalized.includes("graduation") || normalized.includes("school")) return <GraduationCap size={size} />;
+  if (normalized.includes("utensil") || normalized.includes("hotel")) return <UtensilsCrossed size={size} />;
+
+  return <Layers size={size} />;
+}
+
+const UNIVERSAL_TOP: { path: string; labelKey: LangKey; icon: LucideIcon }[] = [
+  { path: "/dashboard", labelKey: "home", icon: LayoutDashboard },
+  { path: "/crm", labelKey: "crm", icon: Briefcase },
+  { path: "/transactions", labelKey: "money", icon: ArrowLeftRight },
+  { path: "/employees", labelKey: "team", icon: Users },
 ];
 
-const UNIVERSAL_BOTTOM: { path: string; labelKey: LangKey; icon: string }[] = [
-  { path: "/finance", labelKey: "finance", icon: "fa-solid fa-file-invoice-dollar" },
-  { path: "/reports", labelKey: "reports", icon: "fa-solid fa-chart-column" },
-  { path: "/admin", labelKey: "admin", icon: "fa-solid fa-shield-halved" },
-  { path: "/settings", labelKey: "setup", icon: "fa-solid fa-gear" },
+const UNIVERSAL_BOTTOM: { path: string; labelKey: LangKey; icon: LucideIcon }[] = [
+  { path: "/finance", labelKey: "finance", icon: Landmark },
+  { path: "/reports", labelKey: "reports", icon: BarChart3 },
+  { path: "/admin", labelKey: "admin", icon: ShieldCheck },
+  { path: "/settings", labelKey: "setup", icon: Settings },
 ];
 
 export function Sidebar({
@@ -48,11 +123,11 @@ export function Sidebar({
   const dark = theme === "dark";
   const sectorConfig = getSectorConfig(sector.id);
 
-  const bg = dark ? "#070c16" : "#0f172a";
-  const surface = dark ? "#0f1826" : "#1e293b";
-  const border = dark ? "#14243a" : "#1e3a5f";
-  const text = "#dde5f0";
-  const muted = "#556070";
+  const bg = dark ? "var(--bg-canvas)" : "var(--bg-surface)";
+  const surface = dark ? "rgba(255, 255, 255, 0.05)" : "rgba(15, 23, 42, 0.04)";
+  const border = "var(--border-line)";
+  const text = dark ? "var(--text-primary)" : "#1e293b";
+  const muted = "var(--text-muted)";
 
   const isActive = (path: string) =>
     pathname === path || pathname.startsWith(path + "/");
@@ -96,7 +171,7 @@ export function Sidebar({
     badge,
   }: {
     path: string;
-    icon: string;
+    icon: LucideIcon | string;
     label: string;
     badge?: number;
   }) {
@@ -113,17 +188,20 @@ export function Sidebar({
           gap: collapsed ? 0 : 10,
           padding: "0 10px",
           justifyContent: collapsed ? "center" : "flex-start",
-          minHeight: 40,
+          minHeight: 38,
           border: 0,
-          borderRadius: 9,
-          background: active ? "#2563eb" : "transparent",
-          color: active ? "#fff" : text,
-          fontWeight: 600,
+          borderRadius: 8,
+          background: active
+            ? dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)"
+            : "transparent",
+          color: active
+            ? dark ? "#93c5fd" : "#2563eb"
+            : text,
+          fontWeight: active ? 600 : 500,
           fontSize: 13,
           cursor: "pointer",
           position: "relative",
-          transition: "background 0.14s, color 0.14s",
-          opacity: active ? 1 : 0.78,
+          transition: "background 0.14s ease, color 0.14s ease",
           textAlign: "left",
           flexShrink: 0,
         }}
@@ -134,10 +212,18 @@ export function Sidebar({
           if (!active) (e.currentTarget as HTMLElement).style.background = "transparent";
         }}
       >
-        <i
-          className={icon}
-          style={{ fontSize: 13, flexShrink: 0, width: 17, textAlign: "center" }}
-        />
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 18,
+            color: active ? (dark ? "#60a5fa" : "#2563eb") : muted,
+            flexShrink: 0,
+          }}
+        >
+          {renderNavIcon(icon, 16)}
+        </span>
         {!collapsed && (
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
             {label}
@@ -152,10 +238,10 @@ export function Sidebar({
               alignItems: "center",
               justifyContent: "center",
               borderRadius: 99,
-              background: active ? "rgba(255,255,255,0.28)" : "#2563eb",
-              color: "white",
+              background: active ? "rgba(37, 99, 235, 0.2)" : border,
+              color: active ? (dark ? "#93c5fd" : "#2563eb") : muted,
               fontSize: 10,
-              fontWeight: 900,
+              fontWeight: 700,
               fontStyle: "normal",
               marginLeft: "auto",
             }}
@@ -221,7 +307,7 @@ export function Sidebar({
                   fontSize: 13,
                   fontWeight: 700,
                   lineHeight: 1.2,
-                  color: "#ffffff",
+                  color: text,
                   overflow: "hidden",
                   whiteSpace: "nowrap",
                   textOverflow: "ellipsis",
@@ -309,7 +395,7 @@ export function Sidebar({
               fontSize: 14,
             }}
           >
-            <i className={sector.icon} />
+            {renderNavIcon(sector.icon, 14)}
           </button>
         ) : (
           <button
@@ -346,7 +432,7 @@ export function Sidebar({
                 fontSize: 13,
               }}
             >
-              <i className={sector.icon} />
+              {renderNavIcon(sector.icon, 14)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 9.5, color: muted, textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 700 }}>Sector</div>
@@ -502,7 +588,7 @@ export function Sidebar({
       >
         {!collapsed && (
           <div style={{ display: "flex", alignItems: "center", gap: 7, color: muted, fontSize: 11 }}>
-            <i className="fa-solid fa-wifi" style={{ fontSize: 12 }} />
+            <Wifi size={13} style={{ color: "var(--accent-blue)" }} />
             <span>Offline-first</span>
           </div>
         )}

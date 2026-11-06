@@ -1,6 +1,15 @@
 "use client";
 
-import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import {
+  ListFilter,
+  Pencil,
+  Plus,
+  Receipt,
+  Search,
+  Trash2,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/format";
 import type { Sector, Transaction, TransactionType } from "@/lib/types";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -13,11 +22,11 @@ function useColors() {
   const dark = theme === "dark";
   return {
     dark,
-    surface: dark ? "#111827" : "#ffffff",
-    alt:     dark ? "#0d1828" : "#f8fafc",
-    border:  dark ? "#1a2d3d" : "#e8edf5",
-    ink:     dark ? "#e2e8f0" : "#0f172a",
-    muted:   dark ? "#566070" : "#64748b",
+    surface: "var(--bg-surface)",
+    alt:     "var(--bg-subtle)",
+    border:  "var(--border-line)",
+    ink:     "var(--text-primary)",
+    muted:   "var(--text-muted)",
   };
 }
 
@@ -50,10 +59,10 @@ export function TransactionsView({
   const expense = transactions.filter((t) => t.type === "EXPENSE").reduce((s, t) => s + t.amount, 0);
 
   const kpis = [
-    { label: "Total Income",   value: formatCurrency(income),          color: "#10b981", bg: c.dark ? "#071812" : "#f0fdf4", bdr: c.dark ? "#0f2e1e" : "#bbf7d0", icon: "fa-solid fa-arrow-trend-up" },
-    { label: "Total Expenses", value: formatCurrency(expense),         color: "#f43f5e", bg: c.dark ? "#1c0a10" : "#fff1f2", bdr: c.dark ? "#3a1520" : "#fecdd3", icon: "fa-solid fa-receipt" },
-    { label: "Net",            value: formatCurrency(income - expense), color: (income - expense) >= 0 ? "#2563eb" : "#f43f5e", bg: c.dark ? "#08121e" : "#eff6ff", bdr: c.dark ? "#142338" : "#bfdbfe", icon: "fa-solid fa-wallet" },
-    { label: "Showing",        value: `${transactions.length} / ${total}`, color: "#f59e0b", bg: c.dark ? "#150f02" : "#fffbeb", bdr: c.dark ? "#2e2008" : "#fde68a", icon: "fa-solid fa-list" },
+    { label: "Total Income",   value: formatCurrency(income),          color: "#10b981", icon: TrendingUp },
+    { label: "Total Expenses", value: formatCurrency(expense),         color: "#f43f5e", icon: Receipt },
+    { label: "Net",            value: formatCurrency(income - expense), color: (income - expense) >= 0 ? "#2563eb" : "#f43f5e", icon: Wallet },
+    { label: "Showing",        value: `${transactions.length} / ${total}`, color: "#f59e0b", icon: ListFilter },
   ];
 
   return (
@@ -62,27 +71,82 @@ export function TransactionsView({
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
         <div>
-          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: c.muted, textTransform: "uppercase", letterSpacing: "0.07em" }}>Finance</p>
-          <h2 style={{ margin: "3px 0 0", fontSize: 21, fontWeight: 700, color: c.ink }}>Transactions</h2>
+          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: c.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Finance</p>
+          <h2 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 700, color: c.ink, lineHeight: 1.2 }}>Transactions</h2>
         </div>
-        <button onClick={onAddTransaction} style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px", borderRadius: 8, border: 0, background: "#2563eb", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-          <Plus size={14} /> Add transaction
+        <button
+          onClick={onAddTransaction}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 7,
+            padding: "7px 14px",
+            borderRadius: 8,
+            border: 0,
+            background: "#2563eb",
+            color: "#fff",
+            fontWeight: 600,
+            fontSize: 13,
+            cursor: "pointer",
+            transition: "background 0.15s ease",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#1d4ed8")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#2563eb")}
+        >
+          <Plus size={14} /> Add Transaction
         </button>
       </div>
 
-      {/* KPI strip */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 10 }} className="kpi-grid">
-        {kpis.map((k) => (
-          <div key={k.label} style={{ padding: "13px 15px", borderRadius: 10, border: `1px solid ${k.bdr}`, background: k.bg }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 7 }}>
-              <span style={{ fontSize: 10.5, fontWeight: 700, color: c.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>{k.label}</span>
-              <div style={{ width: 24, height: 24, borderRadius: 6, background: `${k.color}18`, color: k.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>
-                <i className={k.icon} />
+      {/* KPI strip (De-boxed Flat) */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 12 }} className="kpi-grid">
+        {kpis.map((k) => {
+          const IconComp = k.icon;
+          return (
+            <div
+              key={k.label}
+              style={{
+                padding: "15px 16px",
+                borderRadius: 10,
+                border: `1px solid ${c.border}`,
+                background: c.surface,
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: c.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  {k.label}
+                </span>
+                <div
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: 6,
+                    background: c.dark ? "rgba(255, 255, 255, 0.05)" : "rgba(15, 23, 42, 0.04)",
+                    color: k.color,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <IconComp size={14} />
+                </div>
+              </div>
+              <div
+                style={{
+                  fontSize: "clamp(14px,1.6vw,18px)",
+                  fontWeight: 700,
+                  color: c.ink,
+                  fontVariantNumeric: "tabular-nums",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                {k.value}
               </div>
             </div>
-            <div style={{ fontSize: "clamp(13px,1.8vw,17px)", fontWeight: 800, color: c.ink }}>{k.value}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Type filter pills + search */}
@@ -95,9 +159,18 @@ export function TransactionsView({
               key={item}
               onClick={() => onFilter(item)}
               style={{
-                padding: "5px 13px", borderRadius: 6, border: `1px solid ${active ? accent : c.border}`,
-                background: active ? `${accent}18` : c.surface, color: active ? accent : c.muted,
-                fontWeight: 700, fontSize: 12, cursor: "pointer", textTransform: "capitalize",
+                padding: "6px 14px",
+                borderRadius: 7,
+                border: `1px solid ${active ? accent : c.border}`,
+                background: active
+                  ? (c.dark ? `${accent}22` : `${accent}12`)
+                  : c.surface,
+                color: active ? accent : c.muted,
+                fontWeight: 600,
+                fontSize: 12.5,
+                cursor: "pointer",
+                textTransform: "capitalize",
+                transition: "all 0.14s ease",
               }}
             >
               {item.toLowerCase()}
@@ -105,12 +178,12 @@ export function TransactionsView({
           );
         })}
         <div style={{ flex: 1, position: "relative", minWidth: 200 }}>
-          <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: c.muted, pointerEvents: "none" }} />
+          <Search size={14} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: c.muted, pointerEvents: "none" }} />
           <input
             value={search}
             onChange={(e) => onSearch(e.target.value)}
             placeholder="Search transactions…"
-            style={{ width: "100%", height: 36, borderRadius: 8, border: `1px solid ${c.border}`, background: c.surface, paddingLeft: 30, paddingRight: 12, color: c.ink, fontSize: 13, outline: "none", boxSizing: "border-box" }}
+            style={{ width: "100%", height: 36, borderRadius: 8, border: `1px solid ${c.border}`, background: c.surface, paddingLeft: 32, paddingRight: 12, color: c.ink, fontSize: 13, outline: "none", boxSizing: "border-box" }}
             onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
             onBlur={(e) => (e.currentTarget.style.borderColor = c.border)}
           />
@@ -118,23 +191,21 @@ export function TransactionsView({
       </div>
 
       {/* Advanced filters */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr)) auto auto", gap: 8, alignItems: "end" }}>
-        {[
-          <select key="sector" value={advanced.sectorId} onChange={(e) => onAdvanced({ sectorId: e.target.value })} style={selStyle(c)}>
-            <option value="">All sectors</option>
-            {sectors.map((s) => <option value={s.id} key={s.id}>{s.name}</option>)}
-          </select>,
-          <select key="status" value={advanced.status} onChange={(e) => onAdvanced({ status: e.target.value })} style={selStyle(c)}>
-            <option value="">All statuses</option>
-            {["COMPLETED", "PENDING", "DRAFT"].map((s) => <option key={s}>{s}</option>)}
-          </select>,
-          <select key="pay" value={advanced.paymentMethod} onChange={(e) => onAdvanced({ paymentMethod: e.target.value })} style={selStyle(c)}>
-            <option value="">All payments</option>
-            {paymentMethods.map((m) => <option key={m}>{m}</option>)}
-          </select>,
-          <input key="from" type="date" value={advanced.dateFrom} onChange={(e) => onAdvanced({ dateFrom: e.target.value })} style={{ ...inputStyle(c), width: "auto" }} />,
-          <input key="to" type="date" value={advanced.dateTo} onChange={(e) => onAdvanced({ dateTo: e.target.value })} style={{ ...inputStyle(c), width: "auto" }} />,
-        ]}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr)) auto auto auto", gap: 8, alignItems: "end" }}>
+        <select value={advanced.sectorId} onChange={(e) => onAdvanced({ sectorId: e.target.value })} style={selStyle(c)}>
+          <option value="">All sectors</option>
+          {sectors.map((s) => <option value={s.id} key={s.id}>{s.name}</option>)}
+        </select>
+        <select value={advanced.status} onChange={(e) => onAdvanced({ status: e.target.value })} style={selStyle(c)}>
+          <option value="">All statuses</option>
+          {["COMPLETED", "PENDING", "DRAFT"].map((s) => <option key={s}>{s}</option>)}
+        </select>
+        <select value={advanced.paymentMethod} onChange={(e) => onAdvanced({ paymentMethod: e.target.value })} style={selStyle(c)}>
+          <option value="">All payments</option>
+          {paymentMethods.map((m) => <option key={m}>{m}</option>)}
+        </select>
+        <input type="date" value={advanced.dateFrom} onChange={(e) => onAdvanced({ dateFrom: e.target.value })} style={{ ...inputStyle(c), width: "auto" }} />
+        <input type="date" value={advanced.dateTo} onChange={(e) => onAdvanced({ dateTo: e.target.value })} style={{ ...inputStyle(c), width: "auto" }} />
         <button
           onClick={() => onAdvanced({ sectorId: "", status: "", paymentMethod: "", dateFrom: "", dateTo: "" })}
           style={{ height: 36, padding: "0 12px", borderRadius: 8, border: `1px solid ${c.border}`, background: c.surface, color: c.muted, fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
@@ -166,12 +237,12 @@ export function TransactionCards({
   }
 
   return (
-    <div style={{ borderRadius: 12, border: `1px solid ${c.border}`, background: c.surface, overflow: "hidden" }}>
+    <div style={{ borderRadius: 10, border: `1px solid ${c.border}`, background: c.surface, overflow: "hidden" }}>
       {!compact && (
-        <div style={{ display: "grid", gridTemplateColumns: "8px 1fr auto auto auto", gap: 12, padding: "9px 16px", borderBottom: `1px solid ${c.border}` }}>
+        <div style={{ display: "grid", gridTemplateColumns: "8px 1fr auto auto auto", gap: 12, padding: "10px 16px", borderBottom: `1px solid ${c.border}` }}>
           <div />
-          <span style={{ fontSize: 11, fontWeight: 700, color: c.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Description</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: c.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Amount</span>
+          <span style={{ fontSize: 11, fontWeight: 600, color: c.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Description</span>
+          <span style={{ fontSize: 11, fontWeight: 600, color: c.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Amount</span>
           <span style={{ width: 28 }} />
           <span style={{ width: 28 }} />
         </div>
@@ -187,9 +258,9 @@ export function TransactionCards({
               gridTemplateColumns: compact ? "8px 1fr" : "8px 1fr auto auto auto",
               alignItems: "center",
               gap: 12,
-              padding: compact ? "9px 14px" : "10px 16px",
+              padding: compact ? "9px 14px" : "11px 16px",
               borderBottom: isLast ? "none" : `1px solid ${c.border}`,
-              transition: "background 0.12s",
+              transition: "background 0.12s ease",
               cursor: "default",
             }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = c.alt)}
@@ -200,8 +271,8 @@ export function TransactionCards({
               <div style={{ fontSize: 13, fontWeight: 600, color: c.ink, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
                 {tx.description || tx.category}
               </div>
-              <div style={{ fontSize: 11, color: c.muted, marginTop: 2, display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
-                <span style={{ display: "inline-flex", alignItems: "center", height: 15, padding: "0 5px", borderRadius: 4, background: c.alt, fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <div style={{ fontSize: 11, color: c.muted, marginTop: 2, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                <span style={{ display: "inline-flex", alignItems: "center", height: 16, padding: "0 6px", borderRadius: 4, background: c.alt, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                   {tx.category}
                 </span>
                 <span>·</span>
@@ -214,10 +285,10 @@ export function TransactionCards({
             </div>
             {!compact && (
               <div style={{ textAlign: "right", flexShrink: 0 }}>
-                <div style={{ fontSize: 13.5, fontWeight: 700, color: isIncome ? "#10b981" : "#f43f5e" }}>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: isIncome ? "#10b981" : c.ink, fontVariantNumeric: "tabular-nums" }}>
                   {isIncome ? "+" : "−"}{formatCurrency(tx.amount)}
                 </div>
-                <div style={{ fontSize: 10, color: c.muted, marginTop: 1, textTransform: "uppercase" }}>{tx.status.toLowerCase()}</div>
+                <div style={{ fontSize: 10, color: c.muted, marginTop: 1, textTransform: "uppercase", letterSpacing: "0.04em" }}>{tx.status.toLowerCase()}</div>
               </div>
             )}
             {!compact && onEdit && (

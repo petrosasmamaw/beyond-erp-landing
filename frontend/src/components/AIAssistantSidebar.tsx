@@ -125,17 +125,17 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
   ];
 
   const colors = {
-    bg: dark ? "#0a101d" : "#ffffff",
-    border: dark ? "#1a273e" : "#e2e8f0",
-    headerBg: dark ? "#070c17" : "#f8fafc",
-    ink: dark ? "#f8fafc" : "#0f172a",
-    muted: dark ? "#94a3b8" : "#64748b",
+    bg: "var(--bg-surface)",
+    border: "var(--border-line)",
+    headerBg: "var(--bg-subtle)",
+    ink: "var(--text-primary)",
+    muted: "var(--text-muted)",
     userBubble: dark ? "#1d4ed8" : "#2563eb",
-    aiBubble: dark ? "#131d2e" : "#f1f5f9",
-    aiBubbleBorder: dark ? "#1e2e46" : "#e2e8f0",
+    aiBubble: "var(--bg-subtle)",
+    aiBubbleBorder: "var(--border-line)",
     chipBg: dark ? "rgba(37, 99, 235, 0.12)" : "rgba(37, 99, 235, 0.08)",
     chipBorder: dark ? "rgba(37, 99, 235, 0.3)" : "rgba(37, 99, 235, 0.2)",
-    inputBg: dark ? "#070d18" : "#f8fafc",
+    inputBg: "var(--bg-surface)",
   };
 
   return (
@@ -197,7 +197,7 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
                 width: 36,
                 height: 36,
                 borderRadius: 10,
-                background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+                background: "linear-gradient(135deg, #2563eb, #0284c7)",
                 color: "white",
                 display: "flex",
                 alignItems: "center",
@@ -313,7 +313,7 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
                       width: 26,
                       height: 26,
                       borderRadius: 6,
-                      background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+                      background: "linear-gradient(135deg, #2563eb, #0284c7)",
                       color: "white",
                       display: "flex",
                       alignItems: "center",
@@ -371,7 +371,7 @@ You can ask me to calculate ERCA 15% VAT liability, analyze profit margins, insp
                   width: 26,
                   height: 26,
                   borderRadius: 6,
-                  background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+                  background: "linear-gradient(135deg, #2563eb, #0284c7)",
                   color: "white",
                   display: "flex",
                   alignItems: "center",

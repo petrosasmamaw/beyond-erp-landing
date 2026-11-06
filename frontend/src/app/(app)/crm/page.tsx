@@ -31,7 +31,7 @@ const STAGES: { key: DealStage; label: string; color: string }[] = [
   { key: "PROSPECT", label: "Prospect", color: "#64748b" },
   { key: "CONTACTED", label: "Contacted", color: "#0284c7" },
   { key: "PROPOSAL", label: "Proposal", color: "#f59e0b" },
-  { key: "NEGOTIATION", label: "Negotiation", color: "#8b5cf6" },
+  { key: "NEGOTIATION", label: "Negotiation", color: "#0891b2" },
   { key: "WON", label: "Closed Won", color: "#10b981" },
   { key: "LOST", label: "Closed Lost", color: "#ef4444" },
 ];
@@ -107,14 +107,14 @@ export default function CrmPage() {
   };
 
   const colors = {
-    bg: dark ? "#070b14" : "#f8fafc",
-    cardBg: dark ? "#0d1422" : "#ffffff",
-    cardBorder: dark ? "#1a2a40" : "#e2e8f0",
-    ink: dark ? "#f8fafc" : "#0f172a",
-    muted: dark ? "#94a3b8" : "#64748b",
-    columnBg: dark ? "rgba(13, 20, 34, 0.7)" : "#f1f5f9",
-    dealBg: dark ? "#111b2e" : "#ffffff",
-    dealBorder: dark ? "#1e2e46" : "#e2e8f0",
+    bg: "var(--bg-canvas)",
+    cardBg: "var(--bg-surface)",
+    cardBorder: "var(--border-line)",
+    ink: "var(--text-primary)",
+    muted: "var(--text-muted)",
+    columnBg: dark ? "rgba(15, 23, 42, 0.6)" : "var(--bg-subtle)",
+    dealBg: "var(--bg-surface)",
+    dealBorder: "var(--border-line)",
   };
 
   return (
@@ -287,7 +287,7 @@ export default function CrmPage() {
           <div style={{ fontSize: 11, fontWeight: 700, color: colors.muted, textTransform: "uppercase" }}>
             Win Rate
           </div>
-          <div style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#8b5cf6" }}>
+          <div style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#2563eb" }}>
             {winRate}%
           </div>
           <div style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>Conversion efficiency</div>

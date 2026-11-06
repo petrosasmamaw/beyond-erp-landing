@@ -188,7 +188,7 @@ export function AdminView({
         {[
           { label: "Total Users", value: users.length, color: "#2563eb", bg: c.dark ? "#0c1a2e" : "#eff6ff" },
           { label: "Pending Regs", value: pendingRegistrations, color: "#d97706", bg: c.dark ? "#1c1200" : "#fffbeb" },
-          { label: "Audit Events", value: auditLogs.length, color: "#7c3aed", bg: c.dark ? "#1a0d2e" : "#f5f3ff" },
+          { label: "Audit Events", value: auditLogs.length, color: "#0284c7", bg: c.dark ? "#0c1f2e" : "#eff6ff" },
           { label: "Email Logs", value: emailLogs.length, color: "#0891b2", bg: c.dark ? "#061520" : "#ecfeff" },
         ].map(({ label, value, color, bg }) => (
           <div key={label} style={{ borderRadius: 14, border: `1px solid ${c.border}`, background: c.surface, padding: "14px 16px" }}>
@@ -466,8 +466,8 @@ export function AdminView({
                         style={{
                           display: "flex", alignItems: "center", gap: 8, padding: "8px 10px",
                           borderRadius: 8, cursor: "pointer",
-                          border: `1.5px solid ${checked ? "#7c3aed" : c.border}`,
-                          background: checked ? (c.dark ? "#12082a" : "#f5f3ff") : c.surface,
+                          border: `1.5px solid ${checked ? "#2563eb" : c.border}`,
+                          background: checked ? (c.dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)") : c.surface,
                           transition: "all 0.14s",
                         }}
                       >
@@ -475,9 +475,9 @@ export function AdminView({
                           type="checkbox"
                           checked={checked}
                           onChange={() => setUserForm((f) => ({ ...f, permissions: toggleValue(f.permissions, perm) }))}
-                          style={{ width: 14, height: 14, accentColor: "#7c3aed", cursor: "pointer" }}
+                          style={{ width: 14, height: 14, accentColor: "#2563eb", cursor: "pointer" }}
                         />
-                        <span style={{ fontSize: 12, fontWeight: 600, color: checked ? "#7c3aed" : c.ink }}>{perm}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: checked ? "#2563eb" : c.ink }}>{perm}</span>
                       </label>
                     );
                   })}
@@ -487,10 +487,10 @@ export function AdminView({
                 type="submit"
                 style={{
                   height: 42, paddingInline: 20, borderRadius: 9, border: 0, alignSelf: "flex-start" as const,
-                  background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
                   color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
                   display: "flex", alignItems: "center", gap: 7,
-                  boxShadow: "0 4px 12px rgba(124,58,237,0.3)",
+                  boxShadow: "0 4px 12px rgba(37,99,235,0.25)",
                 }}
               >
                 <UserPlus size={14} /> Create User
@@ -595,8 +595,8 @@ export function AdminView({
       <div style={card}>
         <div style={cardHead}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={iconBadge(c.dark ? "#1a0d2e" : "#f5f3ff")}>
-              <ClipboardList size={15} color="#7c3aed" />
+            <div style={iconBadge(c.dark ? "rgba(37,99,235,0.16)" : "rgba(37,99,235,0.08)")}>
+              <ClipboardList size={15} color="#2563eb" />
             </div>
             <div>
               <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: c.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>System</p>
@@ -615,7 +615,7 @@ export function AdminView({
               value={value}
               style={inp}
               onChange={(e) => setAuditFilters((f) => ({ ...f, [key]: e.target.value }))}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "#7c3aed")}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
               onBlur={(e) => (e.currentTarget.style.borderColor = c.inputBorder)}
               placeholder={placeholder}
             />
@@ -624,7 +624,7 @@ export function AdminView({
             value={auditFilters.method}
             style={{ ...inp, appearance: "auto" as const }}
             onChange={(e) => setAuditFilters((f) => ({ ...f, method: e.target.value }))}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#7c3aed")}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
             onBlur={(e) => (e.currentTarget.style.borderColor = c.inputBorder)}
           >
             <option value="">All methods</option>
@@ -635,7 +635,7 @@ export function AdminView({
             value={auditFilters.dateFrom}
             style={inp}
             onChange={(e) => setAuditFilters((f) => ({ ...f, dateFrom: e.target.value }))}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#7c3aed")}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
             onBlur={(e) => (e.currentTarget.style.borderColor = c.inputBorder)}
           />
           <input
@@ -643,7 +643,7 @@ export function AdminView({
             value={auditFilters.dateTo}
             style={inp}
             onChange={(e) => setAuditFilters((f) => ({ ...f, dateTo: e.target.value }))}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#7c3aed")}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
             onBlur={(e) => (e.currentTarget.style.borderColor = c.inputBorder)}
           />
         </div>

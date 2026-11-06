@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, Download, FileText, Loader2, LogOut, RefreshCcw, Sparkles } from "lucide-react";
+import { Building2, Calendar, ChevronDown, Download, FileText, Loader2, LogOut, RefreshCcw, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -111,7 +111,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (
       <main className="splash-screen" aria-label="Loading">
         <div className="splash-card">
-          <div className="splash-logo"><i className="fa-solid fa-cube" /></div>
+          <div className="splash-logo"><Building2 size={28} /></div>
           <h1>Beyond ERP</h1>
           <p>Loading workspace…</p>
           <div className="splash-progress" aria-hidden="true"><span /></div>
@@ -186,7 +186,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       flexShrink: 0,
                     }}
                   >
-                    <i className={companySector?.icon || "fa-solid fa-building"} />
+                    <Building2 size={12} />
                   </span>
                   <span
                     style={{
@@ -222,9 +222,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     borderRadius: 20,
                     fontSize: 11,
                     fontWeight: 700,
-                    background: "rgba(245, 158, 11, 0.15)",
-                    color: "#f59e0b",
-                    border: "1px solid rgba(245, 158, 11, 0.35)",
+                    background: "rgba(245, 158, 11, 0.12)",
+                    color: dark ? "#fbbf24" : "#d97706",
+                    border: `1px solid ${dark ? "rgba(245, 158, 11, 0.3)" : "rgba(245, 158, 11, 0.25)"}`,
                     letterSpacing: "0.04em",
                     textTransform: "uppercase",
                     whiteSpace: "nowrap",
@@ -247,9 +247,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   gap: 6,
                   padding: "4px 10px",
                   borderRadius: 20,
-                  background: dark ? "rgba(124, 58, 237, 0.2)" : "rgba(124, 58, 237, 0.1)",
-                  color: dark ? "#c4b5fd" : "#6d28d9",
-                  border: "1px solid rgba(124, 58, 237, 0.35)",
+                  background: dark ? "rgba(37, 99, 235, 0.16)" : "rgba(37, 99, 235, 0.08)",
+                  color: dark ? "#93c5fd" : "#1d4ed8",
+                  border: `1px solid ${dark ? "rgba(37, 99, 235, 0.35)" : "rgba(37, 99, 235, 0.22)"}`,
                   fontSize: 11.5,
                   fontWeight: 700,
                   cursor: "pointer",
@@ -257,7 +257,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   whiteSpace: "nowrap",
                 }}
               >
-                <Sparkles size={13} style={{ color: "#a855f7" }} />
+                <Sparkles size={13} style={{ color: "#2563eb" }} />
                 <span className="demo-badge-long">AI Assistant</span>
               </button>
 
@@ -317,11 +317,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Ethiopian date strip — subtle */}
           <div className="calendar-strip">
-            <i className="fa-regular fa-calendar" style={{ fontSize: 13, flexShrink: 0 }} />
+            <Calendar size={13} style={{ flexShrink: 0, color: "var(--accent-blue)" }} />
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
               <strong style={{ fontSize: 13 }}>{ethiopianDate}</strong>
               <span style={{ fontSize: 12 }}>· VAT 15% · ETB · NBE Compliant</span>
-              {holidayToday ? <span className="holiday-badge">🎉 {holidayToday}</span> : null}
+              {holidayToday ? (
+                <span className="holiday-badge">
+                  <Sparkles size={11} style={{ display: "inline-block", verticalAlign: "middle", marginRight: 4 }} />
+                  {holidayToday}
+                </span>
+              ) : null}
             </div>
           </div>
 
