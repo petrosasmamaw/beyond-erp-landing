@@ -148,43 +148,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 500, lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap" }}>
                 {getTimeOfDay()} · {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" })}
               </div>
-              {isDemoActive ? (
-                <button
-                  type="button"
-                  onClick={() => dispatch(openModal({ type: "sector-select" }))}
-                  title="Click to switch Ethiopian industry sector workspace"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 7,
-                    marginTop: 4,
-                    height: 32,
-                    padding: "0 10px",
-                    borderRadius: 6,
-                    background: "var(--accent-blue-subtle)",
-                    border: "none",
-                    color: "var(--accent-blue)",
-                    cursor: "pointer",
-                    fontSize: 13,
-                    fontWeight: 500,
-                    maxWidth: "100%",
-                    transition: "background-color 0.12s ease-out",
-                  }}
-                >
-                  <Building2 size={16} style={{ color: "var(--accent-blue)", flexShrink: 0 }} />
-                  <span
-                    style={{
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      maxWidth: "clamp(120px, 28vw, 260px)",
-                    }}
-                  >
-                    {companyName}
-                  </span>
-                  <ChevronDown size={14} style={{ color: "var(--accent-blue)", marginLeft: 1, flexShrink: 0 }} />
-                </button>
-              ) : (
+              {!isDemoActive && (
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
                   <strong style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.25 }}>
                     {companyName}
