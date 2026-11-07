@@ -26,7 +26,7 @@ function validateEthiopianPhone(phone: string): { isValid: boolean; formatted: s
     return {
       isValid: false,
       formatted: trimmed,
-      error: "Enter a valid Ethiopian phone number (e.g. 0911 234 567 or +251 911 234 567)"
+      error: "Enter a valid Ethiopian phone number"
     };
   }
   const digits = match[1];
@@ -96,7 +96,7 @@ function RegisterDetailsContent() {
   const trimmedCompany = form.companyName.trim();
   const isCompanyNameValid = trimmedCompany.length >= 3 && /[a-zA-Z\u1200-\u137F]/.test(trimmedCompany);
   const companyError = touched.companyName && !isCompanyNameValid
-    ? "Company name must be at least 3 letters (e.g. Selam Trading PLC)"
+    ? "Company name must be at least 3 letters"
     : "";
 
   const trimmedFullName = form.fullName.trim();
@@ -109,7 +109,7 @@ function RegisterDetailsContent() {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const isEmailValid = emailRegex.test(trimmedEmail);
   const emailError = touched.email && !isEmailValid
-    ? "Enter a valid business email address (e.g. name@company.com)"
+    ? "Enter a valid business email address"
     : "";
 
   const phoneResult = validateEthiopianPhone(form.phone);
@@ -119,7 +119,7 @@ function RegisterDetailsContent() {
   const trimmedTin = form.tinNumber.trim().replace(/[\s\-]/g, "");
   const isTinValid = !trimmedTin || /^\d{10}$/.test(trimmedTin);
   const tinError = touched.tinNumber && !isTinValid
-    ? "TIN number must be exactly 10 digits (e.g. 0012345678)"
+    ? "TIN number must be exactly 10 digits"
     : "";
 
   const isSectorValid = Boolean(sectorId);
@@ -479,7 +479,7 @@ function RegisterDetailsContent() {
                     onBlur={() => handleBlur("companyName")}
                     required
                     autoFocus
-                    placeholder="e.g. Selam Trading PLC"
+                    placeholder="Company name"
                     style={fieldStyle(Boolean(companyError), touched.companyName && isCompanyNameValid)}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
                     aria-invalid={Boolean(companyError)}
@@ -501,7 +501,7 @@ function RegisterDetailsContent() {
                     onChange={(e) => setForm((f) => ({ ...f, tinNumber: e.target.value }))}
                     onBlur={() => handleBlur("tinNumber")}
                     maxLength={10}
-                    placeholder="e.g. 0012345678"
+                    placeholder="10-digit TIN"
                     style={fieldStyle(Boolean(tinError), Boolean(form.tinNumber.trim() && isTinValid))}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
                   />
@@ -525,7 +525,7 @@ function RegisterDetailsContent() {
                     onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
                     onBlur={() => handleBlur("fullName")}
                     required
-                    placeholder="e.g. Abebe Kebede"
+                    placeholder="Full name"
                     style={fieldStyle(Boolean(fullNameError), touched.fullName && isFullNameValid)}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
                     aria-invalid={Boolean(fullNameError)}
@@ -548,7 +548,7 @@ function RegisterDetailsContent() {
                     onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                     onBlur={() => handleBlur("email")}
                     required
-                    placeholder="e.g. owner@company.com"
+                    placeholder="name@company.com"
                     style={fieldStyle(Boolean(emailError), touched.email && isEmailValid)}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
                     aria-invalid={Boolean(emailError)}
@@ -574,18 +574,12 @@ function RegisterDetailsContent() {
                     onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
                     onBlur={() => handleBlur("phone")}
                     required
-                    placeholder="e.g. 0911 234 567 or +251 911 234 567"
+                    placeholder="09XX XXX XXX or +251 9XX XXX XXX"
                     style={fieldStyle(Boolean(phoneError), touched.phone && isPhoneValid)}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
                     aria-invalid={Boolean(phoneError)}
                   />
-                  {phoneError ? (
-                    <p style={errorStyle}>{phoneError}</p>
-                  ) : (
-                    <span style={{ fontSize: 11.5, color: muted }}>
-                      Format: 09XX / 07XX or +251 9XX
-                    </span>
-                  )}
+                  {phoneError ? <p style={errorStyle}>{phoneError}</p> : null}
                 </label>
 
                 <label style={labelStyle}>
