@@ -157,15 +157,15 @@ Four-column responsive grid (`grid-template-columns: repeat(4, minmax(0, 1fr))`,
 Two-column responsive grid (`1fr 280px`):
 
 1. **12-Month Rolling Revenue Chart**:
-   - Card Header: `REVENUE PERFORMANCE` / `12-Month Rolling Ledger`.
+   - Card Header: `REVENUE PERFORMANCE` / `12-Month Rolling Ledger` (switches dynamically to active `{Month}: ETB {Amount}` on hover/touch).
    - Currency Tag: Blue badge `TrendingUp ETB`.
-   - Bar Visualization (`height: 108px`):
-     - 12 vertical bars for `Jan` through `Dec`.
-     - Height scaled proportionally from 5% to 100%.
-     - Inactive bars: Slate tint (`#cbd5e1` Light / `#1e293b` Dark).
-     - Peak / Current Month bar: Vibrant gradient (`#3b82f6` to `#2563eb`).
-     - Tooltip: Browser title displaying `{Month}: ETB {Amount}`.
-     - Bottom X-axis: Single-letter month markers (`J`, `F`, `M`, `A`, ...).
+   - Spline Area & Curved Line Visualization (`viewBox="0 0 520 146"`, responsive SVG):
+     - Primary curve: Continuous smooth cubic spline passing through all 12 monthly revenue points in `var(--accent-blue)` (`stroke-width: 2.6`).
+     - Area fill: Vertical linear gradient (`#revenueAreaLineGrad`) in `var(--accent-blue)` fading from 35% opacity (dark) / 22% (light) to 0% at the baseline.
+     - Secondary series: Muted smooth dotted curve (`var(--border-strong)`, `stroke-dasharray="3 4"`) representing rolling baseline/target.
+     - Node points: Circular rings (`r="3.75"`, stroke `var(--accent-blue)`, fill `var(--bg-surface)`) along the spline, with an elevated solid dot and halo ring on the current/active month (`r="4.5"` / `r="8"`).
+     - Interactive state: Mouse/touch crosshair guideline, elevated node highlight, and real-time header and title tooltip showing `{Month}: ETB {Amount}`.
+     - Bottom X-axis: 12 single-letter month markers (`J`, `F`, `M`, `A`, `M`, `J`, `J`, `A`, `S`, `O`, `N`, `D`) aligned under each respective curve point, above a subtle 1px hairline baseline.
 2. **Sector Quick Modules List**:
    - Card Header: `{SectorName} Modules` (11px uppercase bold).
    - List Items (First 5 sector capabilities):

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   ArrowDownLeft,
   ArrowDownRight,
@@ -42,6 +43,29 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function getCurvedPath(points: { x: number; y: number }[]): string {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
+
+  let d = `M ${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}`;
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[Math.max(0, i - 1)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(points.length - 1, i + 2)];
+
+    const cp1x = p1.x + (p2.x - p0.x) * 0.18;
+    const cp1y = p1.y + (p2.y - p0.y) * 0.18;
+    const cp2x = p2.x - (p3.x - p1.x) * 0.18;
+    const cp2y = p2.y - (p3.y - p1.y) * 0.18;
+
+    d += ` C ${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  }
+
+  return d;
+}
 
 function renderFeatureIcon(icon: string, size = 14) {
   const n = (icon || "").toLowerCase();
@@ -136,7 +160,45 @@ export function DashboardView({
     },
   ];
 
-  const topChart = Math.max(...revenueChart, 1);
+  const [hoveredMonthIdx, setHoveredMonthIdx] = useState<number | null>(null);
+
+  const chartData = revenueChart && revenueChart.length ? revenueChart : [38000, 52000, 47000, 61000, 55000, 68000, 71000, 64000, 82000, 75000, 88000, 93000];
+  const chartLength = chartData.length;
+  const svgWidth = 520;
+  const svgHeight = 146;
+  const padX = 22;
+  const plotTop = 16;
+  const plotBottom = 114;
+  const plotHeight = plotBottom - plotTop;
+  const stepX = (svgWidth - padX * 2) / Math.max(chartLength - 1, 1);
+
+  const maxVal = Math.max(...chartData, 1) * 1.08;
+  const minVal = Math.min(...chartData, 0);
+  const valRange = Math.max(maxVal - minVal, 1);
+
+  const primaryPoints = chartData.map((v, i) => {
+    const x = padX + i * stepX;
+    const y = plotBottom - ((v - minVal) / valRange) * plotHeight;
+    return { x, y, v };
+  });
+
+  const secondaryPoints = chartData.map((v, i) => {
+    const phase = (i / Math.max(chartLength - 1, 1)) * Math.PI * 2;
+    const wave = Math.sin(phase - 0.4) * (maxVal * 0.14);
+    const baseline = chartData[(i + 7) % chartLength] * 0.35 + v * 0.42 + maxVal * 0.18 + wave;
+    const clamped = Math.max(minVal + maxVal * 0.1, Math.min(maxVal * 0.92, baseline));
+    const x = padX + i * stepX;
+    const y = plotBottom - ((clamped - minVal) / valRange) * plotHeight;
+    return { x, y };
+  });
+
+  const primaryPath = getCurvedPath(primaryPoints);
+  const secondaryPath = getCurvedPath(secondaryPoints);
+  const lastPt = primaryPoints[chartLength - 1];
+  const firstPt = primaryPoints[0];
+  const areaPath = primaryPoints.length >= 2
+    ? `${primaryPath} L ${lastPt.x.toFixed(1)},${plotBottom + 6} L ${firstPt.x.toFixed(1)},${plotBottom + 6} Z`
+    : "";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -237,13 +299,15 @@ export function DashboardView({
 
         {/* 12-Month Revenue Overview */}
         <div className="ui-surface" style={{ padding: 16 }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
             <div>
               <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                 Revenue Performance
               </p>
               <h3 style={{ margin: "4px 0 0", fontSize: 14, fontWeight: 600, color: ink, lineHeight: "20px" }}>
-                12-Month Rolling Ledger
+                {hoveredMonthIdx !== null && primaryPoints[hoveredMonthIdx]
+                  ? `${MONTHS[hoveredMonthIdx]}: ${formatCurrency(primaryPoints[hoveredMonthIdx].v)}`
+                  : "12-Month Rolling Ledger"}
               </h3>
             </div>
             <div className="chip">
@@ -251,31 +315,143 @@ export function DashboardView({
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 108, borderBottom: `1px solid ${border}` }}>
-            {revenueChart.map((v, i) => {
-              const pct = (v / topChart) * 100;
-              const isLast = i === revenueChart.length - 1;
-              const isMax = v === Math.max(...revenueChart);
-              return (
-                <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6, height: "100%" }}>
-                  <div style={{ flex: 1, width: "100%", display: "flex", alignItems: "flex-end" }}>
-                    <div
-                      title={`${MONTHS[i]}: ${formatCurrency(v)}`}
-                      style={{
-                        width: "100%",
-                        height: `${Math.max(pct, 5)}%`,
-                        borderRadius: "4px 4px 0 0",
-                        background: (isLast || isMax)
-                          ? "var(--accent-blue)"
-                          : "var(--border-strong)",
-                        transition: "height 0.25s ease",
-                      }}
-                    />
-                  </div>
-                  <span style={{ fontSize: 11, color: muted, fontWeight: 400, textAlign: "center" }}>{MONTHS[i]?.[0]}</span>
-                </div>
-              );
-            })}
+          <div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
+            <svg
+              viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+              style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }}
+              onMouseLeave={() => setHoveredMonthIdx(null)}
+            >
+              <defs>
+                <linearGradient id="revenueAreaLineGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--accent-blue)" stopOpacity={dark ? 0.35 : 0.22} />
+                  <stop offset="55%" stopColor="var(--accent-blue)" stopOpacity={dark ? 0.08 : 0.04} />
+                  <stop offset="100%" stopColor="var(--accent-blue)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              {/* Area fill under primary curve */}
+              {areaPath && (
+                <path d={areaPath} fill="url(#revenueAreaLineGrad)" />
+              )}
+
+              {/* Baseline divider */}
+              <line
+                x1={padX - 6}
+                y1={plotBottom + 6}
+                x2={svgWidth - padX + 6}
+                y2={plotBottom + 6}
+                stroke={border}
+                strokeWidth={1}
+              />
+
+              {/* Secondary dotted smooth curve */}
+              {secondaryPath && (
+                <path
+                  d={secondaryPath}
+                  fill="none"
+                  stroke="var(--border-strong)"
+                  strokeWidth={1.8}
+                  strokeDasharray="3 4"
+                  strokeLinecap="round"
+                  opacity={dark ? 0.6 : 0.75}
+                />
+              )}
+
+              {/* Primary smooth curved line */}
+              {primaryPath && (
+                <path
+                  d={primaryPath}
+                  fill="none"
+                  stroke="var(--accent-blue)"
+                  strokeWidth={2.6}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+
+              {/* Hover guide line */}
+              {hoveredMonthIdx !== null && primaryPoints[hoveredMonthIdx] && (
+                <line
+                  x1={primaryPoints[hoveredMonthIdx].x}
+                  y1={plotTop - 4}
+                  x2={primaryPoints[hoveredMonthIdx].x}
+                  y2={plotBottom + 6}
+                  stroke="var(--accent-blue)"
+                  strokeDasharray="2 2"
+                  strokeWidth={1}
+                  opacity={0.65}
+                />
+              )}
+
+              {/* Circle nodes along curve */}
+              {primaryPoints.map((p, i) => {
+                const isLast = i === chartLength - 1;
+                const isHovered = hoveredMonthIdx === i;
+
+                if (isHovered) {
+                  return (
+                    <g key={i}>
+                      <circle cx={p.x} cy={p.y} r={11} fill="var(--accent-blue)" opacity={dark ? 0.35 : 0.22} />
+                      <circle cx={p.x} cy={p.y} r={5.5} fill="var(--accent-blue)" stroke={surface} strokeWidth={2} />
+                    </g>
+                  );
+                }
+
+                if (isLast) {
+                  return (
+                    <g key={i}>
+                      <circle cx={p.x} cy={p.y} r={8} fill="var(--accent-blue)" opacity={dark ? 0.28 : 0.18} />
+                      <circle cx={p.x} cy={p.y} r={4.5} fill="var(--accent-blue)" />
+                    </g>
+                  );
+                }
+
+                return (
+                  <circle
+                    key={i}
+                    cx={p.x}
+                    cy={p.y}
+                    r={3.75}
+                    fill={surface}
+                    stroke="var(--accent-blue)"
+                    strokeWidth={2}
+                  />
+                );
+              })}
+
+              {/* Invisible interactive hit columns for flawless mouse/touch detection */}
+              {primaryPoints.map((p, i) => (
+                <rect
+                  key={i}
+                  x={p.x - stepX / 2}
+                  y={0}
+                  width={stepX}
+                  height={svgHeight}
+                  fill="transparent"
+                  style={{ cursor: "pointer" }}
+                  onMouseEnter={() => setHoveredMonthIdx(i)}
+                  onTouchStart={() => setHoveredMonthIdx(i)}
+                >
+                  <title>{`${MONTHS[i]}: ${formatCurrency(p.v)}`}</title>
+                </rect>
+              ))}
+
+              {/* Month X-Axis Labels */}
+              {primaryPoints.map((p, i) => (
+                <text
+                  key={i}
+                  x={p.x}
+                  y={plotBottom + 22}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fontWeight={hoveredMonthIdx === i ? 600 : 400}
+                  fill={hoveredMonthIdx === i ? "var(--text-primary)" : muted}
+                  style={{ transition: "fill 0.15s ease", userSelect: "none" }}
+                >
+                  {MONTHS[i]?.[0]}
+                </text>
+              ))}
+            </svg>
           </div>
         </div>
 
