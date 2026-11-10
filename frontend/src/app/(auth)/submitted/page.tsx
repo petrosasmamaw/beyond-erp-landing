@@ -200,7 +200,7 @@ export default function SubmittedPage() {
           {isAgreement ? (
             <>
               Your enterprise registration request has been submitted under{" "}
-              <strong style={{ color: dark ? "#60a5fa" : "#2563eb" }}>Separate Price Upon Request (Ask)</strong>.
+              <strong style={{ color: dark ? "#60a5fa" : "#2563eb" }}>Separate Price Upon Request (Contact Company)</strong>.
               <br />
               <strong style={{ color: ink }}>
                 Our administrative leadership will contact you directly to give you a separate price quote based on your request and deliver your custom ERP workspace credentials.
@@ -253,7 +253,7 @@ export default function SubmittedPage() {
                   background: isAgreement ? "#2563eb" : "#10b981",
                 }}
               />
-              {isAgreement ? "Price on Request (Ask)" : "Under Verification"}
+              {isAgreement ? "Separate Price on Request" : "Under Verification"}
             </span>
           </div>
 
@@ -281,14 +281,14 @@ export default function SubmittedPage() {
               <p style={{ margin: 0, fontWeight: 700, color: "#2563eb" }}>
                 {reg?.planTier === "BASIC"
                   ? "Retail & Trading (Net 36,500 ETB • 100 ETB/day)"
-                  : "Price on Request (Ask / Custom Quote)"}
+                  : "Price on Request (Custom Quote)"}
               </p>
             </div>
             <div>
               <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Payment Method</p>
               <p style={{ margin: 0, fontWeight: 700, color: "#2563eb" }}>
                 {isAgreement
-                  ? "Separate Price Upon Request (Ask)"
+                  ? "Separate Price Upon Request (Contact Company)"
                   : reg?.paymentMethod === "TELEBIRR"
                   ? "Telebirr Mobile Money"
                   : "CBE Bank Transfer"}

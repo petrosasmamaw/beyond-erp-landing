@@ -62,8 +62,8 @@ const PLANS: Record<PlanTier, PlanConfig> = {
   STANDARD: {
     id: "STANDARD",
     title: "Enterprise Custom",
-    badge: "Ask for Pricing",
-    totalDisplay: "Ask",
+    badge: "Contact Company",
+    totalDisplay: "Contact the Company",
     numericTotal: null,
     subtotal: "Separate Pricing Upon Request",
     discount: "—",
@@ -74,9 +74,9 @@ const PLANS: Record<PlanTier, PlanConfig> = {
   },
   CUSTOM: {
     id: "CUSTOM",
-    title: "Custom Quote",
-    badge: "Ask for Pricing",
-    totalDisplay: "Ask",
+    title: "Enterprise Custom",
+    badge: "Contact Company",
+    totalDisplay: "Contact the Company",
     numericTotal: null,
     subtotal: "Separate Pricing Upon Request",
     discount: "—",
@@ -194,7 +194,7 @@ function PaymentContent() {
         : "Receipt via Telegram @beyond_et";
 
       const paymentNote = isCustomSector
-        ? `[Tier: ASK / CUSTOM | Separate Pricing Upon Request | Sector: ${companySector.name} | Contact via Telegram @beyond_et | Terms & Policy Confirmed]`
+        ? `[Tier: CUSTOM / CONTACT COMPANY | Separate Pricing Upon Request | Sector: ${companySector.name} | Contact via Telegram @beyond_et | Terms & Policy Confirmed]`
         : `[Tier: BASIC (36,500 ETB) | 100 ETB/Day Net | Sector: Retail & Trading | Payment: ${selectedMethod} | Receipt submitted via Telegram @beyond_et | Terms & Policy Confirmed]`;
 
       const combinedNotes = draft.notes ? `${paymentNote} ${draft.notes}` : paymentNote;
@@ -382,41 +382,49 @@ function PaymentContent() {
                   border: "1px solid rgba(255, 255, 255, 0.25)"
                 }}
               >
-                {currentPlan.title} Tier
+                {isCustomSector ? "Custom Scope" : `${currentPlan.title} Tier`}
               </span>
             </div>
 
             {/* Price Breakdown Table */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
-              {/* Subtotal */}
+              {/* Subtotal / Pricing Model */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Subtotal</span>
+                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>
+                  {isCustomSector ? "Pricing Model" : "Subtotal"}
+                </span>
                 <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
-                  {currentPlan.subtotal}
+                  {isCustomSector ? "Tailored Quotation" : currentPlan.subtotal}
                 </span>
               </div>
 
-              {/* Discount */}
+              {/* Discount / Consultation Scope */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>Discount</span>
-                <span style={{ fontWeight: 700, color: isCustomSector ? "rgba(255, 255, 255, 0.7)" : "#4ade80", fontVariantNumeric: "tabular-nums" }}>
-                  {currentPlan.discount}
+                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>
+                  {isCustomSector ? "Consultation Scope" : "Discount"}
+                </span>
+                <span style={{ fontWeight: 700, color: isCustomSector ? "rgba(255, 255, 255, 0.9)" : "#4ade80", fontVariantNumeric: "tabular-nums" }}>
+                  {isCustomSector ? "Custom Assessment" : currentPlan.discount}
                 </span>
               </div>
 
-              {/* Net Taxable Amount */}
+              {/* Net Taxable Amount / Deployment */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(219, 234, 254, 0.75)", fontSize: 12 }}>Net Taxable Base</span>
+                <span style={{ color: "rgba(219, 234, 254, 0.75)", fontSize: 12 }}>
+                  {isCustomSector ? "Deployment" : "Net Taxable Base"}
+                </span>
                 <span style={{ fontWeight: 600, color: "rgba(219, 234, 254, 0.9)", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
-                  {currentPlan.taxableBase}
+                  {isCustomSector ? "Dedicated Cloud / On-Prem" : currentPlan.taxableBase}
                 </span>
               </div>
 
-              {/* VAT 15% */}
+              {/* VAT 15% / Tax Status */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>VAT (15%)</span>
+                <span style={{ color: "rgba(255, 255, 255, 0.9)" }}>
+                  {isCustomSector ? "Tax Status" : "VAT (15%)"}
+                </span>
                 <span style={{ fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>
-                  {currentPlan.vat15}
+                  {isCustomSector ? "Official VAT Invoice Provided" : currentPlan.vat15}
                 </span>
               </div>
             </div>
@@ -424,20 +432,20 @@ function PaymentContent() {
             {/* Total Divider */}
             <div style={{ borderTop: "1px dashed rgba(255, 255, 255, 0.25)", margin: "12px 0 10px" }} />
 
-            {/* Total Payable Row */}
+            {/* Total Payable / Quotation Row */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#bfdbfe" }}>
-                  {isCustomSector ? "Pricing" : "Total Payable"}
+                  {isCustomSector ? "Quotation Model" : "Total Payable"}
                 </div>
                 <div style={{ fontSize: 11, color: "rgba(219, 234, 254, 0.7)", marginTop: 2 }}>
-                  {isCustomSector ? "Separate quote upon request" : "Official VAT invoice provided"}
+                  {isCustomSector ? "Separate pricing upon request" : "Official VAT invoice provided"}
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
                 {isCustomSector ? (
-                  <div style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
-                    Ask
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+                    Contact Company
                   </div>
                 ) : (
                   <div style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1 }}>
@@ -735,14 +743,14 @@ function PaymentContent() {
               padding: 32px 20px 48px;
             }
           }
-          @media (max-width: 380px) {
+          @media (max-width: 480px) {
             .pay-amount {
-              font-size: 38px;
+              font-size: 32px !important;
             }
             .pay-row {
               flex-direction: column;
               align-items: flex-start;
-              gap: 6px;
+              gap: 8px;
             }
             .pay-row dd {
               width: 100%;
@@ -753,17 +761,32 @@ function PaymentContent() {
 
         <main className="pay-panel-wrap">
           {/* 1. Small heading */}
-          <h1 className="pay-h1">Pay for your workspace</h1>
+          <h1 className="pay-h1">
+            {isCustomSector ? "Request for your workspace" : "Pay for your workspace"}
+          </h1>
 
-          {/* 2. Big amount */}
-          <p className="pay-amount">
-            {currentPlan.totalDisplay}
-            {currentPlan.numericTotal ? <small>ETB</small> : null}
+          {/* 2. Big amount / Contact Heading */}
+          <p
+            className="pay-amount"
+            style={
+              isCustomSector
+                ? {
+                    fontSize: "clamp(26px, 4.5vw, 36px)",
+                    letterSpacing: "-0.015em",
+                    lineHeight: 1.15
+                  }
+                : undefined
+            }
+          >
+            {isCustomSector ? "Contact the Company" : currentPlan.totalDisplay}
+            {!isCustomSector && currentPlan.numericTotal ? <small>ETB</small> : null}
           </p>
 
           {/* 3. Meta line */}
           <p className="pay-meta">
-            {currentPlan.title} Tier, {companySector.name} · 365 days · 15% VAT included
+            {isCustomSector
+              ? `${companySector.name} · Dedicated Setup · Separate price upon request`
+              : `${currentPlan.title} Tier, ${companySector.name} · 365 days · 15% VAT included`}
           </p>
 
           {/* 4. Company row */}
@@ -781,198 +804,353 @@ function PaymentContent() {
             </button>
           </div>
 
-          {/* 5. Section heading */}
-          <h2 className="pay-h2">Pay with</h2>
+          {isCustomSector ? (
+            /* ================= NON-RETAIL / CUSTOM WORKSPACE: DIRECT CONTACT WORKFLOW ================= */
+            <>
+              {/* 5. Section heading */}
+              <h2 className="pay-h2">Direct contact channels</h2>
 
-          {/* 6. Method switch */}
-          <div className="pay-seg" role="group" aria-label="Payment method">
-            <button
-              type="button"
-              aria-pressed={selectedMethod === "CBE"}
-              onClick={() => setSelectedMethod("CBE")}
-            >
-              CBE bank transfer
-            </button>
-            <button
-              type="button"
-              aria-pressed={selectedMethod === "TELEBIRR"}
-              onClick={() => setSelectedMethod("TELEBIRR")}
-            >
-              Telebirr
-            </button>
-          </div>
+              {/* 6. Contact details list using exact same 1px divider UI */}
+              <dl className="pay-dl">
+                <div className="pay-row">
+                  <dt>Primary phone</dt>
+                  <dd>
+                    <span className="pay-num">+251 939 048 523</span>
+                    <button
+                      className={`pay-copy ${copied === "Primary Phone" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy("+251939048523", "Primary Phone")}
+                    >
+                      {copied === "Primary Phone" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
+                </div>
+                <div className="pay-row">
+                  <dt>Alternative phone</dt>
+                  <dd>
+                    <span className="pay-num">+251 928 151 599</span>
+                    <button
+                      className={`pay-copy ${copied === "Alternative Phone" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy("+251928151599", "Alternative Phone")}
+                    >
+                      {copied === "Alternative Phone" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
+                </div>
+                <div className="pay-row">
+                  <dt>Official email</dt>
+                  <dd>
+                    <span style={{ fontSize: 13, wordBreak: "break-all" }}>beyondsolutionsupport@gmail.com</span>
+                    <button
+                      className={`pay-copy ${copied === "Official Email" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy("beyondsolutionsupport@gmail.com", "Official Email")}
+                    >
+                      {copied === "Official Email" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
+                </div>
+                <div className="pay-row">
+                  <dt>Telegram</dt>
+                  <dd>
+                    <span className="pay-num">@beyond_et</span>
+                    <button
+                      className={`pay-copy ${copied === "Telegram" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy("@beyond_et", "Telegram")}
+                    >
+                      {copied === "Telegram" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
+                </div>
+                <div className="pay-row">
+                  <dt>Office location</dt>
+                  <dd>
+                    <span style={{ fontSize: 13 }}>Addis Ababa, 22 Bata Complex, 3rd Floor</span>
+                    <button
+                      className={`pay-copy ${copied === "Office Location" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy("Addis Ababa, 22 Bata Complex, 3rd Floor", "Office Location")}
+                    >
+                      {copied === "Office Location" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
+                </div>
+              </dl>
 
-          {/* 7. Details list */}
-          <dl className="pay-dl">
-            {selectedMethod === "CBE" ? (
-              <>
-                <div className="pay-row">
-                  <dt>Bank</dt>
-                  <dd>{cbeDetails.bankName}, {cbeDetails.branch}</dd>
-                </div>
-                <div className="pay-row">
-                  <dt>Account number</dt>
-                  <dd>
-                    <span className="pay-num">{cbeDetails.accountNumber}</span>
-                    <button
-                      className={`pay-copy ${copied === "Account Number" ? "done" : ""}`}
-                      type="button"
-                      onClick={() => handleCopy(cbeDetails.accountNumber, "Account Number")}
-                    >
-                      {copied === "Account Number" ? "Copied" : "Copy"}
-                    </button>
-                  </dd>
-                </div>
-                <div className="pay-row">
-                  <dt>Account name</dt>
-                  <dd>
-                    <span>{cbeDetails.accountName}</span>
-                    <button
-                      className={`pay-copy ${copied === "Account Name" ? "done" : ""}`}
-                      type="button"
-                      onClick={() => handleCopy(cbeDetails.accountName, "Account Name")}
-                    >
-                      {copied === "Account Name" ? "Copied" : "Copy"}
-                    </button>
-                  </dd>
-                </div>
-                <div className="pay-row">
-                  <dt>Amount</dt>
-                  <dd>
-                    <span className="pay-num">{currentPlan.totalDisplay}</span>
-                    <button
-                      className={`pay-copy ${copied === "Amount" ? "done" : ""}`}
-                      type="button"
-                      onClick={() => handleCopy(String(currentPlan.numericTotal || currentPlan.totalDisplay), "Amount")}
-                    >
-                      {copied === "Amount" ? "Copied" : "Copy"}
-                    </button>
-                  </dd>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="pay-row">
-                  <dt>Service</dt>
-                  <dd>Telebirr mobile money</dd>
-                </div>
-                <div className="pay-row">
-                  <dt>Phone number</dt>
-                  <dd>
-                    <span className="pay-num">{telebirrDetails.phoneNumber}</span>
-                    <button
-                      className={`pay-copy ${copied === "Phone Number" ? "done" : ""}`}
-                      type="button"
-                      onClick={() => handleCopy(telebirrDetails.phoneNumber, "Phone Number")}
-                    >
-                      {copied === "Phone Number" ? "Copied" : "Copy"}
-                    </button>
-                  </dd>
-                </div>
-                <div className="pay-row">
-                  <dt>Account name</dt>
-                  <dd>
-                    <span>{telebirrDetails.accountName}</span>
-                    <button
-                      className={`pay-copy ${copied === "Telebirr Account" ? "done" : ""}`}
-                      type="button"
-                      onClick={() => handleCopy(telebirrDetails.accountName, "Telebirr Account")}
-                    >
-                      {copied === "Telebirr Account" ? "Copied" : "Copy"}
-                    </button>
-                  </dd>
-                </div>
-                <div className="pay-row">
-                  <dt>Amount</dt>
-                  <dd>
-                    <span className="pay-num">{currentPlan.totalDisplay}</span>
-                    <button
-                      className={`pay-copy ${copied === "Amount" ? "done" : ""}`}
-                      type="button"
-                      onClick={() => handleCopy(String(currentPlan.numericTotal || currentPlan.totalDisplay), "Amount")}
-                    >
-                      {copied === "Amount" ? "Copied" : "Copy"}
-                    </button>
-                  </dd>
-                </div>
-              </>
-            )}
-          </dl>
+              {/* 7. Instant Telegram Consultation */}
+              <h2 className="pay-h2">Instant Telegram consultation</h2>
+              <p className="pay-after">
+                Chat directly with our solutions team on Telegram to discuss your operational modules, branch infrastructure, and receive your custom quotation.
+              </p>
 
-          {/* 8 & 9. Then send your receipt */}
-          <h2 className="pay-h2">Then send your receipt</h2>
-          <p className="pay-after">
-            Take a screenshot of the transfer confirmation and send it on Telegram. We verify it and send your login details.
-          </p>
-
-          {/* 10. Telegram button */}
-          <a
-            className="pay-tg"
-            href="https://t.me/beyond_et"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Send receipt to @beyond_et
-          </a>
-
-          {/* 11. Terms */}
-          <label className="pay-agree">
-            <input
-              type="checkbox"
-              checked={agreedToTerms}
-              onChange={(e) => {
-                setAgreedToTerms(e.target.checked);
-                if (error) setError("");
-              }}
-            />
-            <span>
-              I agree to the{" "}
+              {/* 8. Telegram Contact Button */}
               <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowTermsModal(true);
-                }}
+                className="pay-tg"
+                href="https://t.me/beyond_et"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowTermsModal(true);
-                }}
-              >
-                Privacy Policy
+                Chat on Telegram (@beyond_et)
               </a>
-              , and confirm my company details are correct.
-            </span>
-          </label>
 
-          {/* 12. Main button */}
-          <button
-            className="pay-go"
-            type="button"
-            disabled={!agreedToTerms || submitting}
-            onClick={handleDone}
-          >
-            {submitting ? "Submitting..." : "I’ve sent the payment"}
-          </button>
+              {/* 9. Terms */}
+              <label className="pay-agree">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => {
+                    setAgreedToTerms(e.target.checked);
+                    if (error) setError("");
+                  }}
+                />
+                <span>
+                  I agree to the{" "}
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowTermsModal(true);
+                    }}
+                  >
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowTermsModal(true);
+                    }}
+                  >
+                    Privacy Policy
+                  </a>
+                  , and confirm my company details are correct.
+                </span>
+              </label>
 
-          {/* 13. Status hint */}
-          <p className="pay-hint" role="status" style={{ color: error ? "#f43f5e" : payMuted }}>
-            {error || ""}
-          </p>
+              {/* 10. Contact Submit button (No payment logic) */}
+              <button
+                className="pay-go"
+                type="button"
+                disabled={!agreedToTerms || submitting}
+                onClick={handleDone}
+              >
+                {submitting ? "Submitting request..." : "Contact Company (Submit Request)"}
+              </button>
 
-          {/* 14. Back button */}
-          <button
-            className="pay-back"
-            type="button"
-            onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
-          >
-            Back to company details
-          </button>
+              {/* 11. Status hint */}
+              <p className="pay-hint" role="status" style={{ color: error ? "#f43f5e" : payMuted }}>
+                {error || ""}
+              </p>
+
+              {/* 12. Back button */}
+              <button
+                className="pay-back"
+                type="button"
+                onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
+              >
+                Back to company details
+              </button>
+            </>
+          ) : (
+            /* ================= RETAIL STANDARD PAYMENT WORKFLOW ================= */
+            <>
+              {/* 5. Section heading */}
+              <h2 className="pay-h2">Pay with</h2>
+
+              {/* 6. Method switch */}
+              <div className="pay-seg" role="group" aria-label="Payment method">
+                <button
+                  type="button"
+                  aria-pressed={selectedMethod === "CBE"}
+                  onClick={() => setSelectedMethod("CBE")}
+                >
+                  CBE bank transfer
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={selectedMethod === "TELEBIRR"}
+                  onClick={() => setSelectedMethod("TELEBIRR")}
+                >
+                  Telebirr
+                </button>
+              </div>
+
+              {/* 7. Details list */}
+              <dl className="pay-dl">
+                {selectedMethod === "CBE" ? (
+                  <>
+                    <div className="pay-row">
+                      <dt>Bank</dt>
+                      <dd>{cbeDetails.bankName}, {cbeDetails.branch}</dd>
+                    </div>
+                    <div className="pay-row">
+                      <dt>Account number</dt>
+                      <dd>
+                        <span className="pay-num">{cbeDetails.accountNumber}</span>
+                        <button
+                          className={`pay-copy ${copied === "Account Number" ? "done" : ""}`}
+                          type="button"
+                          onClick={() => handleCopy(cbeDetails.accountNumber, "Account Number")}
+                        >
+                          {copied === "Account Number" ? "Copied" : "Copy"}
+                        </button>
+                      </dd>
+                    </div>
+                    <div className="pay-row">
+                      <dt>Account name</dt>
+                      <dd>
+                        <span>{cbeDetails.accountName}</span>
+                        <button
+                          className={`pay-copy ${copied === "Account Name" ? "done" : ""}`}
+                          type="button"
+                          onClick={() => handleCopy(cbeDetails.accountName, "Account Name")}
+                        >
+                          {copied === "Account Name" ? "Copied" : "Copy"}
+                        </button>
+                      </dd>
+                    </div>
+                    <div className="pay-row">
+                      <dt>Amount</dt>
+                      <dd>
+                        <span className="pay-num">{currentPlan.totalDisplay}</span>
+                        <button
+                          className={`pay-copy ${copied === "Amount" ? "done" : ""}`}
+                          type="button"
+                          onClick={() => handleCopy(String(currentPlan.numericTotal || currentPlan.totalDisplay), "Amount")}
+                        >
+                          {copied === "Amount" ? "Copied" : "Copy"}
+                        </button>
+                      </dd>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="pay-row">
+                      <dt>Service</dt>
+                      <dd>Telebirr mobile money</dd>
+                    </div>
+                    <div className="pay-row">
+                      <dt>Phone number</dt>
+                      <dd>
+                        <span className="pay-num">{telebirrDetails.phoneNumber}</span>
+                        <button
+                          className={`pay-copy ${copied === "Phone Number" ? "done" : ""}`}
+                          type="button"
+                          onClick={() => handleCopy(telebirrDetails.phoneNumber, "Phone Number")}
+                        >
+                          {copied === "Phone Number" ? "Copied" : "Copy"}
+                        </button>
+                      </dd>
+                    </div>
+                    <div className="pay-row">
+                      <dt>Account name</dt>
+                      <dd>
+                        <span>{telebirrDetails.accountName}</span>
+                        <button
+                          className={`pay-copy ${copied === "Telebirr Account" ? "done" : ""}`}
+                          type="button"
+                          onClick={() => handleCopy(telebirrDetails.accountName, "Telebirr Account")}
+                        >
+                          {copied === "Telebirr Account" ? "Copied" : "Copy"}
+                        </button>
+                      </dd>
+                    </div>
+                    <div className="pay-row">
+                      <dt>Amount</dt>
+                      <dd>
+                        <span className="pay-num">{currentPlan.totalDisplay}</span>
+                        <button
+                          className={`pay-copy ${copied === "Amount" ? "done" : ""}`}
+                          type="button"
+                          onClick={() => handleCopy(String(currentPlan.numericTotal || currentPlan.totalDisplay), "Amount")}
+                        >
+                          {copied === "Amount" ? "Copied" : "Copy"}
+                        </button>
+                      </dd>
+                    </div>
+                  </>
+                )}
+              </dl>
+
+              {/* 8 & 9. Then send your receipt */}
+              <h2 className="pay-h2">Then send your receipt</h2>
+              <p className="pay-after">
+                Take a screenshot of the transfer confirmation and send it on Telegram. We verify it and send your login details.
+              </p>
+
+              {/* 10. Telegram button */}
+              <a
+                className="pay-tg"
+                href="https://t.me/beyond_et"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Send receipt to @beyond_et
+              </a>
+
+              {/* 11. Terms */}
+              <label className="pay-agree">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => {
+                    setAgreedToTerms(e.target.checked);
+                    if (error) setError("");
+                  }}
+                />
+                <span>
+                  I agree to the{" "}
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowTermsModal(true);
+                    }}
+                  >
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowTermsModal(true);
+                    }}
+                  >
+                    Privacy Policy
+                  </a>
+                  , and confirm my company details are correct.
+                </span>
+              </label>
+
+              {/* 12. Main button */}
+              <button
+                className="pay-go"
+                type="button"
+                disabled={!agreedToTerms || submitting}
+                onClick={handleDone}
+              >
+                {submitting ? "Submitting..." : "I’ve sent the payment"}
+              </button>
+
+              {/* 13. Status hint */}
+              <p className="pay-hint" role="status" style={{ color: error ? "#f43f5e" : payMuted }}>
+                {error || ""}
+              </p>
+
+              {/* 14. Back button */}
+              <button
+                className="pay-back"
+                type="button"
+                onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
+              >
+                Back to company details
+              </button>
+            </>
+          )}
         </main>
       </div>
 
