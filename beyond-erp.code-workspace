@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "name": "Beyond ERP (Main)",
+      "path": "."
+    },
+    {
+      "name": "Biruk Microservices Branch",
+      "path": "biruk-branch"
+    }
+  ],
+  "settings": {
+    "git.autoRepositoryDetection": "subFolders",
+    "git.repositoryScanMaxDepth": 3,
+    "git.scanRepositories": [
+      "biruk-branch"
+    ]
+  }
+}
+
