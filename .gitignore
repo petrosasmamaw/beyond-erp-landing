@@ -9,7 +9,9 @@ coverage
 prisma/dev.db
 *.zip
 .env
-.gitignore
 .env.*
 .env.local
-.env.*
+
+# Nested branch workspace (isolated microservices branch)
+biruk-branch/
+/biruk-branch/
