@@ -437,24 +437,42 @@ export function SectorSelectModal({
                         >
                           <i className={sector.icon} />
                         </span>
-                        {selected && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <span
                             style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 4,
-                              fontSize: 11,
-                              fontWeight: 600,
-                              color: "var(--accent-blue)",
-                              background: "var(--accent-blue-subtle)",
-                              padding: "2px 8px",
-                              borderRadius: 12,
-                              border: "1px solid var(--accent-blue)",
+                              fontSize: 10.5,
+                              fontWeight: 700,
+                              padding: "2px 7px",
+                              borderRadius: 4,
+                              background: sector.id === "retail-trading"
+                                ? (dark ? "rgba(37,99,235,0.25)" : "#dbeafe")
+                                : (dark ? "rgba(148,163,184,0.14)" : "#f1f5f9"),
+                              color: sector.id === "retail-trading"
+                                ? (dark ? "#93c5fd" : "#1d4ed8")
+                                : (dark ? "#cbd5e1" : "#475569"),
                             }}
                           >
-                            <Check size={12} /> Active
+                            {sector.id === "retail-trading" ? "36,500 ETB / yr (100/day)" : "Ask"}
                           </span>
-                        )}
+                          {selected && (
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 4,
+                                fontSize: 11,
+                                fontWeight: 600,
+                                color: "var(--accent-blue)",
+                                background: "var(--accent-blue-subtle)",
+                                padding: "2px 8px",
+                                borderRadius: 12,
+                                border: "1px solid var(--accent-blue)",
+                              }}
+                            >
+                              <Check size={12} /> Active
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <strong style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>
                         {sector.name}

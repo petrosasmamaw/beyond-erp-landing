@@ -55,6 +55,7 @@ function RegisterDetailsContent() {
     notes: "",
   });
 
+  const [phoneFocused, setPhoneFocused] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
 
@@ -77,13 +78,20 @@ function RegisterDetailsContent() {
 
         const effectiveCompany = isSectorMatch && !isDefaultSectorName ? parsed.companyName : "";
 
+        const rawPhone = parsed.phone || "";
+        const cleanedPhone = rawPhone.startsWith("+251")
+          ? rawPhone.slice(4).trim()
+          : rawPhone.startsWith("251")
+          ? rawPhone.slice(3).trim()
+          : rawPhone;
+
         setForm((f) => ({
           ...f,
           companyName: effectiveCompany,
           tinNumber: parsed.tinNumber || f.tinNumber,
           fullName: parsed.fullName || f.fullName,
           email: parsed.email || f.email,
-          phone: parsed.phone || f.phone,
+          phone: cleanedPhone || f.phone,
           notes: parsed.notes || f.notes,
         }));
       }
@@ -124,6 +132,16 @@ function RegisterDetailsContent() {
 
   const isSectorValid = Boolean(sectorId);
   const canContinue = isCompanyNameValid && isFullNameValid && isEmailValid && isPhoneValid && isTinValid && isSectorValid;
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+    if (val.startsWith("+251")) {
+      val = val.slice(4).trim();
+    } else if (val.startsWith("251")) {
+      val = val.slice(3).trim();
+    }
+    setForm((f) => ({ ...f, phone: val }));
+  };
 
   const handleBlur = (field: string) => {
     setTouched((t) => ({ ...t, [field]: true }));
@@ -568,17 +586,67 @@ function RegisterDetailsContent() {
                       </span>
                     )}
                   </div>
-                  <input
-                    type="tel"
-                    value={form.phone}
-                    onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                    onBlur={() => handleBlur("phone")}
-                    required
-                    placeholder="09XX XXX XXX or +251 9XX XXX XXX"
-                    style={fieldStyle(Boolean(phoneError), touched.phone && isPhoneValid)}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "#2563eb")}
-                    aria-invalid={Boolean(phoneError)}
-                  />
+                  <div style={{ display: "flex", width: "100%", alignItems: "stretch" }}>
+                    <div
+                      style={{
+                        height: 44,
+                        padding: "0 12px",
+                        background: dark ? "rgba(255, 255, 255, 0.05)" : "#f1f5f9",
+                        border: `1.5px solid ${
+                          phoneError
+                            ? errorBorder
+                            : phoneFocused
+                            ? "#2563eb"
+                            : touched.phone && isPhoneValid
+                            ? successBorder
+                            : border
+                        }`,
+                        borderRight: "none",
+                        borderTopLeftRadius: 10,
+                        borderBottomLeftRadius: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        color: ink,
+                        fontSize: 13.5,
+                        fontWeight: 700,
+                        flexShrink: 0,
+                        userSelect: "none",
+                        boxSizing: "border-box",
+                        transition: "border-color 0.15s",
+                      }}
+                    >
+                      <span style={{ fontSize: 15 }}>🇪🇹</span>
+                      <span>+251</span>
+                    </div>
+                    <input
+                      type="tel"
+                      value={form.phone}
+                      onChange={handlePhoneChange}
+                      onFocus={() => setPhoneFocused(true)}
+                      onBlur={() => {
+                        setPhoneFocused(false);
+                        handleBlur("phone");
+                      }}
+                      required
+                      placeholder="9*********"
+                      style={{
+                        ...fieldStyle(Boolean(phoneError), touched.phone && isPhoneValid),
+                        borderTopLeftRadius: 0,
+                        borderBottomLeftRadius: 0,
+                        borderColor: phoneError
+                          ? errorBorder
+                          : phoneFocused
+                          ? "#2563eb"
+                          : touched.phone && isPhoneValid
+                          ? successBorder
+                          : border,
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                      aria-invalid={Boolean(phoneError)}
+                    />
+                  </div>
                   {phoneError ? <p style={errorStyle}>{phoneError}</p> : null}
                 </label>
 

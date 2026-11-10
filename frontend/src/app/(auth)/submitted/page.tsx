@@ -48,7 +48,7 @@ export default function SubmittedPage() {
   }, []);
 
   const sector = getSectorDefinition(reg?.sectorId ?? "");
-  const isAgreement = reg?.paymentMethod === "AGREEMENT" || reg?.planTier === "CUSTOM";
+  const isAgreement = reg?.paymentMethod === "AGREEMENT" || reg?.planTier === "CUSTOM" || reg?.planTier === "STANDARD" || (reg?.planTier && reg.planTier !== "BASIC");
 
   const bg = dark ? "#080e19" : "linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%)";
   const cardBg = dark ? "#0f1a2e" : "#ffffff";
@@ -200,15 +200,15 @@ export default function SubmittedPage() {
           {isAgreement ? (
             <>
               Your enterprise registration request has been submitted under{" "}
-              <strong style={{ color: dark ? "#60a5fa" : "#2563eb" }}>Payment by Agreement</strong>.
+              <strong style={{ color: dark ? "#60a5fa" : "#2563eb" }}>Separate Price Upon Request (Ask)</strong>.
               <br />
               <strong style={{ color: ink }}>
-                Our administrative leadership will contact you directly to finalize your contract scope and deliver your custom ERP workspace credentials.
+                Our administrative leadership will contact you directly to give you a separate price quote based on your request and deliver your custom ERP workspace credentials.
               </strong>
             </>
           ) : (
             <>
-              Your registration request and payment confirmation have been received successfully.
+              Your registration request and payment confirmation (Net 36,500 ETB) have been received successfully.
               <br />
               <strong style={{ color: ink }}>
                 Our company team will contact you soon and will send your workspace link and access details.
@@ -253,7 +253,7 @@ export default function SubmittedPage() {
                   background: isAgreement ? "#2563eb" : "#10b981",
                 }}
               />
-              {isAgreement ? "Admin Direct Agreement" : "Under Verification"}
+              {isAgreement ? "Price on Request (Ask)" : "Under Verification"}
             </span>
           </div>
 
@@ -279,18 +279,16 @@ export default function SubmittedPage() {
             <div>
               <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Package Tier</p>
               <p style={{ margin: 0, fontWeight: 700, color: "#2563eb" }}>
-                {reg?.planTier === "STANDARD"
-                  ? "Standard (80,000 ETB)"
-                  : reg?.planTier === "CUSTOM"
-                  ? "Custom (By Agreement)"
-                  : "Basic (41,000 ETB)"}
+                {reg?.planTier === "BASIC"
+                  ? "Retail & Trading (Net 36,500 ETB • 100 ETB/day)"
+                  : "Price on Request (Ask / Custom Quote)"}
               </p>
             </div>
             <div>
               <p style={{ margin: "0 0 1px", fontSize: 11, color: muted }}>Payment Method</p>
               <p style={{ margin: 0, fontWeight: 700, color: "#2563eb" }}>
                 {isAgreement
-                  ? "Payment by Agreement"
+                  ? "Separate Price Upon Request (Ask)"
                   : reg?.paymentMethod === "TELEBIRR"
                   ? "Telebirr Mobile Money"
                   : "CBE Bank Transfer"}

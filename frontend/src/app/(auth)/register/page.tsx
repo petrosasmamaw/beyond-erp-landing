@@ -103,6 +103,7 @@ function RegisterContent() {
         <div className="sector-select-grid">
           {sectorDefinitions.map((sector) => {
             const selected = selectedId === sector.id;
+            const isRetail = sector.id === "retail-trading" || sector.id === "retail";
             return (
               <button
                 type="button"
@@ -111,9 +112,28 @@ function RegisterContent() {
                 onClick={() => { setSelectedId(sector.id); setError(""); }}
                 aria-pressed={selected}
               >
-                <span className="sector-pick-icon" style={{ background: sector.tint, color: sector.color }}>
-                  <i className={sector.icon} />
-                </span>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span className="sector-pick-icon" style={{ background: sector.tint, color: sector.color }}>
+                    <i className={sector.icon} />
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 10.5,
+                      fontWeight: 700,
+                      padding: "2px 7px",
+                      borderRadius: 4,
+                      background: isRetail
+                        ? (dark ? "rgba(37,99,235,0.25)" : "#dbeafe")
+                        : (dark ? "rgba(148,163,184,0.14)" : "#f1f5f9"),
+                      color: isRetail
+                        ? (dark ? "#93c5fd" : "#1d4ed8")
+                        : (dark ? "#cbd5e1" : "#475569"),
+                      letterSpacing: "0.02em"
+                    }}
+                  >
+                    {isRetail ? "36,500 ETB / yr (100 ETB/day)" : "Ask for Pricing"}
+                  </span>
+                </div>
                 <strong>{sector.name}</strong>
                 <small>{sector.description}</small>
               </button>

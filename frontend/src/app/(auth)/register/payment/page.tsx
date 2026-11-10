@@ -3,24 +3,13 @@
 import { type CSSProperties, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  ArrowLeft,
-  Briefcase,
   Building2,
   Check,
-  CheckCircle2,
   Copy,
-  ExternalLink,
-  HelpCircle,
-  Landmark,
   Loader2,
-  Mail,
-  MapPin,
-  Phone,
   Receipt,
   Send,
   ShieldCheck,
-  Smartphone,
-  Sparkles,
   X,
   Zap
 } from "lucide-react";
@@ -59,61 +48,57 @@ interface PlanConfig {
 const PLANS: Record<PlanTier, PlanConfig> = {
   BASIC: {
     id: "BASIC",
-    title: "Basic",
-    badge: "Retail & Trading",
-    totalDisplay: "41,000",
-    numericTotal: 41000,
-    subtotal: "36,500.00 ETB",
-    discount: "- 848.00 ETB",
-    taxableBase: "35,652.00 ETB",
-    vat15: "+ 5,348.00 ETB",
-    subtext: "Annual 365 Days • 15% VAT Included",
-    description: "POS checkout, stock ledger, barcode scanning & retail operations."
+    title: "Retail & Trading",
+    badge: "100 ETB / Day • VAT Included",
+    totalDisplay: "36,500",
+    numericTotal: 36500,
+    subtotal: "31,739.13 ETB",
+    discount: "0.00 ETB",
+    taxableBase: "31,739.13 ETB",
+    vat15: "+ 4,760.87 ETB (15%)",
+    subtext: "Annual 365 Days • 100 ETB/Day • Net 36,500 ETB (15% VAT Included)",
+    description: "POS checkout, barcode inventory, stock ledger & VAT 15% receipts. 100 ETB per day."
   },
   STANDARD: {
     id: "STANDARD",
-    title: "Standard",
-    badge: "Enterprise Sector Tier",
-    totalDisplay: "80,000",
-    numericTotal: 80000,
-    subtotal: "72,000.00 ETB",
-    discount: "- 2,434.78 ETB",
-    taxableBase: "69,565.22 ETB",
-    vat15: "+ 10,434.78 ETB",
-    subtext: "Annual 365 Days • 15% VAT Included • Advanced Workflows",
-    description: "Industry-specialized workflows, multi-branch, BOM/batches & comprehensive ledger."
+    title: "Enterprise Custom",
+    badge: "Ask for Pricing",
+    totalDisplay: "Ask",
+    numericTotal: null,
+    subtotal: "Separate Pricing Upon Request",
+    discount: "—",
+    taxableBase: "—",
+    vat15: "Quoted upon request",
+    subtext: "Separate Pricing Upon Request • Tailored Enterprise Scope",
+    description: "Industry-specialized workflows, multi-branch & comprehensive ledger. Quoted separately upon request."
   },
   CUSTOM: {
     id: "CUSTOM",
-    title: "Custom",
-    badge: "Contact Admin",
-    totalDisplay: "Custom",
+    title: "Custom Quote",
+    badge: "Ask for Pricing",
+    totalDisplay: "Ask",
     numericTotal: null,
-    subtotal: "Custom Enterprise",
+    subtotal: "Separate Pricing Upon Request",
     discount: "—",
     taxableBase: "—",
-    vat15: "Enterprise Scope",
-    subtext: "Enterprise Contract • Direct Admin Support",
-    description: "Tailored multi-branch architectures & bespoke ERP integrations."
+    vat15: "Quoted upon request",
+    subtext: "Separate Pricing Upon Request • Tailored Enterprise Scope",
+    description: "Pricing tailored to your branch network, transaction volume, and operational modules. We provide a separate custom price upon request."
   }
 };
 
 /**
  * Sector Pricing Rule:
- * - Only "Retail & Trading" is BASIC (41,000 ETB)
- * - "Request Custom" is CUSTOM (Payment by Agreement)
- * - ALL OTHER SECTORS are STANDARD (80,000 ETB)
+ * - Only "Retail & Trading" has fixed standard pricing: 36,500 ETB net (100 ETB/day, 15% VAT included)
+ * - ALL OTHER SECTORS are "Ask" (Separate custom pricing upon request)
  */
 function getSectorPlan(sectorId?: string | null): PlanTier {
-  if (!sectorId) return "STANDARD";
+  if (!sectorId) return "CUSTOM";
   const s = sectorId.toLowerCase().trim();
-  if (s === "request-custom" || s === "custom") {
-    return "CUSTOM";
-  }
   if (s === "retail-trading" || s === "retail" || s === "retail-sector") {
     return "BASIC";
   }
-  return "STANDARD";
+  return "CUSTOM";
 }
 
 function PaymentContent() {
@@ -151,6 +136,14 @@ function PaymentContent() {
   const currentPlan = PLANS[selectedPlan];
   const isCustomSector = selectedPlan === "CUSTOM";
 
+  const payText = dark ? "#eef1f8" : "#10131c";
+  const payMuted = dark ? "#98a1b8" : "#5d6577";
+  const payLine = dark ? "#1d2538" : "#e1e4ee";
+  const payAccent = dark ? "#3b6cf4" : "#2457e6";
+  const payField = dark ? "#131a2b" : "#eceff7";
+  const paySuccess = dark ? "#3ccf8a" : "#17a05d";
+  const payBg = dark ? "#0f1a2e" : "#ffffff";
+
   const cbeDetails = {
     bankName: "Commercial Bank of Ethiopia (CBE)",
     accountName: "Beyond Solution PLC",
@@ -170,7 +163,7 @@ function PaymentContent() {
       navigator.clipboard.writeText(text);
       setCopied(label);
       showToast(`Copied ${label} to clipboard`);
-      setTimeout(() => setCopied(null), 2500);
+      setTimeout(() => setCopied(null), 1500);
     }
   };
 
@@ -197,12 +190,12 @@ function PaymentContent() {
     try {
       const paymentMethodVal = isCustomSector ? "AGREEMENT" : selectedMethod;
       const paymentRefVal = isCustomSector
-        ? "Enterprise Agreement - Contact Admin"
+        ? "Separate Pricing Upon Request - Contact Admin"
         : "Receipt via Telegram @beyond_et";
 
       const paymentNote = isCustomSector
-        ? `[Tier: CUSTOM | Payment: By Agreement | Direct Admin Contact | Terms & Policy Confirmed]`
-        : `[Tier: ${selectedPlan} (${currentPlan.totalDisplay} ETB) | Sector: ${companySector.name} | Payment: ${selectedMethod} | Receipt submitted via Telegram @beyond_et | Terms & Policy Confirmed]`;
+        ? `[Tier: ASK / CUSTOM | Separate Pricing Upon Request | Sector: ${companySector.name} | Contact via Telegram @beyond_et | Terms & Policy Confirmed]`
+        : `[Tier: BASIC (36,500 ETB) | 100 ETB/Day Net | Sector: Retail & Trading | Payment: ${selectedMethod} | Receipt submitted via Telegram @beyond_et | Terms & Policy Confirmed]`;
 
       const combinedNotes = draft.notes ? `${paymentNote} ${draft.notes}` : paymentNote;
 
@@ -438,13 +431,13 @@ function PaymentContent() {
                   {isCustomSector ? "Pricing" : "Total Payable"}
                 </div>
                 <div style={{ fontSize: 11, color: "rgba(219, 234, 254, 0.7)", marginTop: 2 }}>
-                  {isCustomSector ? "Direct administrative setup" : "Official VAT invoice provided"}
+                  {isCustomSector ? "Separate quote upon request" : "Official VAT invoice provided"}
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
                 {isCustomSector ? (
-                  <div style={{ fontSize: 22, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
-                    Custom
+                  <div style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
+                    Ask
                   </div>
                 ) : (
                   <div style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1 }}>
@@ -463,7 +456,7 @@ function PaymentContent() {
       </div>
 
       {/* ================= RIGHT INTERACTIVE PAYMENT PANEL ================= */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, overflowY: "auto" }}>
         {/* Top bar with mobile logo & theme toggle */}
         <div className="reg-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 28px" }}>
           <div className="login-mobile-logo" style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => router.push("/")}>
@@ -483,1056 +476,504 @@ function PaymentContent() {
           <ThemeToggle />
         </div>
 
-        <div className="reg-right-panel" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 28px 48px" }}>
-          <div className="reg-form-wrap" style={{ width: "100%", maxWidth: 620 }}>
-            {/* Header info */}
-            <div className="reg-heading" style={{ marginBottom: 20 }}>
-              <p
-                style={{
-                  margin: "0 0 6px",
-                  fontSize: 11,
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.12em",
-                  color: "#2563eb"
-                }}
-              >
-                {isCustomSector ? "Enterprise Custom Request" : "Step 3 of 3 • Payment & Activation"}
-              </p>
-              <h2 style={{ margin: "0 0 6px", fontSize: 26, fontWeight: 700, color: ink, lineHeight: 1.15 }}>
-                {isCustomSector ? "Contact Administration" : "Choose payment method"}
-              </h2>
-              <p style={{ margin: 0, fontSize: 14, color: muted, lineHeight: 1.5 }}>
-                {isCustomSector
-                  ? "For custom enterprise requirements, contact our administrative team directly to finalize specifications and pricing."
-                  : "Transfer via CBE or Telebirr below, then submit your receipt screenshot on Telegram for fast workspace setup."}
-              </p>
-            </div>
+        <style>{`
+          .pay-panel-wrap {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 56px 24px 64px;
+            box-sizing: border-box;
+          }
+          .pay-h1 {
+            font-size: 15px;
+            font-weight: 600;
+            color: ${payMuted};
+            margin: 0 0 6px;
+            line-height: 1.4;
+          }
+          .pay-amount {
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: ${payText};
+            margin: 0;
+            display: flex;
+            align-items: baseline;
+          }
+          .pay-amount small {
+            font-size: 18px;
+            font-weight: 600;
+            color: ${payMuted};
+            margin-left: 6px;
+            letter-spacing: 0;
+          }
+          .pay-meta {
+            color: ${payMuted};
+            margin: 8px 0 0;
+            font-size: 14px;
+            line-height: 1.5;
+          }
+          .pay-company {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin: 28px 0 0;
+            padding: 14px 0;
+            border-top: 1px solid ${payLine};
+            border-bottom: 1px solid ${payLine};
+            font-size: 14px;
+          }
+          .pay-company b {
+            font-weight: 700;
+            color: ${payText};
+          }
+          .pay-company span {
+            color: ${payMuted};
+          }
+          .pay-link {
+            background: none;
+            border: 0;
+            color: ${payAccent};
+            font-weight: 600;
+            font-size: 14px;
+            padding: 4px 0;
+            cursor: pointer;
+            flex-shrink: 0;
+          }
+          .pay-h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: ${payText};
+            margin: 36px 0 12px;
+            line-height: 1.4;
+          }
+          .pay-seg {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            padding: 4px;
+            background: ${payField};
+            border-radius: 12px;
+            box-sizing: border-box;
+          }
+          .pay-seg button {
+            border: 0;
+            background: transparent;
+            color: ${payMuted};
+            padding: 11px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s;
+          }
+          .pay-seg button[aria-pressed="true"] {
+            background: ${payBg} !important;
+            color: ${payText} !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+          }
+          .pay-dl {
+            margin: 8px 0 0;
+            padding: 0;
+          }
+          .pay-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid ${payLine};
+            font-size: 14px;
+          }
+          .pay-row dt {
+            color: ${payMuted};
+            flex-shrink: 0;
+          }
+          .pay-row dd {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            color: ${payText};
+            text-align: right;
+            min-width: 0;
+            justify-content: flex-end;
+          }
+          .pay-num {
+            font-size: 18px;
+            letter-spacing: 0.02em;
+            font-variant-numeric: tabular-nums;
+          }
+          .pay-copy {
+            border: 1px solid ${payLine};
+            background: transparent;
+            color: ${payAccent};
+            font-weight: 600;
+            font-size: 13px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            min-width: 64px;
+            min-height: 32px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: color 0.15s, border-color 0.15s;
+          }
+          .pay-copy.done {
+            color: ${paySuccess} !important;
+            border-color: ${paySuccess} !important;
+          }
+          .pay-after {
+            color: ${payMuted};
+            margin: 0 0 14px;
+            max-width: 46ch;
+            font-size: 14px;
+            line-height: 1.5;
+          }
+          .pay-tg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            color: ${payText};
+            border: 1px solid ${payLine};
+            border-radius: 12px;
+            padding: 13px;
+            font-weight: 600;
+            font-size: 14px;
+            min-height: 44px;
+            box-sizing: border-box;
+            width: 100%;
+            background: transparent;
+            transition: border-color 0.15s;
+          }
+          .pay-tg:hover {
+            border-color: ${payAccent};
+          }
+          .pay-agree {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin: 32px 0 20px;
+            color: ${payMuted};
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1.45;
+          }
+          .pay-agree input {
+            width: 20px;
+            height: 20px;
+            margin: 1px 0 0;
+            accent-color: ${payAccent};
+            flex: none;
+            cursor: pointer;
+          }
+          .pay-agree a {
+            color: ${payText};
+            text-decoration: underline;
+            cursor: pointer;
+          }
+          .pay-go {
+            width: 100%;
+            border: 0;
+            background: ${payAccent};
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            min-height: 52px;
+            cursor: pointer;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.15s;
+          }
+          .pay-go:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+          }
+          .pay-hint {
+            color: ${payMuted};
+            font-size: 13px;
+            text-align: center;
+            margin: 10px 0 0;
+            min-height: 20px;
+          }
+          .pay-back {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 12px;
+            padding: 10px;
+            color: ${payMuted};
+            font-weight: 600;
+            font-size: 14px;
+            background: none;
+            border: 0;
+            cursor: pointer;
+            min-height: 44px;
+          }
+          .pay-panel-wrap :focus-visible {
+            outline: 2px solid ${payAccent};
+            outline-offset: 3px;
+            border-radius: 6px;
+          }
+          @media (max-width: 640px) {
+            .pay-panel-wrap {
+              padding: 32px 20px 48px;
+            }
+          }
+          @media (max-width: 380px) {
+            .pay-amount {
+              font-size: 38px;
+            }
+            .pay-row {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 6px;
+            }
+            .pay-row dd {
+              width: 100%;
+              justify-content: space-between;
+            }
+          }
+        `}</style>
 
-            {/* Selected company overview badge */}
-            <div
-              className="pay-company-badge"
-              style={{
-                marginBottom: 16,
-                borderRadius: 10,
-                border: `1px solid ${border}`,
-                background: dark ? "#0a1220" : "#f8fafc",
-                padding: "12px 14px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12
-              }}
+        <main className="pay-panel-wrap">
+          {/* 1. Small heading */}
+          <h1 className="pay-h1">Pay for your workspace</h1>
+
+          {/* 2. Big amount */}
+          <p className="pay-amount">
+            {currentPlan.totalDisplay}
+            {currentPlan.numericTotal ? <small>ETB</small> : null}
+          </p>
+
+          {/* 3. Meta line */}
+          <p className="pay-meta">
+            {currentPlan.title} Tier, {companySector.name} · 365 days · 15% VAT included
+          </p>
+
+          {/* 4. Company row */}
+          <div className="pay-company">
+            <div>
+              <b>{draft?.companyName || "Your Company Workspace"}</b>{" "}
+              <span>· {draft?.fullName || "Company Admin"}</span>
+            </div>
+            <button
+              className="pay-link"
+              type="button"
+              onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 8,
-                    border: `1px solid ${border}`,
-                    background: sectorTint,
-                    color: sectorColor,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0
-                  }}
-                >
-                  {companySector.icon ? <i className={`${companySector.icon} text-lg`} /> : <Briefcase size={18} />}
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 700, color: ink, overflowWrap: "anywhere" }}>
-                    {draft?.companyName || "Your Company Workspace"}
-                  </p>
-                  <p style={{ margin: 0, fontSize: 12, color: muted }}>
-                    Sector: <strong>{companySector.name}</strong> • {draft?.fullName || "Company Admin"}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
-                style={{
-                  minHeight: 34,
-                  borderRadius: 8,
-                  border: `1px solid ${border}`,
-                  background: surface,
-                  color: "#2563eb",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  padding: "0 10px",
-                  flexShrink: 0
-                }}
-              >
-                Edit Details
-              </button>
-            </div>
+              Edit
+            </button>
+          </div>
 
-            {/* ================= ASSIGNED SECTOR TIER BADGE (LOCKED BY SECTOR, NO CHOOSING) ================= */}
-            {!isCustomSector && (
-              <div
-                style={{
-                  marginBottom: 16,
-                  padding: "12px 16px",
-                  borderRadius: 10,
-                  border: `1px solid ${border}`,
-                  background: surface,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 12,
-                  flexWrap: "wrap"
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 6,
-                      background: dark ? "rgba(37,99,235,0.18)" : "#eff6ff",
-                      color: "#2563eb",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0
-                    }}
-                  >
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 13.5, fontWeight: 800, color: ink }}>
-                        {currentPlan.title} Tier Package
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 10.5,
-                          fontWeight: 700,
-                          padding: "2px 7px",
-                          borderRadius: 4,
-                          background: dark ? "rgba(37,99,235,0.22)" : "#dbeafe",
-                          color: dark ? "#93c5fd" : "#1d4ed8",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.04em"
-                        }}
-                      >
-                        {selectedPlan === "BASIC" ? "Retail & Trading" : "Standard Enterprise"}
-                      </span>
-                    </div>
-                    <p style={{ margin: "2px 0 0", fontSize: 12, color: muted }}>
-                      {currentPlan.description}
-                    </p>
-                  </div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: 16, fontWeight: 900, color: "#2563eb" }}>
-                    {currentPlan.totalDisplay} ETB
-                  </span>
-                </div>
-              </div>
-            )}
+          {/* 5. Section heading */}
+          <h2 className="pay-h2">Pay with</h2>
 
-            {/* ================= CONDITIONAL BRANCH: BASIC/STANDARD vs CUSTOM ================= */}
-            {!isCustomSector ? (
+          {/* 6. Method switch */}
+          <div className="pay-seg" role="group" aria-label="Payment method">
+            <button
+              type="button"
+              aria-pressed={selectedMethod === "CBE"}
+              onClick={() => setSelectedMethod("CBE")}
+            >
+              CBE bank transfer
+            </button>
+            <button
+              type="button"
+              aria-pressed={selectedMethod === "TELEBIRR"}
+              onClick={() => setSelectedMethod("TELEBIRR")}
+            >
+              Telebirr
+            </button>
+          </div>
+
+          {/* 7. Details list */}
+          <dl className="pay-dl">
+            {selectedMethod === "CBE" ? (
               <>
-                {/* Amount Due Banner */}
-                <div
-                  style={{
-                    marginBottom: 16,
-                    padding: "14px 18px",
-                    borderRadius: 12,
-                    background: dark ? "rgba(37,99,235,0.12)" : "#eff6ff",
-                    border: "1.5px solid rgba(37,99,235,0.28)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    flexWrap: "wrap"
-                  }}
-                >
-                  <div>
-                    <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                      Amount to Transfer ({currentPlan.title} Tier)
-                    </p>
-                    <p style={{ margin: 0, fontSize: 20, fontWeight: 900, color: ink, letterSpacing: "-0.01em" }}>
-                      {currentPlan.totalDisplay} ETB <span style={{ fontSize: 12, fontWeight: 600, color: muted }}>({currentPlan.subtext})</span>
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(String(currentPlan.numericTotal), `Amount ${currentPlan.totalDisplay} ETB`)}
-                    style={{
-                      height: 32,
-                      padding: "0 12px",
-                      borderRadius: 7,
-                      border: "1px solid #2563eb",
-                      background: copied === `Amount ${currentPlan.totalDisplay} ETB` ? "#16a34a" : "transparent",
-                      color: copied === `Amount ${currentPlan.totalDisplay} ETB` ? "#ffffff" : "#2563eb",
-                      fontSize: 12,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 5,
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    {copied === `Amount ${currentPlan.totalDisplay} ETB` ? <Check size={13} /> : <Copy size={13} />}
-                    {copied === `Amount ${currentPlan.totalDisplay} ETB` ? "Copied" : `Copy ${currentPlan.totalDisplay}`}
-                  </button>
+                <div className="pay-row">
+                  <dt>Bank</dt>
+                  <dd>{cbeDetails.bankName}, {cbeDetails.branch}</dd>
                 </div>
-
-                {/* Payment Method Selector (CBE vs Telebirr) */}
-                <div className="pay-method-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
-                  {/* Option 1: CBE */}
-                  <button
-                    type="button"
-                    className="pay-method-btn"
-                    onClick={() => setSelectedMethod("CBE")}
-                    style={{
-                      borderRadius: 12,
-                      padding: "14px 16px",
-                      border: `2px solid ${selectedMethod === "CBE" ? "#2563eb" : border}`,
-                      background: selectedMethod === "CBE" ? (dark ? "rgba(37,99,235,0.14)" : "#eff6ff") : surface,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                      textAlign: "left",
-                      cursor: "pointer",
-                      transition: "all 0.15s",
-                      boxShadow: selectedMethod === "CBE" ? "0 4px 14px rgba(37,99,235,0.18)" : "none"
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: "50%",
-                        overflow: "hidden",
-                        border: "none",
-                        background: "#ffffff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
-                      }}
+                <div className="pay-row">
+                  <dt>Account number</dt>
+                  <dd>
+                    <span className="pay-num">{cbeDetails.accountNumber}</span>
+                    <button
+                      className={`pay-copy ${copied === "Account Number" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy(cbeDetails.accountNumber, "Account Number")}
                     >
-                      <img
-                        src="/cbe-logo.jpg"
-                        alt="Commercial Bank of Ethiopia (CBE)"
-                        width={44}
-                        height={44}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaaqYdrTfGtVcFbG4v6-X7a_bJbNSuIPQytPGc42OBCw&s=10";
-                        }}
-                      />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: ink }}>CBE</p>
-                        {selectedMethod === "CBE" && (
-                          <span style={{ color: "#2563eb", display: "flex" }}>
-                            <CheckCircle2 size={16} />
-                          </span>
-                        )}
-                      </div>
-                      <p style={{ margin: 0, fontSize: 11, color: muted }}>Bank Transfer</p>
-                    </div>
-                  </button>
-
-                  {/* Option 2: Telebirr */}
-                  <button
-                    type="button"
-                    className="pay-method-btn"
-                    onClick={() => setSelectedMethod("TELEBIRR")}
-                    style={{
-                      borderRadius: 12,
-                      padding: "14px 16px",
-                      border: `2px solid ${selectedMethod === "TELEBIRR" ? "#2563eb" : border}`,
-                      background: selectedMethod === "TELEBIRR" ? (dark ? "rgba(37,99,235,0.14)" : "#eff6ff") : surface,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                      textAlign: "left",
-                      cursor: "pointer",
-                      transition: "all 0.15s",
-                      boxShadow: selectedMethod === "TELEBIRR" ? "0 4px 14px rgba(37,99,235,0.18)" : "none"
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: "50%",
-                        overflow: "hidden",
-                        border: "none",
-                        background: "#ffffff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
-                      }}
+                      {copied === "Account Number" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
+                </div>
+                <div className="pay-row">
+                  <dt>Account name</dt>
+                  <dd>
+                    <span>{cbeDetails.accountName}</span>
+                    <button
+                      className={`pay-copy ${copied === "Account Name" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy(cbeDetails.accountName, "Account Name")}
                     >
-                      <img
-                        src="/telebirr-logo.jpg"
-                        alt="Telebirr"
-                        width={44}
-                        height={44}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAbYFlfBIHnyGZ0H67HqZctIsIvFrNe69qWDGsnysH5Q&s=10";
-                        }}
-                      />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: ink }}>Telebirr</p>
-                        {selectedMethod === "TELEBIRR" && (
-                          <span style={{ color: "#2563eb", display: "flex" }}>
-                            <CheckCircle2 size={16} />
-                          </span>
-                        )}
-                      </div>
-                      <p style={{ margin: 0, fontSize: 11, color: muted }}>Mobile Money</p>
-                    </div>
-                  </button>
+                      {copied === "Account Name" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
                 </div>
-
-                {/* Account Details Box */}
-                <div
-                  className="pay-account-box"
-                  style={{
-                    borderRadius: 12,
-                    border: `1.5px solid ${border}`,
-                    background: surface,
-                    padding: "20px 22px",
-                    marginBottom: 18,
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
-                  }}
-                >
-                  {selectedMethod === "CBE" ? (
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", border: "none", flexShrink: 0, background: "#ffffff", boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>
-                            <img src="/cbe-logo.jpg" alt="CBE" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
-                          </div>
-                          <div>
-                            <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
-                              CBE Account Details
-                            </span>
-                            <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
-                              {cbeDetails.bankName}
-                            </h3>
-                          </div>
-                        </div>
-                        <span style={{ fontSize: 12, color: muted }}>{cbeDetails.branch}</span>
-                      </div>
-
-                      <div style={{ display: "grid", gap: 12 }}>
-                        {/* Account Number with Copy */}
-                        <div
-                          className="pay-account-row"
-                          style={{
-                            padding: "12px 14px",
-                            borderRadius: 10,
-                            background: inputBg,
-                            border: `1px solid ${border}`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between"
-                          }}
-                        >
-                          <div>
-                            <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
-                              Account Number
-                            </p>
-                            <p style={{ margin: 0, fontSize: 18, fontWeight: 800, color: ink, letterSpacing: "0.05em" }}>
-                              {cbeDetails.accountNumber}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(cbeDetails.accountNumber, "Account Number")}
-                            style={{
-                              height: 36,
-                              padding: "0 14px",
-                              borderRadius: 8,
-                              border: "1px solid #2563eb",
-                              background: copied === "Account Number" ? "#16a34a" : "#2563eb",
-                              color: "#ffffff",
-                              fontSize: 12,
-                              fontWeight: 700,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 6,
-                              cursor: "pointer",
-                              transition: "all 0.15s"
-                            }}
-                          >
-                            {copied === "Account Number" ? <Check size={14} /> : <Copy size={14} />}
-                            {copied === "Account Number" ? "Copied" : "Copy"}
-                          </button>
-                        </div>
-
-                        {/* Account Name */}
-                        <div
-                          className="pay-account-row"
-                          style={{
-                            padding: "10px 14px",
-                            borderRadius: 10,
-                            background: inputBg,
-                            border: `1px solid ${border}`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between"
-                          }}
-                        >
-                          <div>
-                            <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
-                              Account Name
-                            </p>
-                            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: ink }}>
-                              {cbeDetails.accountName}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(cbeDetails.accountName, "Account Name")}
-                            style={{
-                              background: "none",
-                              border: "none",
-                              color: "#2563eb",
-                              fontSize: 12,
-                              fontWeight: 600,
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 4
-                            }}
-                          >
-                            <Copy size={13} />
-                            Copy Name
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", border: "none", flexShrink: 0, background: "#ffffff", boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>
-                            <img src="/telebirr-logo.jpg" alt="Telebirr" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
-                          </div>
-                          <div>
-                            <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb" }}>
-                              Telebirr Transfer Details
-                            </span>
-                            <h3 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 700, color: ink }}>
-                              {telebirrDetails.serviceName}
-                            </h3>
-                          </div>
-                        </div>
-                        <span style={{ fontSize: 12, color: muted }}>{telebirrDetails.shortCode}</span>
-                      </div>
-
-                      <div style={{ display: "grid", gap: 12 }}>
-                        {/* Phone Number with Copy */}
-                        <div
-                          className="pay-account-row"
-                          style={{
-                            padding: "12px 14px",
-                            borderRadius: 10,
-                            background: inputBg,
-                            border: `1px solid ${border}`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between"
-                          }}
-                        >
-                          <div>
-                            <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
-                              Telebirr Phone Number
-                            </p>
-                            <p style={{ margin: 0, fontSize: 18, fontWeight: 800, color: ink, letterSpacing: "0.05em" }}>
-                              {telebirrDetails.phoneNumber}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(telebirrDetails.phoneNumber, "Telebirr Phone")}
-                            style={{
-                              height: 36,
-                              padding: "0 14px",
-                              borderRadius: 8,
-                              border: "1px solid #2563eb",
-                              background: copied === "Telebirr Phone" ? "#16a34a" : "#2563eb",
-                              color: "#ffffff",
-                              fontSize: 12,
-                              fontWeight: 700,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 6,
-                              cursor: "pointer",
-                              transition: "all 0.15s"
-                            }}
-                          >
-                            {copied === "Telebirr Phone" ? <Check size={14} /> : <Copy size={14} />}
-                            {copied === "Telebirr Phone" ? "Copied" : "Copy"}
-                          </button>
-                        </div>
-
-                        {/* Receiver Name */}
-                        <div
-                          className="pay-account-row"
-                          style={{
-                            padding: "10px 14px",
-                            borderRadius: 10,
-                            background: inputBg,
-                            border: `1px solid ${border}`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between"
-                          }}
-                        >
-                          <div>
-                            <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase" }}>
-                              Receiver Name
-                            </p>
-                            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: ink }}>
-                              {telebirrDetails.accountName}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(telebirrDetails.accountName, "Receiver Name")}
-                            style={{
-                              background: "none",
-                              border: "none",
-                              color: "#2563eb",
-                              fontSize: 12,
-                              fontWeight: 600,
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 4
-                            }}
-                          >
-                            <Copy size={13} />
-                            Copy Name
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Instruction callout & Telegram Action */}
-                <div
-                  style={{
-                    borderRadius: 12,
-                    border: "1.5px solid rgba(34, 158, 217, 0.35)",
-                    background: dark ? "rgba(34, 158, 217, 0.08)" : "#f0f9ff",
-                    padding: "16px 18px",
-                    marginBottom: 20
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
-                    <span style={{ color: "#0284c7", flexShrink: 0, marginTop: 2 }}>
-                      <HelpCircle size={18} />
-                    </span>
-                    <div>
-                      <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: ink }}>
-                        Receipt Screenshot Verification
-                      </p>
-                      <p style={{ margin: 0, fontSize: 13, color: muted, lineHeight: 1.45 }}>
-                        After sending your payment ({currentPlan.totalDisplay} ETB), take a screenshot of your transfer confirmation and send it to our Telegram support. Our team will verify it immediately and provision your credentials.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Telegram Submit Button */}
-                  <button
-                    type="button"
-                    onClick={handleTelegramClick}
-                    style={{
-                      width: "100%",
-                      height: 46,
-                      borderRadius: 10,
-                      border: 0,
-                      background: "linear-gradient(135deg, #229ED9 0%, #0088cc 100%)",
-                      color: "#ffffff",
-                      fontSize: 14,
-                      fontWeight: 700,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 10,
-                      cursor: "pointer",
-                      boxShadow: "0 4px 14px rgba(34, 158, 217, 0.35)",
-                      transition: "opacity 0.15s, transform 0.15s"
-                    }}
-                  >
-                    <Send size={16} />
-                    Submit Receipt on Telegram (@beyond_et)
-                    <ExternalLink size={14} style={{ opacity: 0.8 }} />
-                  </button>
+                <div className="pay-row">
+                  <dt>Amount</dt>
+                  <dd>
+                    <span className="pay-num">{currentPlan.totalDisplay}</span>
+                    <button
+                      className={`pay-copy ${copied === "Amount" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy(String(currentPlan.numericTotal || currentPlan.totalDisplay), "Amount")}
+                    >
+                      {copied === "Amount" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
                 </div>
               </>
             ) : (
-              /* ================= CUSTOM / CONTACT ADMIN SECTION (CLEAN SINGLE-BORDER LIST, NO NESTED BOXES) ================= */
-              <div
-                style={{
-                  borderRadius: 14,
-                  border: `1px solid ${border}`,
-                  background: surface,
-                  marginBottom: 18,
-                  overflow: "hidden"
-                }}
-              >
-                {/* Header */}
-                <div
-                  style={{
-                    padding: "16px 20px",
-                    borderBottom: `1px solid ${border}`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 12
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Building2 size={18} style={{ color: "#2563eb" }} />
-                    <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: ink }}>
-                      Enterprise Administration
-                    </h3>
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: "#2563eb",
-                      background: dark ? "rgba(37,99,235,0.12)" : "#eff6ff",
-                      border: `1px solid ${dark ? "rgba(37,99,235,0.25)" : "#dbeafe"}`,
-                      padding: "3px 9px",
-                      borderRadius: 6
-                    }}
-                  >
-                    Payment by Agreement
-                  </span>
+              <>
+                <div className="pay-row">
+                  <dt>Service</dt>
+                  <dd>Telebirr mobile money</dd>
                 </div>
-
-                {/* Info line */}
-                <div
-                  style={{
-                    padding: "11px 20px",
-                    borderBottom: `1px solid ${border}`,
-                    fontSize: 13,
-                    color: muted,
-                    lineHeight: 1.45
-                  }}
-                >
-                  For custom ERP specifications, connect directly with our administration team.
-                </div>
-
-                {/* Contact List */}
-                <div>
-                  {/* Row 1: Phone */}
-                  <div
-                    style={{
-                      padding: "14px 20px",
-                      borderBottom: `1px solid ${border}`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 12,
-                      flexWrap: "wrap"
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <Phone size={16} style={{ color: "#2563eb", flexShrink: 0 }} />
-                      <div>
-                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: muted, display: "block" }}>
-                          Phone Support
-                        </span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: ink }}>
-                          +251 939 048 523 <span style={{ color: muted, fontWeight: 500, fontSize: 13 }}>/ +251 928 151 599</span>
-                        </span>
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <a
-                        href="tel:+251939048523"
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: "#2563eb",
-                          textDecoration: "none",
-                          padding: "5px 12px",
-                          borderRadius: 6,
-                          border: `1px solid ${border}`,
-                          background: dark ? "rgba(37,99,235,0.08)" : "#eff6ff",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4
-                        }}
-                      >
-                        <Phone size={12} /> Call
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy("+251939048523", "Phone Number")}
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: copied === "Phone Number" ? "#16a34a" : muted,
-                          background: "transparent",
-                          border: `1px solid ${border}`,
-                          padding: "5px 12px",
-                          borderRadius: 6,
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4
-                        }}
-                      >
-                        {copied === "Phone Number" ? <Check size={12} /> : <Copy size={12} />}
-                        {copied === "Phone Number" ? "Copied" : "Copy"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Row 2: Email */}
-                  <div
-                    style={{
-                      padding: "14px 20px",
-                      borderBottom: `1px solid ${border}`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 12,
-                      flexWrap: "wrap"
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <Mail size={16} style={{ color: "#2563eb", flexShrink: 0 }} />
-                      <div>
-                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: muted, display: "block" }}>
-                          Official Email
-                        </span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: ink, overflowWrap: "anywhere" }}>
-                          beyondsolutionsupport@gmail.com
-                        </span>
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <a
-                        href="mailto:beyondsolutionsupport@gmail.com?subject=Custom%20ERP%20Enterprise%20Agreement"
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: "#2563eb",
-                          textDecoration: "none",
-                          padding: "5px 12px",
-                          borderRadius: 6,
-                          border: `1px solid ${border}`,
-                          background: dark ? "rgba(37,99,235,0.08)" : "#eff6ff",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4
-                        }}
-                      >
-                        <Mail size={12} /> Email
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy("beyondsolutionsupport@gmail.com", "Email Address")}
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: copied === "Email Address" ? "#16a34a" : muted,
-                          background: "transparent",
-                          border: `1px solid ${border}`,
-                          padding: "5px 12px",
-                          borderRadius: 6,
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4
-                        }}
-                      >
-                        {copied === "Email Address" ? <Check size={12} /> : <Copy size={12} />}
-                        {copied === "Email Address" ? "Copied" : "Copy"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Row 3: Telegram */}
-                  <div
-                    style={{
-                      padding: "14px 20px",
-                      borderBottom: `1px solid ${border}`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 12,
-                      flexWrap: "wrap"
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <Send size={16} style={{ color: "#0284c7", flexShrink: 0 }} />
-                      <div>
-                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: muted, display: "block" }}>
-                          Telegram Channel
-                        </span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: ink }}>
-                          @beyond_et
-                        </span>
-                      </div>
-                    </div>
+                <div className="pay-row">
+                  <dt>Phone number</dt>
+                  <dd>
+                    <span className="pay-num">{telebirrDetails.phoneNumber}</span>
                     <button
+                      className={`pay-copy ${copied === "Phone Number" ? "done" : ""}`}
                       type="button"
-                      onClick={handleTelegramClick}
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "#ffffff",
-                        background: "linear-gradient(135deg, #229ED9 0%, #0088cc 100%)",
-                        border: 0,
-                        padding: "6px 14px",
-                        borderRadius: 6,
-                        cursor: "pointer",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 6
-                      }}
+                      onClick={() => handleCopy(telebirrDetails.phoneNumber, "Phone Number")}
                     >
-                      <Send size={12} />
-                      Chat on Telegram
-                      <ExternalLink size={11} style={{ opacity: 0.8 }} />
+                      {copied === "Phone Number" ? "Copied" : "Copy"}
                     </button>
-                  </div>
-
-                  {/* Row 4: Office */}
-                  <div
-                    style={{
-                      padding: "14px 20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 12,
-                      flexWrap: "wrap"
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <MapPin size={16} style={{ color: "#2563eb", flexShrink: 0 }} />
-                      <div>
-                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: muted, display: "block" }}>
-                          Head Office
-                        </span>
-                        <span style={{ fontSize: 13.5, fontWeight: 700, color: ink }}>
-                          Addis Ababa, 22 Bata Complex, 3rd Floor
-                        </span>
-                      </div>
-                    </div>
-                    <span style={{ fontSize: 11.5, color: muted }}>
-                      Mon – Sat: 8:30 AM – 6:00 PM
-                    </span>
-                  </div>
+                  </dd>
                 </div>
-              </div>
+                <div className="pay-row">
+                  <dt>Account name</dt>
+                  <dd>
+                    <span>{telebirrDetails.accountName}</span>
+                    <button
+                      className={`pay-copy ${copied === "Telebirr Account" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy(telebirrDetails.accountName, "Telebirr Account")}
+                    >
+                      {copied === "Telebirr Account" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
+                </div>
+                <div className="pay-row">
+                  <dt>Amount</dt>
+                  <dd>
+                    <span className="pay-num">{currentPlan.totalDisplay}</span>
+                    <button
+                      className={`pay-copy ${copied === "Amount" ? "done" : ""}`}
+                      type="button"
+                      onClick={() => handleCopy(String(currentPlan.numericTotal || currentPlan.totalDisplay), "Amount")}
+                    >
+                      {copied === "Amount" ? "Copied" : "Copy"}
+                    </button>
+                  </dd>
+                </div>
+              </>
             )}
+          </dl>
 
-            {/* Terms of Service & Privacy Policy Agreement Card */}
-            <div
-              style={{
-                marginBottom: 20,
-                borderRadius: 12,
-                border: `1.5px solid ${agreedToTerms ? (dark ? "rgba(37, 99, 235, 0.45)" : "#93c5fd") : border}`,
-                background: agreedToTerms
-                  ? dark
-                    ? "rgba(37, 99, 235, 0.08)"
-                    : "#eff6ff"
-                  : dark
-                  ? "#0b1424"
-                  : "#f8fafc",
-                padding: "14px 16px",
-                transition: "all 0.2s ease",
+          {/* 8 & 9. Then send your receipt */}
+          <h2 className="pay-h2">Then send your receipt</h2>
+          <p className="pay-after">
+            Take a screenshot of the transfer confirmation and send it on Telegram. We verify it and send your login details.
+          </p>
+
+          {/* 10. Telegram button */}
+          <a
+            className="pay-tg"
+            href="https://t.me/beyond_et"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Send receipt to @beyond_et
+          </a>
+
+          {/* 11. Terms */}
+          <label className="pay-agree">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => {
+                setAgreedToTerms(e.target.checked);
+                if (error) setError("");
               }}
-            >
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 12,
-                  cursor: "pointer",
-                  userSelect: "none",
+            />
+            <span>
+              I agree to the{" "}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowTermsModal(true);
                 }}
               >
-                <input
-                  type="checkbox"
-                  checked={agreedToTerms}
-                  onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  style={{ display: "none" }}
-                />
-                <div
-                  style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 6,
-                    border: `1.5px solid ${agreedToTerms ? "#2563eb" : dark ? "#334155" : "#cbd5e1"}`,
-                    background: agreedToTerms ? "#2563eb" : dark ? "#0a1220" : "#ffffff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                    marginTop: 2,
-                    transition: "all 0.15s ease",
-                    boxShadow: agreedToTerms ? "0 2px 6px rgba(37, 99, 235, 0.35)" : "none",
-                  }}
-                >
-                  {agreedToTerms && <Check size={13} color="#ffffff" strokeWidth={3} />}
-                </div>
-
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 600, color: ink, lineHeight: 1.45 }}>
-                    I agree to the{" "}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setShowTermsModal(true);
-                      }}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        color: dark ? "#60a5fa" : "#2563eb",
-                        fontWeight: 700,
-                        textDecoration: "underline",
-                        cursor: "pointer",
-                        fontSize: 13.5,
-                      }}
-                    >
-                      Terms of Service
-                    </button>{" "}
-                    and{" "}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setShowTermsModal(true);
-                      }}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        color: dark ? "#60a5fa" : "#2563eb",
-                        fontWeight: 700,
-                        textDecoration: "underline",
-                        cursor: "pointer",
-                        fontSize: 13.5,
-                      }}
-                    >
-                      Privacy Policy
-                    </button>
-                    .
-                  </div>
-                  <p
-                    style={{
-                      margin: "5px 0 0",
-                      fontSize: 12,
-                      color: muted,
-                      lineHeight: 1.45,
-                    }}
-                  >
-                    {isCustomSector
-                      ? "I authorize Beyond ERP to process our enterprise registration request under direct agreement."
-                      : "I authorize Beyond ERP to activate our Ethiopian enterprise workspace and confirm submitted registration information is accurate."}
-                  </p>
-                </div>
-              </label>
-            </div>
-
-            {error && (
-              <p style={{ margin: "0 0 16px", color: "#e11d48", fontSize: 13, fontWeight: 600 }}>
-                {error}
-              </p>
-            )}
-
-            {/* Primary Action Button */}
-            <div style={{ display: "grid", gap: 10 }}>
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={handleDone}
-                style={{
-                  height: 48,
-                  borderRadius: 10,
-                  border: 0,
-                  background: submitting
-                    ? "#3b82f6"
-                    : "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                  color: "#ffffff",
-                  fontSize: 15,
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 10,
-                  cursor: submitting ? "not-allowed" : "pointer",
-                  boxShadow: submitting
-                    ? "none"
-                    : "0 4px 16px rgba(37, 99, 235, 0.35)",
-                  transition: "all 0.15s"
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowTermsModal(true);
                 }}
               >
-                {submitting ? (
-                  <Loader2 className="spin" size={18} />
-                ) : isCustomSector ? (
-                  <Send size={18} />
-                ) : (
-                  <Check size={18} />
-                )}
-                {submitting
-                  ? "Submitting Registration..."
-                  : isCustomSector
-                  ? "Submit Request (Payment by Agreement)"
-                  : "Done — I Have Sent the Payment"}
-              </button>
+                Privacy Policy
+              </a>
+              , and confirm my company details are correct.
+            </span>
+          </label>
 
-              <button
-                type="button"
-                onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
-                style={{
-                  height: 44,
-                  borderRadius: 10,
-                  border: `1.5px solid ${border}`,
-                  background: surface,
-                  color: ink,
-                  fontSize: 14,
-                  fontWeight: 600,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  cursor: "pointer",
-                  transition: "all 0.15s"
-                }}
-              >
-                <ArrowLeft size={16} />
-                Back to Company Details
-              </button>
-            </div>
-          </div>
-        </div>
+          {/* 12. Main button */}
+          <button
+            className="pay-go"
+            type="button"
+            disabled={!agreedToTerms || submitting}
+            onClick={handleDone}
+          >
+            {submitting ? "Submitting..." : "I’ve sent the payment"}
+          </button>
+
+          {/* 13. Status hint */}
+          <p className="pay-hint" role="status" style={{ color: error ? "#f43f5e" : payMuted }}>
+            {error || ""}
+          </p>
+
+          {/* 14. Back button */}
+          <button
+            className="pay-back"
+            type="button"
+            onClick={() => router.push(sectorId ? `/register/details?sectorId=${sectorId}` : "/register")}
+          >
+            Back to company details
+          </button>
+        </main>
       </div>
 
       {/* Terms of Service & Privacy Policy Modal */}
