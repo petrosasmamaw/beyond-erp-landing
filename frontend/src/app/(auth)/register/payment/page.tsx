@@ -851,48 +851,17 @@ function PaymentContent() {
                     </button>
                   </dd>
                 </div>
-                <div className="pay-row">
-                  <dt>Telegram</dt>
-                  <dd>
-                    <span className="pay-num">@beyond_et</span>
-                    <button
-                      className={`pay-copy ${copied === "Telegram" ? "done" : ""}`}
-                      type="button"
-                      onClick={() => handleCopy("@beyond_et", "Telegram")}
-                    >
-                      {copied === "Telegram" ? "Copied" : "Copy"}
-                    </button>
-                  </dd>
-                </div>
-                <div className="pay-row">
-                  <dt>Office location</dt>
-                  <dd>
-                    <span style={{ fontSize: 13 }}>Addis Ababa, 22 Bata Complex, 3rd Floor</span>
-                    <button
-                      className={`pay-copy ${copied === "Office Location" ? "done" : ""}`}
-                      type="button"
-                      onClick={() => handleCopy("Addis Ababa, 22 Bata Complex, 3rd Floor", "Office Location")}
-                    >
-                      {copied === "Office Location" ? "Copied" : "Copy"}
-                    </button>
-                  </dd>
-                </div>
               </dl>
 
-              {/* 7. Instant Telegram Consultation */}
-              <h2 className="pay-h2">Instant Telegram consultation</h2>
-              <p className="pay-after">
-                Chat directly with our solutions team on Telegram to discuss your operational modules, branch infrastructure, and receive your custom quotation.
-              </p>
-
-              {/* 8. Telegram Contact Button */}
+              {/* 7. Telegram Contact Button */}
               <a
                 className="pay-tg"
                 href="https://t.me/beyond_et"
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{ marginTop: 20 }}
               >
-                Chat on Telegram (@beyond_et)
+                Contact us on Telegram (@beyond_et)
               </a>
 
               {/* 9. Terms */}
