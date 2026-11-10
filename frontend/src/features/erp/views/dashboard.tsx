@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowDownLeft,
   ArrowDownRight,
@@ -12,6 +13,7 @@ import {
   Briefcase,
   Building2,
   CheckCircle2,
+  ChevronRight,
   Clock,
   Coins,
   FileText,
@@ -37,10 +39,12 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import type { Dashboard, Transaction } from "@/lib/types";
-import { t, type SectorDefinition } from "../config";
+import { t, type SectorDefinition, type SectorFeature } from "../config";
+import { getSectorConfig } from "@/features/sectors";
 import { useApp } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { StockAlertsModal } from "@/components/modals/StockAlertsModal";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -110,10 +114,62 @@ export function DashboardView({
   maxChart: number;
   language?: string;
 }) {
-  const { openTransactionModal, openTelebirrModal } = useApp();
+  const router = useRouter();
+  const { openTransactionModal, openTelebirrModal, openBarcodeModal } = useApp();
   const { user } = useAuth();
   const { theme } = useTheme();
   const dark = theme === "dark";
+  const [showStockAlerts, setShowStockAlerts] = useState(false);
+
+  const handleFeatureClick = (f: SectorFeature) => {
+    const titleLower = f.title.toLowerCase();
+
+    // 1. Barcode scanner
+    if (titleLower.includes("barcode")) {
+      openBarcodeModal();
+      return;
+    }
+
+    // 2. Stock alerts
+    if (titleLower.includes("alert") || titleLower.includes("stock alert")) {
+      setShowStockAlerts(true);
+      return;
+    }
+
+    // 3. Match against sector navItems / modules
+    const sectorCfg = getSectorConfig(sector.id) || getSectorConfig("retail-trading");
+    const match = sectorCfg?.navItems.find(
+      (item) =>
+        item.label.toLowerCase() === titleLower ||
+        titleLower.includes(item.key.toLowerCase()) ||
+        item.key.toLowerCase().includes(titleLower.replace(/\s+/g, "-")) ||
+        item.label.toLowerCase().includes(titleLower) ||
+        titleLower.includes(item.label.toLowerCase())
+    );
+
+    if (match) {
+      router.push(`/m/${match.key}`);
+      return;
+    }
+
+    // Specific retail fallbacks
+    if (titleLower.includes("pos") || titleLower.includes("checkout")) {
+      router.push("/m/pos");
+      return;
+    }
+    if (titleLower.includes("inventory") || titleLower.includes("stock")) {
+      router.push("/m/inventory");
+      return;
+    }
+    if (titleLower.includes("product")) {
+      router.push("/m/products");
+      return;
+    }
+
+    // Fallback module navigation
+    const slug = titleLower.replace(/[^a-z0-9]+/g, "-");
+    router.push(`/m/${slug}`);
+  };
 
   const firstName = user?.fullName?.split(" ")[0] ?? "there";
 
@@ -204,7 +260,7 @@ export function DashboardView({
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
       {/* ── Page Header ── */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+      <div className="dashboard-header-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
         <div>
           <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.04em" }}>
             Overview
@@ -213,35 +269,69 @@ export function DashboardView({
             Good to see you, {firstName}
           </h2>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          {/* Sector inline text */}
+        <div className="dashboard-action-buttons" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {/* Sector inline chip */}
           <div
             style={{
-              display: "flex",
+              display: "inline-flex",
               alignItems: "center",
               gap: 6,
               color: muted,
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: 500,
-              padding: "0 4px",
+              padding: "4px 8px",
+              borderRadius: 6,
+              background: subtle,
+              border: `1px solid ${border}`,
             }}
           >
-            {renderFeatureIcon(sector.icon, 16)}
+            {renderFeatureIcon(sector.icon, 14)}
             <span>{sector.shortName}</span>
           </div>
 
           <button
+            type="button"
             onClick={() => openTransactionModal()}
-            className="btn-primary"
+            className="action-btn-primary"
+            style={{
+              height: 32,
+              padding: "0 12px",
+              fontSize: 13,
+              fontWeight: 500,
+              borderRadius: 6,
+              border: "1px solid var(--accent-blue)",
+              background: "var(--accent-blue)",
+              color: "#ffffff",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              cursor: "pointer",
+              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+            }}
           >
-            <Plus size={14} /> {t("addTransaction", language)}
+            <Plus size={14} /> <span>{t("addTransaction", language)}</span>
           </button>
 
           <button
+            type="button"
             onClick={openTelebirrModal}
-            className="btn-secondary"
+            className="action-btn-secondary"
+            style={{
+              height: 32,
+              padding: "0 12px",
+              fontSize: 13,
+              fontWeight: 500,
+              borderRadius: 6,
+              border: `1px solid ${border}`,
+              background: surface,
+              color: ink,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              cursor: "pointer",
+            }}
           >
-            <Smartphone size={14} style={{ color: muted }} /> Telebirr
+            <Smartphone size={14} style={{ color: muted }} /> <span>Telebirr</span>
           </button>
         </div>
       </div>
@@ -463,42 +553,66 @@ export function DashboardView({
             flexDirection: "column",
           }}
         >
-          <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}` }}>
+          <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.04em" }}>
               {sector.shortName} Modules
             </p>
+            <span style={{ fontSize: 11, color: "var(--accent-blue)", fontWeight: 500 }}>
+              Quick Action
+            </span>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column" }}>
             {sector.features.slice(0, 5).map((f, idx) => {
               const isLast = idx === Math.min(sector.features.length, 5) - 1;
               return (
-                <div
+                <button
                   key={f.title}
+                  type="button"
+                  onClick={() => handleFeatureClick(f)}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: 12,
                     padding: "12px 16px",
+                    border: "none",
                     borderBottom: isLast ? "none" : `1px solid ${border}`,
+                    background: "transparent",
                     cursor: "pointer",
-                    transition: "background-color 0.12s ease-out",
+                    textAlign: "left",
+                    width: "100%",
+                    minHeight: 50,
+                    transition: "background-color 0.12s ease-out, transform 0.08s ease",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = subtle)}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = subtle)}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+                  title={`Open ${f.title}`}
                 >
-                  <span style={{ color: muted, display: "flex", alignItems: "center", flexShrink: 0 }}>
+                  <span
+                    style={{
+                      color: f.color || "var(--accent-blue)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 28,
+                      height: 28,
+                      borderRadius: 6,
+                      background: subtle,
+                      flexShrink: 0,
+                    }}
+                  >
                     {renderFeatureIcon(f.icon, 16)}
                   </span>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {f.title}
                     </div>
                     <div style={{ fontSize: 12, color: muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {f.description}
                     </div>
                   </div>
-                </div>
+                  <ChevronRight size={14} style={{ color: muted, flexShrink: 0, opacity: 0.6 }} />
+                </button>
               );
             })}
           </div>
@@ -596,6 +710,10 @@ export function DashboardView({
         )}
       </div>
 
+      <StockAlertsModal
+        isOpen={showStockAlerts}
+        onClose={() => setShowStockAlerts(false)}
+      />
     </div>
   );
 }

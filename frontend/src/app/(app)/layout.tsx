@@ -13,7 +13,6 @@ import { getInitials, getTimeOfDay } from "@/lib/format";
 import { readOperationQueue, readQueue } from "@/features/erp/offline";
 import { Sidebar } from "@/components/navigation/Sidebar";
 import { BottomNav } from "@/components/navigation/BottomNav";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";
 import { TransactionModal } from "@/components/modals/TransactionModal";
 import { EmployeeModal } from "@/components/modals/EmployeeModal";
@@ -163,26 +162,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-              {isDemoActive && (
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 12,
-                    fontWeight: 400,
-                    color: "var(--text-secondary)",
-                    background: "transparent",
-                    border: "none",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--warning)", flexShrink: 0 }} />
-                  <span className="demo-badge-long">DEMO MODE · IN-MEMORY</span>
-                  <span className="demo-badge-short">DEMO</span>
-                </span>
-              )}
-
               {/* Beyond AI Assistant Drawer Trigger */}
               <button
                 type="button"
@@ -209,8 +188,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <Sparkles size={13} style={{ color: "var(--text-muted)" }} />
                 <span className="demo-badge-long">AI Assistant</span>
               </button>
-
-              <ThemeToggle />
 
               <button
                 className="topbar-btn"
@@ -290,7 +267,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Calendar size={13} style={{ flexShrink: 0, color: "var(--text-muted)" }} />
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", color: "var(--text-muted)" }}>
               <span style={{ fontSize: 12, fontWeight: 500, color: "var(--text-primary)" }}>{ethiopianDate}</span>
-              <span style={{ fontSize: 12 }}>· VAT 15% · ETB · NBE Compliant</span>
+              <span style={{ fontSize: 12 }}>· VAT 15% · ETB</span>
               {holidayToday ? (
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--text-muted)" }}>
                   <Sparkles size={11} style={{ display: "inline-block", verticalAlign: "middle" }} />

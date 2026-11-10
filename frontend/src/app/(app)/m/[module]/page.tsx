@@ -2,15 +2,18 @@
 
 import { use } from "react";
 import { useApp } from "@/contexts/AppContext";
+import { useAppSelector } from "@/store/hooks";
 import { getSectorConfig } from "@/features/sectors";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function ModulePage({ params }: { params: Promise<{ module: string }> }) {
   const { module: moduleKey } = use(params);
   const { settings } = useApp();
+  const reduxSectorId = useAppSelector((state) => state.sectors.activeSectorId);
+  const activeUser = useAppSelector((state) => state.auth.user);
 
-  const sectorId = settings?.companySectorId ?? null;
-  const config = getSectorConfig(sectorId);
+  const sectorId = reduxSectorId ?? activeUser?.companySectorId ?? settings?.companySectorId ?? "retail-trading";
+  const config = getSectorConfig(sectorId) || getSectorConfig("retail-trading");
 
   if (!config) {
     return (

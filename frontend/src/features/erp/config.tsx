@@ -24,6 +24,51 @@ export type LangKey =
   | "workflow" | "features" | "companyName" | "tinNumber" | "language" | "clearCache";
 
 const i18n: Record<string, Partial<Record<LangKey, string>>> = {
+  English: {
+    home: "Home",
+    crm: "CRM",
+    sectors: "Sectors",
+    money: "Transactions",
+    team: "Team",
+    finance: "Finance",
+    reports: "Reports",
+    admin: "Admin",
+    setup: "Settings",
+    morning: "Morning",
+    afternoon: "Afternoon",
+    evening: "Evening",
+    dashboard: "Dashboard",
+    addTransaction: "Add Transaction",
+    revenue: "Revenue",
+    expenses: "Expenses",
+    netProfit: "Net Profit",
+    pendingSync: "Pending Sync",
+    employees: "Employees",
+    settings: "Settings",
+    search: "Search",
+    save: "Save",
+    cancel: "Cancel",
+    delete: "Delete",
+    edit: "Edit",
+    add: "Add",
+    amount: "Amount",
+    description: "Description",
+    category: "Category",
+    paymentMethod: "Payment Method",
+    date: "Date",
+    noRecords: "No records found",
+    activeTask: "Active Tasks",
+    sectorRevenue: "Sector Revenue",
+    pendingRecords: "Pending Records",
+    manageAdmins: "Manage Admins",
+    addMember: "Add Member",
+    workflow: "Workflow",
+    features: "Features",
+    companyName: "Company Name",
+    tinNumber: "TIN Number",
+    language: "Language",
+    clearCache: "Clear Cache"
+  },
   Amharic: {
     home: "ዋና", crm: "ሲአርኤም (ደንበኞች)", sectors: "ዘርፎች", money: "ገንዘብ", team: "ቡድን",
     finance: "ፋይናንስ", reports: "ሪፖርቶች", admin: "አስተዳዳሪ", setup: "ቅንብር",
@@ -72,7 +117,10 @@ const i18n: Record<string, Partial<Record<LangKey, string>>> = {
 };
 
 export function t(key: LangKey, language = "English"): string {
-  return i18n[language]?.[key] ?? key;
+  const dict = i18n[language] || i18n["English"];
+  if (dict && dict[key]) return dict[key]!;
+  if (i18n["English"] && i18n["English"][key]) return i18n["English"][key]!;
+  return key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
 }
 
 export const paymentMethods = ["Telebirr", "Cash", "Bank Transfer", "CBE Birr", "Amole", "Cheque"];
