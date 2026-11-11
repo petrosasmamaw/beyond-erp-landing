@@ -560,14 +560,15 @@ function PaymentContent() {
           .pay-seg {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4px;
-            padding: 4px;
-            background: ${payField};
+            gap: 6px;
+            padding: 5px;
+            background: ${dark ? "#121927" : "#e8ecf4"};
+            border: 1px solid ${dark ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.08)"};
             border-radius: 12px;
             box-sizing: border-box;
           }
           .pay-seg button {
-            border: 0;
+            border: 1px solid transparent;
             background: transparent;
             color: ${payMuted};
             padding: 11px;
@@ -579,12 +580,20 @@ function PaymentContent() {
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.15s, color 0.15s;
+            transition: all 0.2s ease;
+          }
+          .pay-seg button:hover:not([aria-pressed="true"]) {
+            color: ${payText};
+            background: ${dark ? "rgba(255, 255, 255, 0.04)" : "rgba(255, 255, 255, 0.5)"};
           }
           .pay-seg button[aria-pressed="true"] {
-            background: ${payBg} !important;
-            color: ${payText} !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+            background: ${dark ? "#263d66" : "#ffffff"} !important;
+            color: ${dark ? "#ffffff" : "#0f172a"} !important;
+            font-weight: 700 !important;
+            border-color: ${dark ? "rgba(147, 197, 253, 0.5)" : "rgba(37, 99, 235, 0.3)"} !important;
+            box-shadow: ${dark
+              ? "0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.22)"
+              : "0 3px 10px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)"} !important;
           }
           .pay-dl {
             margin: 8px 0 0;
@@ -936,14 +945,40 @@ function PaymentContent() {
                   aria-pressed={selectedMethod === "CBE"}
                   onClick={() => setSelectedMethod("CBE")}
                 >
-                  CBE bank transfer
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    {selectedMethod === "CBE" ? (
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: dark ? "#93c5fd" : "#2563eb",
+                          boxShadow: dark ? "0 0 8px #60a5fa" : "0 0 6px rgba(37, 99, 235, 0.4)"
+                        }}
+                      />
+                    ) : null}
+                    CBE bank transfer
+                  </span>
                 </button>
                 <button
                   type="button"
                   aria-pressed={selectedMethod === "TELEBIRR"}
                   onClick={() => setSelectedMethod("TELEBIRR")}
                 >
-                  Telebirr
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    {selectedMethod === "TELEBIRR" ? (
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: dark ? "#93c5fd" : "#2563eb",
+                          boxShadow: dark ? "0 0 8px #60a5fa" : "0 0 6px rgba(37, 99, 235, 0.4)"
+                        }}
+                      />
+                    ) : null}
+                    Telebirr
+                  </span>
                 </button>
               </div>
 
